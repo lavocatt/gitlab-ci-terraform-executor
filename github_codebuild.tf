@@ -91,7 +91,7 @@ resource "aws_codebuild_project" "imagebuilder_terraform" {
   }
 
   source_version = "main"
-  tags = var.imagebuilder_tags
+  tags           = var.imagebuilder_tags
 }
 
 resource "aws_codebuild_webhook" "imagebuilder_terraform" {
