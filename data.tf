@@ -46,6 +46,11 @@ data "aws_iam_policy" "read_only_iam" {
   arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
 }
 
+# Get the policy that allows reading CodeBuild information.
+data "aws_iam_policy" "read_only_codebuild" {
+  arn = "arn:aws:iam::aws:policy/AWSCodeBuildReadOnlyAccess"
+}
+
 # Allow Terraform to read state from S3.
 data "aws_iam_policy_document" "terraform_read_state" {
   statement {

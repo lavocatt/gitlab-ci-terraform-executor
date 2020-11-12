@@ -35,6 +35,10 @@ resource "aws_iam_user_policy_attachment" "read_only_iam" {
   user       = aws_iam_user.github_actions_readonly.name
   policy_arn = data.aws_iam_policy.read_only_iam.arn
 }
+resource "aws_iam_user_policy_attachment" "read_only_codebuild" {
+  user       = aws_iam_user.github_actions_readonly.name
+  policy_arn = data.aws_iam_policy.read_only_codebuild.arn
+}
 resource "aws_iam_user_policy_attachment" "terraform_read_state" {
   user       = aws_iam_user.github_actions_readonly.name
   policy_arn = aws_iam_policy.terraform_read_state.arn
