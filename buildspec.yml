@@ -8,11 +8,6 @@ env:
 phases:
   install:
     commands:
-      - |
-        curl -Ls --retry 5 --output terraform.zip \
-          https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-      - unzip terraform.zip
-      - mv terraform /usr/local/bin/terraform
       - terraform version
   build:
     commands:
