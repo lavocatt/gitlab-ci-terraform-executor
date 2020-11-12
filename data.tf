@@ -41,11 +41,12 @@ data "aws_iam_policy" "viewonly" {
   arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
 }
 
-# Get the policy that allows reading IAM information
+# Get the policy that allows reading IAM information.
 data "aws_iam_policy" "read_only_iam" {
   arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
 }
 
+# Allow Terraform to read state from S3.
 data "aws_iam_policy_document" "terraform_read_state" {
   statement {
     actions = [
@@ -60,6 +61,7 @@ data "aws_iam_policy_document" "terraform_read_state" {
   }
 }
 
+# Allow Terraform to use dynamodb for locking.
 data "aws_iam_policy_document" "terraform_locks" {
   statement {
     actions = [
