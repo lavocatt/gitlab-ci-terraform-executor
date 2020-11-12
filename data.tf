@@ -36,19 +36,9 @@ data "aws_ami" "rhel8_latest" {
 # IAM
 ##############################################################################
 
-# Get the policy from IAM that allows viewing everything.
-data "aws_iam_policy" "viewonly" {
-  arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
-}
-
-# Get the policy that allows reading IAM information.
-data "aws_iam_policy" "read_only_iam" {
-  arn = "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
-}
-
-# Get the policy that allows reading CodeBuild information.
-data "aws_iam_policy" "read_only_codebuild" {
-  arn = "arn:aws:iam::aws:policy/AWSCodeBuildReadOnlyAccess"
+# Get the policy from IAM that allows reading everything.
+data "aws_iam_policy" "readonly" {
+  arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
 # Allow Terraform to read state from S3.
