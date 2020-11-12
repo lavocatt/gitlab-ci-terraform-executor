@@ -13,5 +13,5 @@ output "internal_subnets" {
 }
 
 output "rhel_latest" {
-  value = "${data.aws_ami.rhel8_latest.name} (${data.aws_ami.rhel8_latest.id})"
+  value = "${data.aws_ami.rhel8_x86.name} (${data.aws_ami.rhel8_x86.id})"
 }

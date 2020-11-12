@@ -7,11 +7,11 @@ data "aws_availability_zones" "available" {
 # EC2
 ##############################################################################
 
-# Get the latest non-beta RHEL 8 image in AWS provided by Cloud Access.
-data "aws_ami" "rhel8_latest" {
+# Get the RHEL 8 image in AWS that we will use (provided by Cloud Access).
+data "aws_ami" "rhel8_x86" {
+  # Only images we can actually execute.
   executable_users = ["self"]
-  most_recent      = true
-  # Exclude any beta images.
+  # Restrict to RHEL8 GA images.
   name_regex = "^RHEL-8[.0-9]+_HVM-[0-9]{8}.*$"
   # Red Had Cloud Access account.
   owners = ["309956199498"]
@@ -29,6 +29,13 @@ data "aws_ami" "rhel8_latest" {
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
+  }
+
+  # This uniquely specifies the image, the other filters are
+  # just sanity checks.
+  filter {
+    name   = "image-id"
+    values = ["ami-0c82f7789103a1e20"]
   }
 }
 
