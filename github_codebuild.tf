@@ -22,7 +22,10 @@ resource "aws_iam_role" "codebuild_imagebuilder_deploy" {
 data "aws_iam_policy_document" "codebuild_log_to_cloudwatch" {
   statement {
     actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
       "logs:PutLogEvents",
+      "logs:DescribeLogStreams"
     ]
 
     resources = [
