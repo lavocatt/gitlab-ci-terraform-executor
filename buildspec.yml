@@ -3,7 +3,6 @@ version: 0.2
 env:
   variables:
     FOO: BAR
-    TERRAFORM_VERSION: 0.13.5
 
 phases:
   install:

@@ -69,7 +69,7 @@ resource "aws_codebuild_project" "imagebuilder_terraform" {
   # These environment variables are passed to the container in CodeBuild.
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "docker.io/hashicorp/terraform:full"
+    image                       = "docker.io/hashicorp/terraform:0.13.5"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
 
