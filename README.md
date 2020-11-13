@@ -19,16 +19,3 @@ The current resource files include:
 * `output.tf`: data to print after a `terraform apply` run
 * `provider.tf`: deployment-wide configurations for AWS
 * `terraform.tf`: deployment-wide general configuration
-
-# Operations
-
-## 🔒 State and locks
-
-Terraform uses centralized state and locks to ensure consistency in
-deployments. Review the [README](state-and-locks/README.md) and terraform
-resources in the `state-and-locks` directory.
-
-💣 **Deploying these resources is a one-time operation!** Making changes to
-state storage and lock handling can be highly disruptive to Terraform's
-operations. These resources were applied during the creation of this
-repository and should not need to be changed later.
