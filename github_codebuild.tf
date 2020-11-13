@@ -47,6 +47,16 @@ resource "aws_iam_role_policy_attachment" "codebuild_log_to_cloudwatch" {
   policy_arn = aws_iam_policy.codebuild_log_to_cloudwatch.arn
 }
 
+# Allow CodeBuild to retrieve state and set up locking.
+resource "aws_iam_role_policy_attachment" "terraform_read_state_codebuild" {
+  role       = aws_iam_role.codebuild_imagebuilder_deploy.name
+  policy_arn = aws_iam_policy.terraform_read_state.arn
+}
+resource "aws_iam_role_policy_attachment" "terraform_locks_codebuild" {
+  role       = aws_iam_role.codebuild_imagebuilder_deploy.name
+  policy_arn = aws_iam_policy.terraform_locks.arn
+}
+
 # Set up a CloudWatch log group for CodeBuild
 resource "aws_cloudwatch_log_group" "codebuild_to_cloudwatch" {
   name              = "imagebuilder_codebuild"
