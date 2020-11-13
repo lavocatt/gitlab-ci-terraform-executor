@@ -1,12 +1,14 @@
 # Data that must be gathered from AWS for the deployment to work.
+
+##############################################################################
+## GENERAL
+# Get the availability zones in our region.
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
 ##############################################################################
-# EC2
-##############################################################################
-
+## EC2
 # Get the RHEL 8 image in AWS that we will use (provided by Cloud Access).
 data "aws_ami" "rhel8_x86" {
   # Only images we can actually execute.
@@ -40,9 +42,7 @@ data "aws_ami" "rhel8_x86" {
 }
 
 ##############################################################################
-# VPC
-##############################################################################
-
+## VPC
 # Find the details for the internal VPC at AWS.
 data "aws_vpc" "internal_vpc" {
   filter {
