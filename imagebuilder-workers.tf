@@ -1,6 +1,7 @@
-# Create S3 buckets for stage and prod where imagebuilder workers will upload
-# images to import into EC2.
-resource "aws_s3_bucket" "imagebuilder-stage" {
+##############################################################################
+## STAGE
+# Create S3 bucket for stage workers to upload images.
+resource "aws_s3_bucket" "imagebuilder_stage" {
   bucket = "imagebuilder-service-stage"
   acl    = "private"
 
@@ -8,11 +9,65 @@ resource "aws_s3_bucket" "imagebuilder-stage" {
     var.imagebuilder_tags, { Name = "Image Builder S3 bucket for Stage" },
   )
 }
-resource "aws_s3_bucket" "imagebuilder-prod" {
+
+# Generate policy to allow workers to upload images to S3.
+data "aws_iam_policy_document" "imagebuilder_stage" {
+  statement {
+    sid = "1"
+
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:DeleteObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::imagebuilder-stage",
+      "arn:aws:s3:::imagebuilder-stage/*"
+    ]
+  }
+}
+
+# Create policy based on s3 upload policy document.
+resource "aws_iam_policy" "imagebuilder_stage_workers_s3" {
+  name   = "imagebuilder-stage-workers-s3"
+  policy = data.aws_iam_policy_document.imagebuilder_stage.json
+}
+
+##############################################################################
+## PROD
+# Create S3 bucket for prod workers to upload images.
+resource "aws_s3_bucket" "imagebuilder_prod" {
   bucket = "imagebuilder-service-prod"
   acl    = "private"
 
   tags = merge(
     var.imagebuilder_tags, { Name = "Image Builder S3 bucket for Prod" },
   )
+}
+
+# Policy to allow workers to upload images to S3.
+data "aws_iam_policy_document" "imagebuilder_prod" {
+  statement {
+    sid = "1"
+
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:DeleteObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::imagebuilder-prod",
+      "arn:aws:s3:::imagebuilder-prod/*"
+    ]
+  }
+}
+
+# Create policy based on s3 upload policy document.
+resource "aws_iam_policy" "imagebuilder_prod_workers_s3" {
+  name   = "imagebuilder-prod-workers-s3"
+  policy = data.aws_iam_policy_document.imagebuilder_prod.json
 }
