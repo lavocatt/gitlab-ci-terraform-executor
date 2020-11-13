@@ -35,6 +35,15 @@ resource "aws_iam_policy" "imagebuilder_stage_workers_s3" {
   policy = data.aws_iam_policy_document.imagebuilder_stage.json
 }
 
+resource "aws_iam_user" "imagebuilder_stage" {
+  name = "imagebuilder-stage"
+  path = "/workers/"
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "Image Builder Stage User" },
+  )
+}
+
 ##############################################################################
 ## PROD
 # Create S3 bucket for prod workers to upload images.
@@ -70,4 +79,13 @@ data "aws_iam_policy_document" "imagebuilder_prod" {
 resource "aws_iam_policy" "imagebuilder_prod_workers_s3" {
   name   = "imagebuilder-prod-workers-s3"
   policy = data.aws_iam_policy_document.imagebuilder_prod.json
+}
+
+resource "aws_iam_user" "imagebuilder_prod" {
+  name = "imagebuilder-prod"
+  path = "/workers/"
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "Image Builder Prod User" },
+  )
 }
