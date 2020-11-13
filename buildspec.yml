@@ -10,6 +10,6 @@ phases:
       - terraform version
   build:
     commands:
-      - terrform init
+      - terraform init
       - terraform plan
       - terraform deploy -auto-approve
