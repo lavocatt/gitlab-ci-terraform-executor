@@ -1,7 +1,5 @@
 # Resources for CodeBuild at AWS that deploys our infrastructure.
 
-
-
 # Set up a CloudWatch log group for CodeBuild
 resource "aws_cloudwatch_log_group" "codebuild_to_cloudwatch" {
   name              = "imagebuilder_codebuild"
@@ -15,7 +13,7 @@ resource "aws_codebuild_project" "imagebuilder_terraform" {
   name          = "imagebuilder-terraform"
   description   = "imagebuilder-terraform deployment"
   badge_enabled = true
-  service_role  = aws_iam_role.codebuild_imagebuilder_deploy.arn
+  service_role  = aws_iam_role.codebuild_imagebuilder.arn
 
   artifacts {
     type = "NO_ARTIFACTS"

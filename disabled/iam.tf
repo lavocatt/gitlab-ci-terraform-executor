@@ -27,8 +27,9 @@ data "aws_iam_policy_document" "terraform_read_state" {
   }
 }
 resource "aws_iam_policy" "terraform_read_state" {
-  name   = "terraform_read_state"
-  policy = data.aws_iam_policy_document.terraform_read_state.json
+  name        = "terraform_read_state"
+  description = "Allow reading Terraform state"
+  policy      = data.aws_iam_policy_document.terraform_read_state.json
 }
 
 # Allow Terraform to write state to S3.
@@ -43,8 +44,9 @@ data "aws_iam_policy_document" "terraform_write_state" {
   }
 }
 resource "aws_iam_policy" "terraform_write_state" {
-  name   = "terraform_write_state"
-  policy = data.aws_iam_policy_document.terraform_write_state.json
+  name        = "terraform_write_state"
+  description = "Allow writing Terraform state"
+  policy      = data.aws_iam_policy_document.terraform_write_state.json
 }
 
 # Allow Terraform to use dynamodb for locking.
@@ -62,8 +64,9 @@ data "aws_iam_policy_document" "terraform_locks" {
   }
 }
 resource "aws_iam_policy" "terraform_locks" {
-  name   = "terraform_locks"
-  policy = data.aws_iam_policy_document.terraform_locks.json
+  name        = "terraform_locks"
+  description = "Allow management of Terraform locks"
+  policy      = data.aws_iam_policy_document.terraform_locks.json
 }
 
 # Allow CodeBuild to send logs to CloudWatch.
@@ -82,8 +85,9 @@ data "aws_iam_policy_document" "codebuild_log_to_cloudwatch" {
   }
 }
 resource "aws_iam_policy" "codebuild_log_to_cloudwatch" {
-  name   = "codebuild_log_to_cloudwatch"
-  policy = data.aws_iam_policy_document.codebuild_log_to_cloudwatch.json
+  name        = "codebuild_log_to_cloudwatch"
+  description = "Allow CodeBuild logging to CloudWatch"
+  policy      = data.aws_iam_policy_document.codebuild_log_to_cloudwatch.json
 }
 
 
@@ -126,35 +130,36 @@ resource "aws_iam_user_policy_attachment" "terraform_locks" {
 ##############################################################################
 ## ROLES
 # Create the IAM role for CodeBuild.
-resource "aws_iam_role" "codebuild_imagebuilder_deploy" {
-  name               = "codebuild_imagebuilder_deploy"
+resource "aws_iam_role" "codebuild_imagebuilder" {
+  name               = "codebuild_imagebuilder"
   assume_role_policy = data.aws_iam_policy_document.codebuild_principal.json
+  tags               = var.imagebuilder_tags
 }
 
 ##############################################################################
 ## ROLE/POLICY ATTACHMENT
 # Attach all of the policies for CodeBuild.
 resource "aws_iam_role_policy_attachment" "codebuild_cloudwatch" {
-  role       = aws_iam_role.codebuild_imagebuilder_deploy.name
+  role       = aws_iam_role.codebuild_imagebuilder.name
   policy_arn = aws_iam_policy.codebuild_log_to_cloudwatch.arn
 }
 resource "aws_iam_role_policy_attachment" "codebuild_read_state" {
-  role       = aws_iam_role.codebuild_imagebuilder_deploy.name
+  role       = aws_iam_role.codebuild_imagebuilder.name
   policy_arn = aws_iam_policy.terraform_read_state.arn
 }
 resource "aws_iam_role_policy_attachment" "codebuild_write_state" {
-  role       = aws_iam_role.codebuild_imagebuilder_deploy.name
+  role       = aws_iam_role.codebuild_imagebuilder.name
   policy_arn = aws_iam_policy.terraform_write_state.arn
 }
 resource "aws_iam_role_policy_attachment" "codebuild_terraform_locks" {
-  role       = aws_iam_role.codebuild_imagebuilder_deploy.name
+  role       = aws_iam_role.codebuild_imagebuilder.name
   policy_arn = aws_iam_policy.terraform_locks.arn
 }
 resource "aws_iam_role_policy_attachment" "codebuild_iam_full_access" {
-  role       = aws_iam_role.codebuild_imagebuilder_deploy.name
+  role       = aws_iam_role.codebuild_imagebuilder.name
   policy_arn = data.aws_iam_policy.iam_full_access.arn
 }
 resource "aws_iam_role_policy_attachment" "codebuild_readonly" {
-  role       = aws_iam_role.codebuild_imagebuilder_deploy.name
+  role       = aws_iam_role.codebuild_imagebuilder.name
   policy_arn = data.aws_iam_policy.readonly.arn
 }
