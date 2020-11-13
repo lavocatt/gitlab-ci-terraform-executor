@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    FOO: BAR
+    AWS_REGION: us-east-1
 
 phases:
   install:
@@ -10,5 +10,6 @@ phases:
       - terraform version
   build:
     commands:
+      - terrform init
       - terraform plan
       - terraform deploy -auto-approve
