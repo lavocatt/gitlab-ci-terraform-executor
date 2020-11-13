@@ -35,6 +35,7 @@ resource "aws_iam_policy" "imagebuilder_stage_workers_s3" {
   policy = data.aws_iam_policy_document.imagebuilder_stage.json
 }
 
+# Create the stage IAM user.
 resource "aws_iam_user" "imagebuilder_stage" {
   name = "imagebuilder-stage"
   path = "/workers/"
@@ -42,6 +43,12 @@ resource "aws_iam_user" "imagebuilder_stage" {
   tags = merge(
     var.imagebuilder_tags, { Name = "Image Builder Stage User" },
   )
+}
+
+# Attach policies.
+resource "aws_iam_user_policy_attachment" "imagebuilder_stage_s3" {
+  user       = aws_iam_user.imagebuilder_stage.name
+  policy_arn = aws_iam_policy.imagebuilder_stage_workers_s3.arn
 }
 
 ##############################################################################
@@ -81,6 +88,7 @@ resource "aws_iam_policy" "imagebuilder_prod_workers_s3" {
   policy = data.aws_iam_policy_document.imagebuilder_prod.json
 }
 
+# Create the prod IAM user.
 resource "aws_iam_user" "imagebuilder_prod" {
   name = "imagebuilder-prod"
   path = "/workers/"
@@ -88,4 +96,10 @@ resource "aws_iam_user" "imagebuilder_prod" {
   tags = merge(
     var.imagebuilder_tags, { Name = "Image Builder Prod User" },
   )
+}
+
+# Attach policies.
+resource "aws_iam_user_policy_attachment" "imagebuilder_prod_s3" {
+  user       = aws_iam_user.imagebuilder_prod.name
+  policy_arn = aws_iam_policy.imagebuilder_prod_workers_s3.arn
 }
