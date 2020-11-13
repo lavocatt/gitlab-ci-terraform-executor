@@ -10,6 +10,6 @@ phases:
       - terraform version
   build:
     commands:
-      - terraform init
-      - terraform plan
-      - terraform deploy -auto-approve
+      - terraform init -lock-timeout=300s
+      - terraform plan -lock-timeout=300s
+      - terraform deploy -auto-approve -lock-timeout=300s
