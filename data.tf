@@ -40,45 +40,6 @@ data "aws_ami" "rhel8_x86" {
 }
 
 ##############################################################################
-# IAM
-##############################################################################
-
-# Get the policy from IAM that allows reading everything.
-data "aws_iam_policy" "readonly" {
-  arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
-}
-
-# Allow Terraform to read state from S3.
-data "aws_iam_policy_document" "terraform_read_state" {
-  statement {
-    actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
-    ]
-
-    resources = [
-      "arn:aws:s3:::imagebuilder-terraform-state",
-      "arn:aws:s3:::imagebuilder-terraform-state/*"
-    ]
-  }
-}
-
-# Allow Terraform to use dynamodb for locking.
-data "aws_iam_policy_document" "terraform_locks" {
-  statement {
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:DeleteItem"
-    ]
-
-    resources = [
-      "arn:aws:dynamodb:*:*:table/imagebuilder-terraform-locks",
-    ]
-  }
-}
-
-##############################################################################
 # VPC
 ##############################################################################
 
