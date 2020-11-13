@@ -2,7 +2,7 @@ variable "imagebuilder_tags" {
   type        = map
   description = "Required AWS tags for Image Builder"
   default = {
-    Name : "Image Builder Terraform State Storage"
+    Name : "Image Builder"
     ServiceOwner : "Image Builder"
     AppCode : "IMGB-001"
   }
