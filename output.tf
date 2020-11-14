@@ -12,6 +12,6 @@ output "internal_subnets" {
   value = join(", ", data.aws_subnet_ids.internal_subnets.ids)
 }
 
-output "rhel_latest" {
+output "rhel8_x86" {
   value = "${data.aws_ami.rhel8_x86.name} (${data.aws_ami.rhel8_x86.id})"
 }
