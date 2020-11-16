@@ -187,8 +187,8 @@ data "aws_iam_policy_document" "imagebuilder_stage" {
     ]
 
     resources = [
-      "arn:aws:s3:::imagebuilder-stage",
-      "arn:aws:s3:::imagebuilder-stage/*"
+      "arn:aws:s3:::imagebuilder-service-stage",
+      "arn:aws:s3:::imagebuilder-service-stage/*"
     ]
   }
 }
@@ -244,8 +244,8 @@ data "aws_iam_policy_document" "imagebuilder_prod" {
     ]
 
     resources = [
-      "arn:aws:s3:::imagebuilder-prod",
-      "arn:aws:s3:::imagebuilder-prod/*"
+      "arn:aws:s3:::imagebuilder-service-prod",
+      "arn:aws:s3:::imagebuilder-service-prod/*"
     ]
   }
 }
