@@ -91,6 +91,35 @@ resource "aws_iam_role_policy_attachment" "vmimport_ec2" {
 }
 
 ##############################################################################
+## SPOT FLEET
+# Set up a role policy for spot fleets.
+data "aws_iam_policy_document" "spotfleet_iam_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["spotfleet.amazonaws.com"]
+    }
+  }
+}
+
+# Create the spot fleet role.
+resource "aws_iam_role" "spot_fleet_tagging_role" {
+  assume_role_policy = data.aws_iam_policy_document.spotfleet_iam_policy.json
+  name               = "SpotFleetTaggingRoleForImageBuilder"
+  lifecycle {
+    ignore_changes = [name]
+  }
+}
+
+# Attach the tagging policy to the spot fleet.role
+resource "aws_iam_role_policy_attachment" "spot_request_policy" {
+  role       = aws_iam_role.spot_fleet_tagging_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+}
+
+##############################################################################
 ## STAGE
 # Create S3 bucket for stage workers to upload images.
 resource "aws_s3_bucket" "imagebuilder_stage" {
