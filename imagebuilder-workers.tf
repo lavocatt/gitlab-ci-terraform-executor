@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "vmimport_trust" {
   statement {
     sid = "1"
 
-    effect = "Allow"
+    actions = ["sts:AssumeRole"]
 
     principals {
       type        = "Service"
