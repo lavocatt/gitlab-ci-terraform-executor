@@ -6,3 +6,17 @@ variable "imagebuilder_tags" {
     AppCode : "IMGB-001"
   }
 }
+
+# These instance types are used with the spot fleet to determine what type of
+# instances should be used for running workers.
+variable "worker_instance_types" {
+  description = "Instance types for workers"
+  default = [
+    "c5.large",
+    "c5d.large",
+    "c5a.large",
+    "c5.xlarge",
+    "c5d.xlarge",
+    "c5a.xlarge"
+  ]
+}
