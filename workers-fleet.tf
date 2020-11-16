@@ -84,7 +84,7 @@ resource "aws_spot_fleet_request" "imagebuilder_worker_x86" {
   target_capacity = 1
 
   # IAM role that the spot fleet service can use.
-  iam_fleet_role = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet"
+  iam_fleet_role = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-ec2-spot-fleet-tagging-role"
 
   # Instances that reach spot expiration or are stopped due to target capacity
   # limits should be terminated.
