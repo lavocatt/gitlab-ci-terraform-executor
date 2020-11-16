@@ -32,6 +32,8 @@ resource "aws_launch_template" "worker_x86" {
 
   # Get the security group for the instances.
   vpc_security_group_ids = [
+    aws_security_group.allow_cockpit.id,
+    aws_security_group.allow_egress.id,
     aws_security_group.allow_icmp.id,
     aws_security_group.allow_ssh.id
   ]
@@ -91,9 +93,9 @@ resource "aws_spot_fleet_request" "imagebuilder_worker_x86" {
   terminate_instances_with_expiration = true
 
   # Create a new fleet before destroying the old one.
-  lifecycle {
-    create_before_destroy = true
-  }
+  # lifecycle {
+  #   create_before_destroy = true
+  # }
 
   # Use our pre-defined launch template.
   launch_template_config {

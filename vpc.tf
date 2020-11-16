@@ -33,6 +33,25 @@ resource "aws_security_group" "allow_ssh" {
   )
 }
 
+# Allow cockpit.
+resource "aws_security_group" "allow_cockpit" {
+  name        = "allow-cockpit"
+  description = "Allow cockpit access"
+  vpc_id      = data.aws_vpc.internal_vpc.id
+
+  ingress {
+    description = "cockpit"
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "allow-cockpit" },
+  )
+}
+
 # Allow ICMP.
 resource "aws_security_group" "allow_icmp" {
   name        = "allow-icmp"
@@ -49,5 +68,23 @@ resource "aws_security_group" "allow_icmp" {
 
   tags = merge(
     var.imagebuilder_tags, { Name = "allow-icmp" },
+  )
+}
+
+# Allow egress.
+resource "aws_security_group" "allow_egress" {
+  name        = "allow-egress"
+  description = "Allow egress traffic"
+  vpc_id      = data.aws_vpc.internal_vpc.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "allow-egress" },
   )
 }
