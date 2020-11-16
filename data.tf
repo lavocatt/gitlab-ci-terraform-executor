@@ -57,3 +57,13 @@ data "aws_vpc" "internal_vpc" {
 data "aws_subnet_ids" "internal_subnets" {
   vpc_id = data.aws_vpc.internal_vpc.id
 }
+
+# Find the default VPC (not internal).
+data "aws_vpc" "external_vpc" {
+  default = true
+}
+
+# Find all of the subnet IDs from the default VPC.
+data "aws_subnet_ids" "external_subnets" {
+  vpc_id = data.aws_vpc.external_vpc.id
+}
