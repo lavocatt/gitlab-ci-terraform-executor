@@ -35,8 +35,8 @@ resource "aws_security_group" "allow_ssh" {
 
 # Allow ICMP.
 resource "aws_security_group" "allow_icmp" {
-  name        = "allow-ssh"
-  description = "Allow SSH access"
+  name        = "allow-icmp"
+  description = "Allow ICMP access"
   vpc_id      = data.aws_vpc.internal_vpc.id
 
   ingress {

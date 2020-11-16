@@ -7,6 +7,9 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+# Get data for the account.
+data "aws_caller_identity" "current" {}
+
 ##############################################################################
 ## EC2
 # Get the RHEL 8 image in AWS that we will use (provided by Cloud Access).
