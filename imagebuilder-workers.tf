@@ -24,9 +24,8 @@ data "aws_iam_policy_document" "vmimport_trust" {
   }
 }
 
-# Create vmimport base policy. This allows EC2 to get images from our S3
-# buckets and take actions on snapshots/AMIs during import.
-data "aws_iam_policy_document" "vmimport_base" {
+# Create base policy for vmimport with S3 storage.
+data "aws_iam_policy_document" "vmimport_s3" {
   statement {
     sid = "1"
 
@@ -43,9 +42,12 @@ data "aws_iam_policy_document" "vmimport_base" {
       "arn:aws:s3:::imagebuilder-prod/*"
     ]
   }
+}
 
+# Create base policy for vmimport with EC2.
+data "aws_iam_policy_document" "vmimport_ec2" {
   statement {
-    sid = "2"
+    sid = "1"
 
     actions = [
       "ec2:ModifySnapshotAttribute",
@@ -58,10 +60,14 @@ data "aws_iam_policy_document" "vmimport_base" {
   }
 }
 
-# Load the vmimport base policy.
-resource "aws_iam_policy" "vmimport_base" {
-  name   = "vmimport_base"
-  policy = data.aws_iam_policy_document.vmimport_base.json
+# Load the vmimport S3/EC2 policies
+resource "aws_iam_policy" "vmimport_s3" {
+  name   = "vmimport_s3"
+  policy = data.aws_iam_policy_document.vmimport_s3.json
+}
+resource "aws_iam_policy" "vmimport_ec2" {
+  name   = "vmimport_ec2"
+  policy = data.aws_iam_policy_document.vmimport_ec2.json
 }
 
 # Create the vmimport role.
@@ -75,9 +81,13 @@ resource "aws_iam_role" "vmimport" {
 }
 
 # Attach base vmimport policy to role.
-resource "aws_iam_role_policy_attachment" "vmimport_base" {
+resource "aws_iam_role_policy_attachment" "vmimport_s3" {
   role       = aws_iam_role.vmimport.name
-  policy_arn = aws_iam_policy.vmimport_base.arn
+  policy_arn = aws_iam_policy.vmimport_s3.arn
+}
+resource "aws_iam_role_policy_attachment" "vmimport_ec2" {
+  role       = aws_iam_role.vmimport.name
+  policy_arn = aws_iam_policy.vmimport_ec2.arn
 }
 
 ##############################################################################
@@ -132,6 +142,10 @@ resource "aws_iam_user_policy_attachment" "imagebuilder_stage_s3" {
   user       = aws_iam_user.imagebuilder_stage.name
   policy_arn = aws_iam_policy.imagebuilder_stage_workers_s3.arn
 }
+resource "aws_iam_user_policy_attachment" "imagebuilder_stage_vmimport" {
+  user       = aws_iam_user.imagebuilder_stage.name
+  policy_arn = aws_iam_policy.vmimport_ec2.arn
+}
 
 ##############################################################################
 ## PROD
@@ -184,4 +198,8 @@ resource "aws_iam_user" "imagebuilder_prod" {
 resource "aws_iam_user_policy_attachment" "imagebuilder_prod_s3" {
   user       = aws_iam_user.imagebuilder_prod.name
   policy_arn = aws_iam_policy.imagebuilder_prod_workers_s3.arn
+}
+resource "aws_iam_user_policy_attachment" "imagebuilder_prod_vmimport" {
+  user       = aws_iam_user.imagebuilder_prod.name
+  policy_arn = aws_iam_policy.vmimport_ec2.arn
 }
