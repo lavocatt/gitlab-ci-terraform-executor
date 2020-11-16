@@ -93,7 +93,7 @@ resource "aws_iam_role_policy_attachment" "vmimport_ec2" {
 ##############################################################################
 ## SPOT FLEET
 # Set up a role policy for spot fleets.
-data "aws_iam_policy_document" "spotfleet_iam_policy" {
+data "aws_iam_policy_document" "spotfleet_iam_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -104,9 +104,76 @@ data "aws_iam_policy_document" "spotfleet_iam_policy" {
   }
 }
 
+# Create a policy that allows EC2 to manage our spot fleets.
+data "aws_iam_policy_document" "spotfleet_iam_spot_policy" {
+  statement {
+    sid = "1"
+
+    actions = [
+      "ec2:DescribeImages",
+      "ec2:DescribeSubnets",
+      "ec2:RequestSpotInstances",
+      "ec2:DescribeInstanceStatus",
+      "ec2:RunInstances"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "2"
+
+    actions = ["iam:PassRole"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values = [
+        "ec2.amazonaws.com",
+        "ec2.amazonaws.com.cn"
+      ]
+    }
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "3"
+
+    actions = ["ec2:CreateTags"]
+
+    resources = [
+      "arn:aws:ec2:*:*:instance/*",
+      "arn:aws:ec2:*:*:spot-instances-request/*",
+      "arn:aws:ec2:*:*:spot-fleet-request/*",
+      "arn:aws:ec2:*:*:volume/*"
+    ]
+  }
+
+  statement {
+    sid = "4"
+
+    actions = ["ec2:TerminateInstances"]
+
+    condition {
+      test     = "StringLike"
+      variable = "ec2:ResourceTag/aws:ec2spot:fleet-request-id"
+      values   = ["*"]
+    }
+
+    resources = ["*"]
+  }
+}
+
+# Load the spot fleet policy.
+resource "aws_iam_policy" "spotfleet_iam_spot_policy" {
+  name   = "vmimport_s3"
+  policy = data.aws_iam_policy_document.spotfleet_iam_spot_policy.json
+}
+
 # Create the spot fleet role.
 resource "aws_iam_role" "spot_fleet_tagging_role" {
-  assume_role_policy = data.aws_iam_policy_document.spotfleet_iam_policy.json
+  assume_role_policy = data.aws_iam_policy_document.spotfleet_iam_role_policy.json
   name               = "SpotFleetTaggingRoleForImageBuilder"
   lifecycle {
     ignore_changes = [name]
@@ -114,9 +181,13 @@ resource "aws_iam_role" "spot_fleet_tagging_role" {
 }
 
 # Attach the tagging policy to the spot fleet.role
-resource "aws_iam_role_policy_attachment" "spot_request_policy" {
+resource "aws_iam_role_policy_attachment" "spotfleet_iam_role_policy" {
   role       = aws_iam_role.spot_fleet_tagging_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+}
+resource "aws_iam_role_policy_attachment" "spotfleet_iam_spot_policy" {
+  role       = aws_iam_role.spot_fleet_tagging_role.name
+  policy_arn = aws_iam_policy.spotfleet_iam_spot_policy.arn
 }
 
 ##############################################################################
