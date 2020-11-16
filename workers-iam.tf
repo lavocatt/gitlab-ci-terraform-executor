@@ -107,59 +107,34 @@ data "aws_iam_policy_document" "spotfleet_iam_role_policy" {
 # Create a policy that allows EC2 to manage our spot fleets.
 data "aws_iam_policy_document" "spotfleet_iam_spot_policy" {
   statement {
-    sid = "1"
-
     actions = [
-      "ec2:DescribeImages",
-      "ec2:DescribeSubnets",
-      "ec2:RequestSpotInstances",
-      "ec2:DescribeInstanceStatus",
-      "ec2:RunInstances"
+      "ec2:RunInstances",
+      "ec2:CreateTags",
+      "ec2:RequestSpotFleet",
+      "ec2:ModifySpotFleetRequest",
+      "ec2:CancelSpotFleetRequests",
+      "ec2:DescribeSpotFleetRequests",
+      "ec2:DescribeSpotFleetInstances",
+      "ec2:DescribeSpotFleetRequestHistory"
     ]
 
     resources = ["*"]
   }
 
   statement {
-    sid = "2"
-
     actions = ["iam:PassRole"]
 
-    condition {
-      test     = "StringEquals"
-      variable = "iam:PassedToService"
-      values = [
-        "ec2.amazonaws.com",
-        "ec2.amazonaws.com.cn"
-      ]
-    }
-
-    resources = ["*"]
-  }
-
-  statement {
-    sid = "3"
-
-    actions = ["ec2:CreateTags"]
-
     resources = [
-      "arn:aws:ec2:*:*:instance/*",
-      "arn:aws:ec2:*:*:spot-instances-request/*",
-      "arn:aws:ec2:*:*:spot-fleet-request/*",
-      "arn:aws:ec2:*:*:volume/*"
+      "arn:aws:iam::*:role/aws-ec2-spot-fleet-tagging-role"
     ]
   }
 
   statement {
-    sid = "4"
-
-    actions = ["ec2:TerminateInstances"]
-
-    condition {
-      test     = "StringLike"
-      variable = "ec2:ResourceTag/aws:ec2spot:fleet-request-id"
-      values   = ["*"]
-    }
+    actions = [
+      "iam:CreateServiceLinkedRole",
+      "iam:ListRoles",
+      "iam:ListInstanceProfiles"
+    ]
 
     resources = ["*"]
   }
@@ -174,10 +149,7 @@ resource "aws_iam_policy" "spotfleet_iam_spot_policy" {
 # Create the spot fleet role.
 resource "aws_iam_role" "spot_fleet_tagging_role" {
   assume_role_policy = data.aws_iam_policy_document.spotfleet_iam_role_policy.json
-  name               = "SpotFleetTaggingRoleForImageBuilder"
-  lifecycle {
-    ignore_changes = [name]
-  }
+  name               = "imagebuilder-spot-fleet-role"
 }
 
 # Attach the tagging policy to the spot fleet.role
