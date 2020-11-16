@@ -167,7 +167,7 @@ data "aws_iam_policy_document" "spotfleet_iam_spot_policy" {
 
 # Load the spot fleet policy.
 resource "aws_iam_policy" "spotfleet_iam_spot_policy" {
-  name   = "vmimport_s3"
+  name   = "spotfleet_iam_spot_policy"
   policy = data.aws_iam_policy_document.spotfleet_iam_spot_policy.json
 }
 
