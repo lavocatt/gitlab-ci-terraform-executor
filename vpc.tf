@@ -7,7 +7,7 @@ resource "aws_vpc_endpoint" "internal_vpc_s3" {
   service_name = "com.amazonaws.us-east-1.s3"
 
   tags = merge(
-    var.imagebuilder_tags, {Name = "Image Builder S3 VPC endpoint"},
+    var.imagebuilder_tags, { Name = "Image Builder S3 VPC endpoint" },
   )
 }
 
