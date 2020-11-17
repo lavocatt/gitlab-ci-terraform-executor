@@ -1,3 +1,5 @@
+##############################################################################
+## WORKER SPOT FLEETS
 # Set up the cloud-init user data for worker instances.
 data "template_file" "worker_user_data" {
   template = file("cloud-init/worker-variables.template")

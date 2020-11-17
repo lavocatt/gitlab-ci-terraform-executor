@@ -1,3 +1,7 @@
+##############################################################################
+## GLOBAL VARIABLES
+
+# The default tags for all resources created by Terraform.
 variable "imagebuilder_tags" {
   type        = map
   description = "Required AWS tags for Image Builder"
