@@ -53,7 +53,8 @@ data "aws_iam_policy_document" "vmimport_ec2" {
       "ec2:ModifySnapshotAttribute",
       "ec2:CopySnapshot",
       "ec2:RegisterImage",
-      "ec2:Describe*"
+      "ec2:Describe*",
+      "ec2:ImportSnapshot"
     ]
 
     resources = ["*"]
