@@ -36,10 +36,10 @@ data "aws_iam_policy_document" "vmimport_s3" {
     ]
 
     resources = [
-      "arn:aws:s3:::imagebuilder-stage",
-      "arn:aws:s3:::imagebuilder-stage/*",
-      "arn:aws:s3:::imagebuilder-prod",
-      "arn:aws:s3:::imagebuilder-prod/*"
+      "arn:aws:s3:::imagebuilder-service-stage",
+      "arn:aws:s3:::imagebuilder-service-stage/*",
+      "arn:aws:s3:::imagebuilder-service-prod",
+      "arn:aws:s3:::imagebuilder-service-prod/*"
     ]
   }
 }
