@@ -24,3 +24,8 @@ variable "worker_instance_types" {
     "c5a.xlarge"
   ]
 }
+
+variable composer_commit {
+  type        = string
+  description = "The Git SHA of osbuild-composer to deploy on both the composer and worker nodes."
+}

@@ -1,0 +1,7 @@
+#!/bin/bash
+set -euxo pipefail
+
+# Variables from Terraform go here.
+COMMIT=${commit}
+
+${setup_script}
