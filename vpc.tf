@@ -112,7 +112,7 @@ resource "aws_security_group" "inernal_allow_egress" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "allow-egress" },
+    var.imagebuilder_tags, { Name = "internal-allow-egress" },
   )
 }
 
