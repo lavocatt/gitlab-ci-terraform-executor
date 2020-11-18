@@ -51,6 +51,7 @@ ca = "/etc/osbuild-composer/ca.cert.pem"
 EOF
 
 # Forward systemd journal to the console for easier viewing.
+mkdir /etc/osbuild-composer
 tee /etc/osbuild-composer/osbuild-composer.toml > /dev/null << EOF
 [Journal]
 ForwardToConsole=yes
@@ -62,10 +63,6 @@ restorecon -Rv /etc/systemd/journald.conf.d/forward-to-console.conf
 
 # Restart journald to pick up the console log change.
 systemctl restart systemd-journald
-
-# Start osbuild-composer and a default worker.
-# NOTE(mhayden): Use a remote worker setup later once we know this works.
-systemctl enable --now osbuild-composer.socket
 
 # Set up storage on composer.
 if ! grep ${STATE_DIR} /proc/mounts; then
@@ -99,3 +96,7 @@ if ! grep ${STATE_DIR} /proc/mounts; then
   touch ${STATE_DIR}/.provisioning_check
   rm -f ${STATE_DIR}/.provisioning_check
 fi
+
+# Start osbuild-composer and a default worker.
+# NOTE(mhayden): Use a remote worker setup later once we know this works.
+systemctl enable --now osbuild-composer.socket
