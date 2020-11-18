@@ -17,7 +17,7 @@ resource "aws_network_interface" "composer_brew" {
   subnet_id = data.aws_subnet.internal_subnet_primary.id
 
   private_ips = [
-    cidrhost(data.aws_subnet.internal_subnet_primary.cidr_block, 1)
+    cidrhost(data.aws_subnet.internal_subnet_primary.cidr_block, 10)
   ]
 
   security_groups = [
