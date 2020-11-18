@@ -45,27 +45,15 @@ resource "aws_volume_attachment" "composer_brew" {
 }
 
 resource "aws_instance" "composer_brew" {
-  ami                         = data.aws_ami.rhel8_x86.id
-  instance_type               = "t3.small"
-  key_name                    = "mhayden"
-  associate_public_ip_address = false
-
-  vpc_security_group_ids = [
-    aws_security_group.internal_allow_egress.id,
-    aws_security_group.internal_allow_trusted.id
-  ]
-
-  subnet_id = data.aws_subnet.internal_subnet_primary.id
+  ami           = data.aws_ami.rhel8_x86.id
+  instance_type = "t3.small"
+  key_name      = "mhayden"
 
   user_data = base64encode(data.template_file.composer_brew_user_data.rendered)
 
   network_interface {
     network_interface_id = aws_network_interface.composer_brew.id
     device_index         = 0
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 
   tags = merge(
