@@ -51,6 +51,7 @@ ca = "/etc/osbuild-composer/ca.cert.pem"
 EOF
 
 # Forward systemd journal to the console for easier viewing.
+mkdir /etc/osbuild-composer
 tee /etc/osbuild-composer/osbuild-composer.toml > /dev/null << EOF
 [Journal]
 ForwardToConsole=yes
