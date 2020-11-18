@@ -13,6 +13,20 @@ data "template_file" "composer_brew_user_data" {
   }
 }
 
+resource "aws_network_interface" "composer_brew" {
+  subnet_id = data.aws_subnet.internal_subnet_primary.id
+
+  private_ips = [
+    cidrhost(data.aws_subnet.internal_subnet_primary.cidr_block, 1)
+  ]
+
+  security_groups = [
+    aws_security_group.internal_allow_egress.id,
+    aws_security_group.internal_allow_trusted.id
+  ]
+
+}
+
 resource "aws_ebs_volume" "composer_brew" {
   availability_zone = data.aws_subnet.internal_subnet_primary.availability_zone
   encrypted         = true
@@ -35,12 +49,20 @@ resource "aws_instance" "composer_brew" {
   instance_type               = "t3.small"
   key_name                    = "mhayden"
   associate_public_ip_address = false
+
   vpc_security_group_ids = [
     aws_security_group.internal_allow_egress.id,
     aws_security_group.internal_allow_trusted.id
   ]
+
   subnet_id = data.aws_subnet.internal_subnet_primary.id
+
   user_data = base64encode(data.template_file.composer_brew_user_data.rendered)
+
+  network_interface {
+    network_interface_id = aws_network_interface.composer_brew.id
+    device_index         = 0
+  }
 
   lifecycle {
     create_before_destroy = true
@@ -49,9 +71,4 @@ resource "aws_instance" "composer_brew" {
   tags = merge(
     var.imagebuilder_tags, { Name = "Composer for Brew" },
   )
-}
-
-resource "aws_eip" "composer_brew" {
-  instance = aws_instance.composer_brew.id
-  vpc      = true
 }
