@@ -99,7 +99,7 @@ resource "aws_security_group" "allow_egress" {
 ##############################################################################
 ## INTERNAL SECURITY GROUPS
 # Allow egress.
-resource "aws_security_group" "inernal_allow_egress" {
+resource "aws_security_group" "internal_allow_egress" {
   name        = "internal-allow-egress"
   description = "Allow egress traffic"
   vpc_id      = data.aws_vpc.internal_vpc.id
