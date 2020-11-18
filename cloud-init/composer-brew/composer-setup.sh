@@ -52,6 +52,7 @@ ca = "/etc/osbuild-composer/ca.cert.pem"
 EOF
 
 # Forward systemd journal to the console for easier viewing.
+mkdir -p /etc/systemd/journald.conf.d/
 tee /etc/systemd/journald.conf.d/forward-to-console.conf > /dev/null << EOF
 [Journal]
 ForwardToConsole=yes
@@ -59,7 +60,7 @@ MaxLevelConsole=6
 EOF
 
 # Ensure the SELinux contexts are correct.
-restorecon -Rv /etc/systemd/journald.conf.d/forward-to-console.conf
+restorecon -Rv /etc/systemd
 
 # Restart journald to pick up the console log change.
 systemctl restart systemd-journald
