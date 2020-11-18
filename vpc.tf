@@ -10,6 +10,14 @@ resource "aws_vpc_endpoint" "internal_vpc_s3" {
     var.imagebuilder_tags, { Name = "Image Builder S3 VPC endpoint" },
   )
 }
+resource "aws_vpc_endpoint" "external_vpc_s3" {
+  vpc_id       = data.aws_vpc.external_vpc.id
+  service_name = "com.amazonaws.us-east-1.s3"
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "Image Builder S3 VPC endpoint" },
+  )
+}
 
 ##############################################################################
 ## SECURITY GROUPS
