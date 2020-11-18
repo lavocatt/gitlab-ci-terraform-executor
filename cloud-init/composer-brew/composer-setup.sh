@@ -64,10 +64,6 @@ restorecon -Rv /etc/systemd/journald.conf.d/forward-to-console.conf
 # Restart journald to pick up the console log change.
 systemctl restart systemd-journald
 
-# Start osbuild-composer and a default worker.
-# NOTE(mhayden): Use a remote worker setup later once we know this works.
-systemctl enable --now osbuild-composer.socket
-
 # Set up storage on composer.
 if ! grep ${STATE_DIR} /proc/mounts; then
   # Ensure EBS is fully connected first.
@@ -100,3 +96,7 @@ if ! grep ${STATE_DIR} /proc/mounts; then
   touch ${STATE_DIR}/.provisioning_check
   rm -f ${STATE_DIR}/.provisioning_check
 fi
+
+# Start osbuild-composer and a default worker.
+# NOTE(mhayden): Use a remote worker setup later once we know this works.
+systemctl enable --now osbuild-composer.socket
