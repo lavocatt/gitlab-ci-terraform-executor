@@ -31,10 +31,10 @@ resource "aws_volume_attachment" "composer_brew" {
 }
 
 resource "aws_instance" "composer_brew" {
-  ami           = data.aws_ami.rhel8_x86.id
-  instance_type = "t3.small"
-  key_name      = "mhayden"
-
+  ami                         = data.aws_ami.rhel8_x86.id
+  instance_type               = "t3.small"
+  key_name                    = "mhayden"
+  associate_public_ip_address = false
   vpc_security_group_ids = [
     aws_security_group.internal_allow_egress.id,
     aws_security_group.internal_allow_trusted.id
