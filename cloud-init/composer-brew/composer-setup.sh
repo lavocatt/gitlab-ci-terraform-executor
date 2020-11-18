@@ -40,6 +40,7 @@ retry dnf -y upgrade
 retry dnf -y install osbuild-composer
 
 # Deploy a customized osbuild-composer configuration.
+mkdir /etc/osbuild-composer
 tee /etc/osbuild-composer/osbuild-composer.toml > /dev/null << EOF
 [koji]
 allowed_domains = [ "team.osbuild.org", "hub.brew.osbuild.org", "worker.brew.osbuild.org" ]
@@ -51,8 +52,7 @@ ca = "/etc/osbuild-composer/ca.cert.pem"
 EOF
 
 # Forward systemd journal to the console for easier viewing.
-mkdir /etc/osbuild-composer
-tee /etc/osbuild-composer/osbuild-composer.toml > /dev/null << EOF
+tee /etc/systemd/journald.conf.d/forward-to-console.conf > /dev/null << EOF
 [Journal]
 ForwardToConsole=yes
 MaxLevelConsole=6
