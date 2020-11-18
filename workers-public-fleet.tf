@@ -111,7 +111,7 @@ resource "aws_spot_fleet_request" "imagebuilder_worker_x86" {
 
       content {
         instance_type = overrides.value
-        subnet_id     = sort(data.aws_subnet_ids.internal_subnets.ids)[0]
+        subnet_id     = sort(data.aws_subnet_ids.external_subnets.ids)[0]
       }
     }
   }
