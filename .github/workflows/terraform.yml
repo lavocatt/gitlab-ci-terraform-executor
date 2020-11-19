@@ -11,8 +11,7 @@ jobs:
     name: 'Terraform'
     runs-on: ubuntu-latest
     env:
-      TF_VAR_composer_brew_cert: ${{ secrets.COMPOSER_BREW_CERT_20201119 }}
-      TF_VAR_composer_brew_key: ${{ secrets.COMPOSER_BREW_KEY_20201119 }}
+      ACTIONS_VARS: github_actions.auto.tfvars
     steps:
 
       - name: Checkout
@@ -22,6 +21,16 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Write additional Terraform variables
+        run: |
+          #!/bin/bash
+          echo "composer_brew_cert = \"$(base64 -w0 - <<< ${composer_brew_cert})\"" >> $ACTIONS_VARS
+          echo "composer_brew_key  = \"$(base64 -w0 - <<< ${composer_brew_key})\"" >> $ACTIONS_VARS
+          terraform fmt
+        env:
+          composer_brew_cert: ${{ secrets.COMPOSER_BREW_CERT_20201119 }}
+          composer_brew_key: ${{ secrets.COMPOSER_BREW_KEY_20201119 }}
 
       - name: Terraform Format
         id: fmt
