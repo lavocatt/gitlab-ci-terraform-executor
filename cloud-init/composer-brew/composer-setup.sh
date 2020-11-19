@@ -131,11 +131,11 @@ fi
 
 # Start osbuild-composer and a default worker.
 # NOTE(mhayden): Use a remote worker setup later once we know this works.
-systemctl enable --now osbuild-composer.socket
+# systemctl enable --now osbuild-composer.socket
 
 # Prepare osbuild-composer's remote worker services and sockets.
 # NOTE(mhayden): Enable these and disable the socket above once we have
 # certificates and keys provisioned.
-#systemctl mask osbuild-worker@1.service
-#systemctl enable --now osbuild-remote-worker.socket
-#systemctl enable --now osbuild-composer-api.socket
+systemctl mask osbuild-worker@1.service
+systemctl enable --now osbuild-remote-worker.socket
+systemctl enable --now osbuild-composer-api.socket
