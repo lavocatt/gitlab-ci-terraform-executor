@@ -7,7 +7,7 @@ data "template_file" "composer_brew_user_data" {
     commit             = var.composer_commit
     composer_brew_cert = var.composer_brew_cert
     composer_brew_key  = var.composer_brew_key
-    composer_brew_ca_cert = file("${path.module}/files/composer-brew-ca-cert.pem")
+    composer_brew_ca_cert = filebase64("${path.module}/files/composer-brew-ca-cert.pem")
 
     # 💣 Split off most of the setup script to avoid shenanigans with
     # Terraform's template interpretation that destroys Bash variables.

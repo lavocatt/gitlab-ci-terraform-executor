@@ -13,7 +13,7 @@ data "template_file" "worker_brew_user_data" {
     # Change these to worker certs later.
     worker_brew_cert      = var.composer_brew_cert
     worker_brew_key       = var.composer_brew_key
-    composer_brew_ca_cert = file("${path.module}/files/composer-brew-ca-cert.pem")
+    composer_brew_ca_cert = filebase64("${path.module}/files/composer-brew-ca-cert.pem")
 
     # TODO(mhayden): Remove the address below once DNS is working.
     composer_brew_host    = var.composer_brew_host

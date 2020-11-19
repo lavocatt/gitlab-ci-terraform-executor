@@ -46,7 +46,7 @@ retry dnf -y install osbuild-composer
 
 # Deploy the composer CA certificate.
 mkdir ${COMPOSER_DIR}
-<<< ${COMPOSER_BREW_CA_CERT} > ${COMPOSER_DIR}/ca-cert.pem
+base64 -d - <<< ${COMPOSER_BREW_CA_CERT} > ${COMPOSER_DIR}/ca-cert.pem
 
 # Deploy the composer key and certificate.
 base64 -d - <<< ${WORKER_BREW_CERT} > ${WORKER_DIR}/worker-crt.pem
