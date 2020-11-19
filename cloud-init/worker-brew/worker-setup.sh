@@ -42,7 +42,7 @@ retry dnf -y install osbuild-composer
 
 # Set up /etc/hosts
 # TODO(mhayden): We need to convert this to DNS later when we launch.
-<<< "${COMPOSER_BREW_ADDRESS} ${COMPOSER_BREW_HOST}" >> /etc/hosts
+cat <<< "${COMPOSER_BREW_ADDRESS} ${COMPOSER_BREW_HOST}" >> /etc/hosts
 
 # Deploy the composer CA certificate.
 mkdir ${COMPOSER_DIR}
