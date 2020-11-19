@@ -76,12 +76,8 @@ JslM/7psyr1o5ttbBn6Y5As=
 EOF
 
 # Deploy the composer key and certificate.
-tee ${COMPOSER_DIR}/composer-crt.pem > /dev/null << EOF
-${COMPOSER_BREW_CERT}
-EOF
-tee ${COMPOSER_DIR}/composer-key.pem > /dev/null << EOF
-${COMPOSER_BREW_KEY}
-EOF
+base64 -d - <<< ${COMPOSER_BREW_CERT} > ${COMPOSER_DIR}/composer-crt.pem
+base64 -d - <<< ${COMPOSER_BREW_KEY} > ${COMPOSER_DIR}/composer-key.pem
 
 # Ensure osbuild-composer's configuration files have correct ownership.
 chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
