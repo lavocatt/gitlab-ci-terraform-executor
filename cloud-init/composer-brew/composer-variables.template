@@ -5,5 +5,6 @@ set -euxo pipefail
 COMMIT=${commit}
 COMPOSER_BREW_CERT=${composer_brew_cert}
 COMPOSER_BREW_KEY=${composer_brew_key}
+COMPOSER_BREW_CA_CERT=${composer_brew_ca_cert}
 
 ${setup_script}

@@ -40,24 +40,17 @@ retry dnf -y upgrade
 # Install required packages.
 retry dnf -y install osbuild-composer
 
-# Deploy a customized osbuild-composer configuration.
-mkdir ${COMPOSER_DIR}
-tee ${COMPOSER_DIR}/osbuild-composer.toml > /dev/null << EOF
-[koji]
-allowed_domains = [ "team.osbuild.org", "hub.brew.osbuild.org", "worker.brew.osbuild.org" ]
-ca = "/etc/osbuild-composer/ca-cert.pem"
-
-[worker]
-allowed_domains = [ "team.osbuild.org", "worker.brew.osbuild.org" ]
-ca = "/etc/osbuild-composer/ca-cert.pem"
-EOF
+# Set up /etc/hosts
+# TODO(mhayden): We need to convert this to DNS later when we launch.
+<<< "${COMPOSER_BREW_ADDRESS} ${COMPOSER_BREW_HOST}" >> /etc/hosts
 
 # Deploy the composer CA certificate.
+mkdir ${COMPOSER_DIR}
 <<< ${COMPOSER_BREW_CA_CERT} > ${COMPOSER_DIR}/ca-cert.pem
 
 # Deploy the composer key and certificate.
-base64 -d - <<< ${COMPOSER_BREW_CERT} > ${COMPOSER_DIR}/composer-crt.pem
-base64 -d - <<< ${COMPOSER_BREW_KEY} > ${COMPOSER_DIR}/composer-key.pem
+base64 -d - <<< ${WORKER_BREW_CERT} > ${WORKER_DIR}/worker-crt.pem
+base64 -d - <<< ${WORKER_BREW_KEY} > ${WORKER_DIR}/worker-key.pem
 
 # Ensure osbuild-composer's configuration files have correct ownership.
 chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
@@ -76,46 +69,7 @@ restorecon -Rv /etc/systemd
 # Restart journald to pick up the console log change.
 systemctl restart systemd-journald
 
-# Set up storage on composer.
-if ! grep ${STATE_DIR} /proc/mounts; then
-  # Ensure EBS is fully connected first.
-  for TIMER in {0..300}; do
-    if stat $EBS_STORAGE; then
-      break
-    fi
-    sleep 1
-  done
-
-  # Check if XFS filesystem is already made.
-  if ! xfs_info $EBS_STORAGE; then
-    mkfs.xfs $EBS_STORAGE
-  fi
-
-  # Make osbuild-composer state directory if missing.
-  mkdir -p ${STATE_DIR}
-
-  # Add to /etc/fstab and mount.
-  echo "${EBS_STORAGE} ${STATE_DIR} xfs defaults 0 0" | tee -a /etc/fstab
-  mount $EBS_STORAGE
-
-  # Reset SELinux contexts.
-  restorecon -Rv /var/lib
-
-  # Set filesystem permissions.
-  chown -R _osbuild-composer:_osbuild-composer ${STATE_DIR}
-
-  # Verify that the storage is writable
-  touch ${STATE_DIR}/.provisioning_check
-  rm -f ${STATE_DIR}/.provisioning_check
-fi
-
-# Start osbuild-composer and a default worker.
-# NOTE(mhayden): Use a remote worker setup later once we know this works.
-# systemctl enable --now osbuild-composer.socket
-
 # Prepare osbuild-composer's remote worker services and sockets.
 # NOTE(mhayden): Enable these and disable the socket above once we have
 # certificates and keys provisioned.
-systemctl mask osbuild-worker@1.service
-systemctl enable --now osbuild-remote-worker.socket
-systemctl enable --now osbuild-composer-api.socket
+systemctl enable --now osbuild-remote-worker@${COMPOSER_BREW_HOST}:8700

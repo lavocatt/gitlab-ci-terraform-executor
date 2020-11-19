@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euxo pipefail
+
+# Variables from Terraform go here.
+COMMIT=${commit}
+COMPOSER_BREW_HOST=${composer_brew_host}
+COMPOSER_BREW_ADDRESS=${composer_brew_address}
+WORKER_BREW_CERT=${worker_brew_cert}
+WORKER_BREW_KEY=${worker_brew_key}
+WORKER_BREW_CA_CERT=${composer_brew_ca_cert}
+
+${setup_script}
