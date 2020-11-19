@@ -10,6 +10,9 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_composer_brew_cert: ${{ secrets.COMPOSER_BREW_CERT_20201119 }}
+      TF_VAR_composer_brew_key: ${{ secrets.COMPOSER_BREW_KEY_20201119 }}
     steps:
 
       - name: Checkout

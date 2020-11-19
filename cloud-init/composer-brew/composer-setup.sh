@@ -19,6 +19,7 @@ function retry {
 # Variables for the script.
 EBS_STORAGE=/dev/nvme1n1
 STATE_DIR=/var/lib/osbuild-composer
+COMPOSER_DIR=/etc/osbuild-composer
 
 # Deploy the dnf repository file for osbuild-composer.
 tee /etc/yum.repos.d/composer.repo > /dev/null << EOF
@@ -40,8 +41,8 @@ retry dnf -y upgrade
 retry dnf -y install osbuild-composer
 
 # Deploy a customized osbuild-composer configuration.
-mkdir /etc/osbuild-composer
-tee /etc/osbuild-composer/osbuild-composer.toml > /dev/null << EOF
+mkdir ${COMPOSER_DIR}
+tee ${COMPOSER_DIR}/osbuild-composer.toml > /dev/null << EOF
 [koji]
 allowed_domains = [ "team.osbuild.org", "hub.brew.osbuild.org", "worker.brew.osbuild.org" ]
 ca = "/etc/osbuild-composer/ca.cert.pem"
@@ -52,7 +53,7 @@ ca = "/etc/osbuild-composer/ca.cert.pem"
 EOF
 
 # Deploy the composer CA certificate.
-tee /etc/osbuild-composer/ca-cert.pem > /dev/null << EOF
+tee ${COMPOSER_DIR}/ca-cert.pem > /dev/null << EOF
 -----BEGIN CERTIFICATE-----
 MIIDDTCCAfWgAwIBAgIUP3P3f35PFRNuoftzc9L96DhTodAwDQYJKoZIhvcNAQEL
 BQAwFjEUMBIGA1UEAwwLb3NidWlsZC5vcmcwHhcNMjAwOTEzMTYyMDU3WhcNMzAw
@@ -73,6 +74,17 @@ tSgMBp75UReo45E8PJrJp3hyo4Rx9RQGkrycRIwfBHvkxMJfnsc7Y/v5iuF8mxMz
 JslM/7psyr1o5ttbBn6Y5As=
 -----END CERTIFICATE-----
 EOF
+
+# Deploy the composer key and certificate.
+tee ${COMPOSER_DIR}/composer-crt.pem > /dev/null << EOF
+${COMPOSER_BREW_CERT}
+EOF
+tee ${COMPOSER_DIR}/composer-key.pem > /dev/null << EOF
+${COMPOSER_BREW_KEY}
+EOF
+
+# Ensure osbuild-composer's configuration files have correct ownership.
+chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
 
 # Forward systemd journal to the console for easier viewing.
 mkdir -p /etc/systemd/journald.conf.d/

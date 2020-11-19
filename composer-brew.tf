@@ -4,7 +4,9 @@ data "template_file" "composer_brew_user_data" {
   vars = {
     # Add any variables here to pass to the setup script when the instance
     # boots.
-    commit = var.composer_commit
+    commit             = var.composer_commit
+    composer_brew_cert = var.composer_brew_cert
+    composer_brew_key  = var.composer_brew_key
 
     # 💣 Split off most of the setup script to avoid shenanigans with
     # Terraform's template interpretation that destroys Bash variables.

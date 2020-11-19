@@ -29,3 +29,13 @@ variable composer_commit {
   type        = string
   description = "The Git SHA of osbuild-composer to deploy on both the composer and worker nodes."
 }
+
+variable composer_brew_cert {
+  type    = string
+  default = "not provided"
+}
+
+variable composer_brew_key {
+  type    = string
+  default = "not provided"
+}
