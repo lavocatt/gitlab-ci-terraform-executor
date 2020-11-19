@@ -49,8 +49,8 @@ mkdir ${COMPOSER_DIR}
 base64 -d - <<< ${COMPOSER_BREW_CA_CERT} > ${COMPOSER_DIR}/ca-cert.pem
 
 # Deploy the composer key and certificate.
-base64 -d - <<< ${WORKER_BREW_CERT} > ${WORKER_DIR}/worker-crt.pem
-base64 -d - <<< ${WORKER_BREW_KEY} > ${WORKER_DIR}/worker-key.pem
+base64 -d - <<< ${WORKER_BREW_CERT} > ${COMPOSER_DIR}/worker-crt.pem
+base64 -d - <<< ${WORKER_BREW_KEY} > ${COMPOSER_DIR}/worker-key.pem
 
 # Ensure osbuild-composer's configuration files have correct ownership.
 chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
