@@ -53,7 +53,7 @@ ca = "/etc/osbuild-composer/ca-cert.pem"
 EOF
 
 # Deploy the composer CA certificate.
-base64 -d - <<< ${COMPOSER_BREW_CA_CERT} > ${COMPOSER_DIR}/ca-cert.pem
+base64 -d - <<< ${COMPOSER_BREW_CA_CERT} > ${COMPOSER_DIR}/ca-crt.pem
 
 # Deploy the composer key and certificate.
 base64 -d - <<< ${COMPOSER_BREW_CERT} > ${COMPOSER_DIR}/composer-crt.pem
