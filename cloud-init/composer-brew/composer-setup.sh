@@ -45,11 +45,11 @@ mkdir ${COMPOSER_DIR}
 tee ${COMPOSER_DIR}/osbuild-composer.toml > /dev/null << EOF
 [koji]
 allowed_domains = [ "team.osbuild.org", "hub.brew.osbuild.org", "worker.brew.osbuild.org" ]
-ca = "/etc/osbuild-composer/ca.cert.pem"
+ca = "/etc/osbuild-composer/ca-cert.pem"
 
 [worker]
 allowed_domains = [ "team.osbuild.org", "worker.brew.osbuild.org" ]
-ca = "/etc/osbuild-composer/ca.cert.pem"
+ca = "/etc/osbuild-composer/ca-cert.pem"
 EOF
 
 # Deploy the composer CA certificate.
