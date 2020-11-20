@@ -8,9 +8,10 @@ data "template_file" "composer_brew_user_data" {
     # Add any variables here to pass to the setup script when the instance
     # boots.
     commit                = var.composer_commit
-    composer_brew_cert    = var.composer_brew_cert
-    composer_brew_key     = var.composer_brew_key
     composer_brew_ca_cert = filebase64("${path.module}/files/composer-brew-ca-cert.pem")
+
+    # Provide the ARN to the secret that contains keys/certificates
+    brew_keys_arn = data.aws_secretsmanager_secret.brew_keys.arn
 
     # 💣 Split off most of the setup script to avoid shenanigans with
     # Terraform's template interpretation that destroys Bash variables.

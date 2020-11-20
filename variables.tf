@@ -32,7 +32,3 @@ variable composer_commit {
 
 # Brew composer/worker certificates and keys.
 variable composer_brew_host {}
-variable composer_brew_cert {}
-variable composer_brew_key {}
-variable worker_brew_cert {}
-variable worker_brew_key {}

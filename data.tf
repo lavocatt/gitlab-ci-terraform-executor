@@ -10,6 +10,11 @@ data "aws_availability_zones" "available" {
 # Get data for the account.
 data "aws_caller_identity" "current" {}
 
+# Get the brew_infrastructure secret ARN.
+data "aws_secretsmanager_secret" "brew_keys" {
+  name = "brew_keys"
+}
+
 ##############################################################################
 ## EC2
 # Get the RHEL 8 image in AWS that we will use (provided by Cloud Access).

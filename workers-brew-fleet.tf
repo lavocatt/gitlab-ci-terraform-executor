@@ -11,13 +11,14 @@ data "template_file" "worker_brew_user_data" {
     commit        = var.composer_commit
 
     # Change these to worker certs later.
-    worker_brew_cert      = var.worker_brew_cert
-    worker_brew_key       = var.worker_brew_key
     composer_brew_ca_cert = filebase64("${path.module}/files/composer-brew-ca-cert.pem")
 
     # TODO(mhayden): Remove the address below once DNS is working.
     composer_brew_host    = var.composer_brew_host
     composer_brew_address = aws_instance.composer_brew.private_ip
+
+    # Provide the ARN to the secret that contains keys/certificates
+    brew_keys_arn = data.aws_secretsmanager_secret.brew_keys.arn
 
     # 💣 Split off most of the setup script to avoid shenanigans with
     # Terraform's template interpretation that destroys Bash variables.
@@ -33,6 +34,11 @@ resource "aws_launch_template" "worker_brew_x86" {
   image_id      = data.aws_ami.rhel8_x86.id
   instance_type = "t3.medium"
   key_name      = "mhayden"
+
+  # Allow the instance to assume the brew_infrastructure IAM role.
+  iam_instance_profile {
+    name = aws_iam_instance_profile.brew_infrastructure.name
+  }
 
   # Assemble the cloud-init userdata file.
   user_data = base64encode(data.template_file.worker_brew_user_data.rendered)

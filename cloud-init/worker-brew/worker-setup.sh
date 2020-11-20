@@ -38,7 +38,14 @@ retry dnf makecache
 retry dnf -y upgrade
 
 # Install required packages.
-retry dnf -y install osbuild-composer
+retry dnf -y install jq osbuild-composer
+
+# Set up the AWS CLI.
+pushd /tmp
+  curl --retry 5 -Ls -o awscli.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+  unzip awscli.zip
+  aws/install
+popd
 
 # Set up /etc/hosts
 # TODO(mhayden): We need to convert this to DNS later when we launch.
@@ -49,8 +56,11 @@ mkdir ${COMPOSER_DIR}
 base64 -d - <<< ${COMPOSER_BREW_CA_CERT} > ${COMPOSER_DIR}/ca-crt.pem
 
 # Deploy the composer key and certificate.
-base64 -d - <<< ${WORKER_BREW_CERT} > ${COMPOSER_DIR}/worker-crt.pem
-base64 -d - <<< ${WORKER_BREW_KEY} > ${COMPOSER_DIR}/worker-key.pem
+/usr/local/bin/aws secretsmanager get-secret-value \
+  --secret-id ${BREW_KEYS_ARN} | jq -r ".SecretString" > /tmp/brew_keys.json
+jq -r ".worker_key" /tmp/brew_keys.json | base64 -d - > ${COMPOSER_DIR}/worker-key.pem
+jq -r ".worker_crt" /tmp/brew_keys.json | base64 -d - > ${COMPOSER_DIR}/worker-crt.pem
+rm -f /tmp/brew_keys.json
 
 # Ensure osbuild-composer's configuration files have correct ownership.
 chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
