@@ -48,7 +48,7 @@ retry dnf makecache
 retry dnf -y upgrade
 
 # Install required packages.
-retry dnf -y install jq osbuild-composer unzip
+retry dnf -y install jq osbuild-composer-worker python3 unzip
 
 # Set up the AWS CLI.
 pushd /tmp
