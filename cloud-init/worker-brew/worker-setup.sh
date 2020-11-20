@@ -24,8 +24,18 @@ COMPOSER_DIR=/etc/osbuild-composer
 # Deploy the dnf repository file for osbuild-composer.
 tee /etc/yum.repos.d/composer.repo > /dev/null << EOF
 [composer]
-name = osbuild-composer commit ${COMMIT}
-baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild-composer/rhel-8.3/x86_64/${COMMIT}
+name = osbuild-composer commit ${COMPOSER_COMMIT}
+baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild-composer/rhel-8.3/x86_64/${COMPOSER_COMMIT}
+enabled = 1
+gpgcheck = 0
+priority = 5
+EOF
+
+# Deploy the dnf repository file for osbuild.
+tee /etc/yum.repos.d/osbuild.repo > /dev/null << EOF
+[osbuild]
+name = osbuild commit ${OSBUILD_COMMIT}
+baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild/rhel-8.3/x86_64/${OSBUILD_COMMIT}
 enabled = 1
 gpgcheck = 0
 priority = 5
