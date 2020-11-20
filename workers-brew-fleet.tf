@@ -11,8 +11,8 @@ data "template_file" "worker_brew_user_data" {
     commit        = var.composer_commit
 
     # Change these to worker certs later.
-    worker_brew_cert      = var.composer_brew_cert
-    worker_brew_key       = var.composer_brew_key
+    worker_brew_cert      = var.worker_brew_cert
+    worker_brew_key       = var.worker_brew_key
     composer_brew_ca_cert = filebase64("${path.module}/files/composer-brew-ca-cert.pem")
 
     # TODO(mhayden): Remove the address below once DNS is working.
@@ -87,7 +87,7 @@ resource "aws_spot_fleet_request" "imagebuilder_worker_brew_x86" {
 
   # Keep the fleet at the target_capacity at all times.
   fleet_type      = "maintain"
-  target_capacity = 0
+  target_capacity = 1
 
   # IAM role that the spot fleet service can use.
   iam_fleet_role = aws_iam_role.spot_fleet_tagging_role.arn

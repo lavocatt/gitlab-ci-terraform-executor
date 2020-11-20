@@ -22,15 +22,20 @@ jobs:
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
+      # NOTE(mhayden): Ensure the equal signs are aligned here to ensure that
+      # Terraform's linter is happy.
       - name: Write additional Terraform variables
         run: |
           #!/bin/bash
           echo "composer_brew_cert = \"$(base64 -w0 - <<< ${composer_brew_cert})\"" >> $ACTIONS_VARS
           echo "composer_brew_key  = \"$(base64 -w0 - <<< ${composer_brew_key})\"" >> $ACTIONS_VARS
-          terraform fmt
+          echo "worker_brew_cert   = \"$(base64 -w0 - <<< ${worker_brew_cert})\"" >> $ACTIONS_VARS
+          echo "worker_brew_key    = \"$(base64 -w0 - <<< ${worker_brew_key})\"" >> $ACTIONS_VARS
         env:
           composer_brew_cert: ${{ secrets.COMPOSER_BREW_CERT_20201119 }}
-          composer_brew_key: ${{ secrets.COMPOSER_BREW_KEY_20201119 }}
+          composer_brew_key:   ${{ secrets.COMPOSER_BREW_KEY_20201119 }}
+          worker_brew_cert:     ${{ secrets.WORKER_BREW_CERT_20201120 }}
+          worker_brew_key:       ${{ secrets.WORKER_BREW_KEY_20201120 }}
 
       - name: Terraform Format
         id: fmt

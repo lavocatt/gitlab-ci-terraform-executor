@@ -30,6 +30,9 @@ variable composer_commit {
   description = "The Git SHA of osbuild-composer to deploy on both the composer and worker nodes."
 }
 
+# Brew composer/worker certificates and keys.
 variable composer_brew_host {}
 variable composer_brew_cert {}
 variable composer_brew_key {}
+variable worker_brew_cert {}
+variable worker_brew_key {}
