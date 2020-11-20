@@ -70,6 +70,9 @@ resource "aws_instance" "composer_brew" {
   # TODO(mhayden): Remove this key once we know everything is working.
   key_name = "mhayden"
 
+  # Allow the instance to assume the brew_infrastructure IAM role.
+  iam_instance_profile = aws_iam_instance_profile.brew_infrastructure.name
+
   # Pass the user data that we generated.
   user_data = base64encode(data.template_file.composer_brew_user_data.rendered)
 
