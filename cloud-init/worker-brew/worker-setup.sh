@@ -17,8 +17,6 @@ function retry {
 }
 
 # Variables for the script.
-EBS_STORAGE=/dev/nvme1n1
-STATE_DIR=/var/lib/osbuild-composer
 COMPOSER_DIR=/etc/osbuild-composer
 
 # Deploy the dnf repository file for osbuild-composer.
