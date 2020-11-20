@@ -1,5 +1,5 @@
 # Create a policy that allows for reading Brew secrets.
-data "aws_iam_policy_document" "brew_read_secrets" {
+data "aws_iam_policy_document" "brew_read_keys" {
   statement {
     sid = "1"
 
@@ -11,15 +11,15 @@ data "aws_iam_policy_document" "brew_read_secrets" {
     ]
 
     resources = [
-      "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:secret:brew_secrets"
+      "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:secret:brew_keys"
     ]
   }
 }
 
 # Load the Brew secrets policy.
-resource "aws_iam_policy" "brew_read_secrets" {
-  name   = "brew_read_secrets"
-  policy = data.aws_iam_policy_document.brew_read_secrets.json
+resource "aws_iam_policy" "brew_read_keys" {
+  name   = "brew_read_keys"
+  policy = data.aws_iam_policy_document.brew_read_keys.json
 }
 
 # Create a policy that lets EC2 assume the role.
@@ -48,7 +48,7 @@ resource "aws_iam_role" "brew_infrastructure" {
 }
 
 # Attach the Brew secrets policy to the Brew role.
-resource "aws_iam_role_policy_attachment" "brew_read_secrets" {
+resource "aws_iam_role_policy_attachment" "brew_read_keys" {
   role       = aws_iam_role.brew_infrastructure.name
-  policy_arn = aws_iam_policy.brew_read_secrets.arn
+  policy_arn = aws_iam_policy.brew_read_keys.arn
 }
