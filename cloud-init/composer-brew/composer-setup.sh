@@ -113,6 +113,15 @@ fi
 # NOTE(mhayden): Use a remote worker setup later once we know this works.
 # systemctl enable --now osbuild-composer.socket
 
+# Enable access logging for osbuild-composer.
+mkdir /etc/systemd/system/osbuild-composer.service.d/
+tee /etc/systemd/system/osbuild-composer.service.d/override.conf << EOF
+[Service]
+ExecStart=
+ExecStart=/usr/libexec/osbuild-composer/osbuild-composer -v
+EOF
+systemctl daemon-reload
+
 # Prepare osbuild-composer's remote worker services and sockets.
 # NOTE(mhayden): Enable these and disable the socket above once we have
 # certificates and keys provisioned.
