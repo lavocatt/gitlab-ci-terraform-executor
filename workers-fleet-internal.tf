@@ -14,8 +14,8 @@ data "template_file" "worker_brew_user_data" {
     osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
     # TODO(mhayden): Remove the address below once DNS is working.
-    composer_host    = var.composer_brew_host
-    composer_address = aws_instance.composer_brew.private_ip
+    composer_host    = var.composer_host_internal
+    composer_address = aws_instance.composer_internal.private_ip
 
     # Provide the ARN to the secret that contains keys/certificates
     worker_ssl_keys_arn = data.aws_secretsmanager_secret.brew_keys.arn

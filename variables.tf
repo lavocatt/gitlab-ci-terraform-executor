@@ -35,5 +35,7 @@ variable osbuild_commit {
   description = "The Git SHA of osbuild to deploy on the worker nodes."
 }
 
-# Brew composer/worker certificates and keys.
-variable composer_brew_host {}
+variable composer_host_internal {
+  type        = string
+  description = "Hostname of the composer instance on the internal network."
+}
