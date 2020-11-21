@@ -7,7 +7,6 @@ data "template_file" "worker_brew_user_data" {
   vars = {
     # Add any variables here to pass to the setup script when the instance
     # boots.
-    node_hostname   = "worker-brew-fleet-testing"
     osbuild_commit  = var.osbuild_commit
     composer_commit = var.composer_commit
 
