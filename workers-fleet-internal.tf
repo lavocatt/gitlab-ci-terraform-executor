@@ -1,7 +1,7 @@
 ##############################################################################
 ## WORKER SPOT FLEETS
 # Set up the cloud-init user data for worker instances.
-data "template_file" "worker_brew_user_data" {
+data "template_file" "worker_internal_user_data" {
   template = file("cloud-init/worker/worker-variables.template")
 
   vars = {
@@ -29,8 +29,8 @@ data "template_file" "worker_brew_user_data" {
 
 # Create a launch template that specifies almost everything about our workers.
 # This eliminates a lot of repeated code for the actual spot fleet itself.
-resource "aws_launch_template" "worker_brew_x86" {
-  name          = "imagebuilder-worker-brew-x86"
+resource "aws_launch_template" "worker_internal_x86" {
+  name          = "imagebuilder-worker-internal-x86"
   image_id      = data.aws_ami.rhel8_x86.id
   instance_type = "t3.medium"
   key_name      = "tgunders"
@@ -41,7 +41,7 @@ resource "aws_launch_template" "worker_brew_x86" {
   }
 
   # Assemble the cloud-init userdata file.
-  user_data = base64encode(data.template_file.worker_brew_user_data.rendered)
+  user_data = base64encode(data.template_file.worker_internal_user_data.rendered)
 
   # Get the security group for the instances.
   vpc_security_group_ids = [
@@ -64,7 +64,7 @@ resource "aws_launch_template" "worker_brew_x86" {
 
   # Apply tags to the spot fleet definition itself.
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder Brew worker" },
+    var.imagebuilder_tags, { Name = "Image Builder internal worker" },
   )
 
   # Apply tags to the instances created in the fleet.
@@ -72,7 +72,7 @@ resource "aws_launch_template" "worker_brew_x86" {
     resource_type = "instance"
 
     tags = merge(
-      var.imagebuilder_tags, { Name = "Image Builder Brew worker" },
+      var.imagebuilder_tags, { Name = "Image Builder internal worker" },
     )
   }
 
@@ -81,13 +81,13 @@ resource "aws_launch_template" "worker_brew_x86" {
     resource_type = "volume"
 
     tags = merge(
-      var.imagebuilder_tags, { Name = "Image Builder Brew worker" },
+      var.imagebuilder_tags, { Name = "Image Builder internal worker" },
     )
   }
 }
 
 # Create a spot fleet with our launch template.
-resource "aws_spot_fleet_request" "imagebuilder_worker_brew_x86" {
+resource "aws_spot_fleet_request" "workers_internal_x86" {
   # Ensure we use the lowest price instances at all times.
   allocation_strategy = "lowestPrice"
 
@@ -110,8 +110,8 @@ resource "aws_spot_fleet_request" "imagebuilder_worker_brew_x86" {
   # Use our pre-defined launch template.
   launch_template_config {
     launch_template_specification {
-      id      = aws_launch_template.worker_brew_x86.id
-      version = aws_launch_template.worker_brew_x86.latest_version
+      id      = aws_launch_template.worker_internal_x86.id
+      version = aws_launch_template.worker_internal_x86.latest_version
     }
 
     dynamic "overrides" {
@@ -125,6 +125,6 @@ resource "aws_spot_fleet_request" "imagebuilder_worker_brew_x86" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder Brew worker fleet" },
+    var.imagebuilder_tags, { Name = "Image Builder internal worker fleet" },
   )
 }
