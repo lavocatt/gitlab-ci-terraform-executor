@@ -4,9 +4,9 @@ set -euxo pipefail
 # Variables from Terraform go here.
 OSBUILD_COMMIT=${osbuild_commit}
 COMPOSER_COMMIT=${composer_commit}
-COMPOSER_BREW_HOST=${composer_brew_host}
-COMPOSER_BREW_ADDRESS=${composer_brew_address}
+COMPOESR_HOST=${composer_host}
+COMPOSER_ADDRESS=${composer_address}
 OSBUILD_CA_CERT=${osbuild_ca_cert}
-BREW_KEYS_ARN=${brew_keys_arn}
+WORKER_SSL_KEYS_ARN=${worker_ssl_keys_arn}
 
 ${setup_script}

@@ -72,7 +72,7 @@ popd
 
 # Set up /etc/hosts
 # TODO(mhayden): We need to convert this to DNS later when we launch.
-cat <<< "${COMPOSER_BREW_ADDRESS} ${COMPOSER_BREW_HOST}" >> /etc/hosts
+cat <<< "${COMPOSER_ADDRESS} ${COMPOESR_HOST}" >> /etc/hosts
 
 # Deploy the composer CA certificate.
 mkdir ${COMPOSER_DIR}
@@ -80,10 +80,10 @@ base64 -d - <<< ${OSBUILD_CA_CERT} > ${COMPOSER_DIR}/ca-crt.pem
 
 # Deploy the composer key and certificate.
 /usr/local/bin/aws secretsmanager get-secret-value \
-  --secret-id ${BREW_KEYS_ARN} | jq -r ".SecretString" > /tmp/brew_keys.json
-jq -r ".worker_key" /tmp/brew_keys.json | base64 -d - > ${COMPOSER_DIR}/worker-key.pem
-jq -r ".worker_crt" /tmp/brew_keys.json | base64 -d - > ${COMPOSER_DIR}/worker-crt.pem
-rm -f /tmp/brew_keys.json
+  --secret-id ${WORKER_SSL_KEYS_ARN} | jq -r ".SecretString" > /tmp/worker_keys.json
+jq -r ".worker_key" /tmp/worker_keys.json | base64 -d - > ${COMPOSER_DIR}/worker-key.pem
+jq -r ".worker_crt" /tmp/worker_keys.json | base64 -d - > ${COMPOSER_DIR}/worker-crt.pem
+rm -f /tmp/worker_keys.json
 
 # Ensure osbuild-composer's configuration files have correct ownership.
 chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
@@ -91,4 +91,4 @@ chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
 # Prepare osbuild-composer's remote worker services and sockets.
 # NOTE(mhayden): Enable these and disable the socket above once we have
 # certificates and keys provisioned.
-systemctl enable --now osbuild-remote-worker@${COMPOSER_BREW_HOST}:8700
+systemctl enable --now osbuild-remote-worker@${COMPOESR_HOST}:8700
