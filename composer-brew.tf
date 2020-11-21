@@ -2,21 +2,21 @@
 ## BREW COMPOSER DEPLOYMENT
 # Assemble cloud-init user data for the instance.
 data "template_file" "composer_brew_user_data" {
-  template = file("cloud-init/composer-brew/composer-variables.template")
+  template = file("cloud-init/composer/composer-variables.template")
 
   vars = {
     # Add any variables here to pass to the setup script when the instance
     # boots.
-    commit          = var.composer_commit
+    composer_commit = var.composer_commit
     osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
     # Provide the ARN to the secret that contains keys/certificates
-    brew_keys_arn = data.aws_secretsmanager_secret.brew_keys.arn
+    composer_ssl_keys_arn = data.aws_secretsmanager_secret.brew_keys.arn
 
     # 💣 Split off most of the setup script to avoid shenanigans with
     # Terraform's template interpretation that destroys Bash variables.
     # https://github.com/hashicorp/terraform/issues/15933
-    setup_script = file("cloud-init/composer-brew/composer-setup.sh")
+    setup_script = file("cloud-init/composer/composer-setup.sh")
   }
 }
 

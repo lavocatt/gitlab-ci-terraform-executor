@@ -39,8 +39,8 @@ COMPOSER_DIR=/etc/osbuild-composer
 # Deploy the dnf repository file for osbuild-composer.
 tee /etc/yum.repos.d/composer.repo > /dev/null << EOF
 [composer]
-name = osbuild-composer commit ${COMMIT}
-baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild-composer/rhel-8.3/x86_64/${COMMIT}
+name = osbuild-composer commit ${COMPOSER_COMMIT}
+baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild-composer/rhel-8.3/x86_64/${COMPOSER_COMMIT}
 enabled = 1
 gpgcheck = 0
 priority = 5
@@ -79,10 +79,10 @@ base64 -d - <<< ${OSBUILD_CA_CERT} > ${COMPOSER_DIR}/ca-crt.pem
 
 # Deploy the composer key and certificate.
 /usr/local/bin/aws secretsmanager get-secret-value \
-  --secret-id ${BREW_KEYS_ARN} | jq -r ".SecretString" > /tmp/brew_keys.json
-jq -r ".composer_key" /tmp/brew_keys.json | base64 -d - > ${COMPOSER_DIR}/composer-key.pem
-jq -r ".composer_crt" /tmp/brew_keys.json | base64 -d - > ${COMPOSER_DIR}/composer-crt.pem
-rm -f /tmp/brew_keys.json
+  --secret-id ${COMPOSER_SSL_KEYS_ARN} | jq -r ".SecretString" > /tmp/composer_keys.json
+jq -r ".composer_key" /tmp/composer_keys.json | base64 -d - > ${COMPOSER_DIR}/composer-key.pem
+jq -r ".composer_crt" /tmp/composer_keys.json | base64 -d - > ${COMPOSER_DIR}/composer-crt.pem
+rm -f /tmp/composer_keys.json
 
 # Ensure osbuild-composer's configuration files have correct ownership.
 chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
