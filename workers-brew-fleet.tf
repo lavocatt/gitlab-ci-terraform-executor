@@ -2,7 +2,7 @@
 ## WORKER SPOT FLEETS
 # Set up the cloud-init user data for worker instances.
 data "template_file" "worker_brew_user_data" {
-  template = file("cloud-init/worker-brew/worker-variables.template")
+  template = file("cloud-init/worker/worker-variables.template")
 
   vars = {
     # Add any variables here to pass to the setup script when the instance
@@ -24,7 +24,7 @@ data "template_file" "worker_brew_user_data" {
     # 💣 Split off most of the setup script to avoid shenanigans with
     # Terraform's template interpretation that destroys Bash variables.
     # https://github.com/hashicorp/terraform/issues/15933
-    setup_script = file("cloud-init/worker-brew/worker-setup.sh")
+    setup_script = file("cloud-init/worker/worker-setup.sh")
   }
 }
 
