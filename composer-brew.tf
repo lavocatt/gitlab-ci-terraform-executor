@@ -7,8 +7,8 @@ data "template_file" "composer_brew_user_data" {
   vars = {
     # Add any variables here to pass to the setup script when the instance
     # boots.
-    commit                = var.composer_commit
-    composer_brew_ca_cert = filebase64("${path.module}/files/composer-brew-ca-cert.pem")
+    commit          = var.composer_commit
+    osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
     # Provide the ARN to the secret that contains keys/certificates
     brew_keys_arn = data.aws_secretsmanager_secret.brew_keys.arn

@@ -12,7 +12,7 @@ data "template_file" "worker_brew_user_data" {
     composer_commit = var.composer_commit
 
     # Change these to worker certs later.
-    composer_brew_ca_cert = filebase64("${path.module}/files/composer-brew-ca-cert.pem")
+    osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
     # TODO(mhayden): Remove the address below once DNS is working.
     composer_brew_host    = var.composer_brew_host

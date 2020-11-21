@@ -3,7 +3,7 @@ set -euxo pipefail
 
 # Variables from Terraform go here.
 COMMIT=${commit}
-COMPOSER_BREW_CA_CERT=${composer_brew_ca_cert}
+OSBUILD_CA_CERT=${osbuild_ca_cert}
 BREW_KEYS_ARN=${brew_keys_arn}
 
 ${setup_script}

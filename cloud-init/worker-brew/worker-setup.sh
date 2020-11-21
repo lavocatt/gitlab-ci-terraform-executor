@@ -76,7 +76,7 @@ cat <<< "${COMPOSER_BREW_ADDRESS} ${COMPOSER_BREW_HOST}" >> /etc/hosts
 
 # Deploy the composer CA certificate.
 mkdir ${COMPOSER_DIR}
-base64 -d - <<< ${COMPOSER_BREW_CA_CERT} > ${COMPOSER_DIR}/ca-crt.pem
+base64 -d - <<< ${OSBUILD_CA_CERT} > ${COMPOSER_DIR}/ca-crt.pem
 
 # Deploy the composer key and certificate.
 /usr/local/bin/aws secretsmanager get-secret-value \
