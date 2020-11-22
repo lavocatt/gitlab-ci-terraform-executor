@@ -56,11 +56,8 @@ data "aws_iam_policy_document" "internal_worker_read_keys" {
       "secretsmanager:ListSecretVersionIds"
     ]
 
-    # NOTE(mhayden): AWS adds some extra random characters on the end of the
-    # secret name so it can do versioning. The asterisk at the end of this
-    # ARN is *critical*.
     resources = [
-      "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:secret:brew_keys*"
+      data.aws_secretsmanager_secret.internal_worker_keys.arn
     ]
   }
 }
@@ -76,11 +73,8 @@ data "aws_iam_policy_document" "internal_composer_read_keys" {
       "secretsmanager:ListSecretVersionIds"
     ]
 
-    # NOTE(mhayden): AWS adds some extra random characters on the end of the
-    # secret name so it can do versioning. The asterisk at the end of this
-    # ARN is *critical*.
     resources = [
-      "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:secret:brew_keys*"
+      data.aws_secretsmanager_secret.internal_composer_keys.arn
     ]
   }
 }
