@@ -18,7 +18,7 @@ data "template_file" "worker_internal_user_data" {
     composer_address = aws_instance.composer_internal.private_ip
 
     # Provide the ARN to the secret that contains keys/certificates
-    worker_ssl_keys_arn = data.aws_secretsmanager_secret.brew_keys.arn
+    worker_ssl_keys_arn = data.aws_secretsmanager_secret.internal_worker_keys.arn
 
     # 💣 Split off most of the setup script to avoid shenanigans with
     # Terraform's template interpretation that destroys Bash variables.
@@ -35,9 +35,9 @@ resource "aws_launch_template" "worker_internal_x86" {
   instance_type = "t3.medium"
   key_name      = "tgunders"
 
-  # Allow the instance to assume the brew_infrastructure IAM role.
+  # Allow the instance to assume the internal_worker IAM role.
   iam_instance_profile {
-    name = aws_iam_instance_profile.brew_infrastructure.name
+    name = aws_iam_instance_profile.internal_worker.name
   }
 
   # Assemble the cloud-init userdata file.

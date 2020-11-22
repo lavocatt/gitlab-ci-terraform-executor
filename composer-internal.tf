@@ -11,7 +11,7 @@ data "template_file" "composer_internal_user_data" {
     osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
     # Provide the ARN to the secret that contains keys/certificates
-    composer_ssl_keys_arn = data.aws_secretsmanager_secret.brew_keys.arn
+    composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
 
     # 💣 Split off most of the setup script to avoid shenanigans with
     # Terraform's template interpretation that destroys Bash variables.
@@ -71,8 +71,8 @@ resource "aws_instance" "composer_internal" {
   # TODO(mhayden): Remove this key once we know everything is working.
   key_name = "tgunders"
 
-  # Allow the instance to assume the brew_infrastructure IAM role.
-  iam_instance_profile = aws_iam_instance_profile.brew_infrastructure.name
+  # Allow the instance to assume the internal_composer IAM role.
+  iam_instance_profile = aws_iam_instance_profile.internal_composer.name
 
   # Pass the user data that we generated.
   user_data = base64encode(data.template_file.composer_internal_user_data.rendered)

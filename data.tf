@@ -10,8 +10,12 @@ data "aws_availability_zones" "available" {
 # Get data for the account.
 data "aws_caller_identity" "current" {}
 
-# Get the brew_infrastructure secret ARN.
-data "aws_secretsmanager_secret" "brew_keys" {
+# Get the secret ARNs.
+data "aws_secretsmanager_secret" "internal_worker_keys" {
+  name = "brew_keys"
+}
+
+data "aws_secretsmanager_secret" "internal_composer_keys" {
   name = "brew_keys"
 }
 
