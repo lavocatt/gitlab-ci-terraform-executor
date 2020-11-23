@@ -34,7 +34,7 @@ resource "aws_launch_template" "worker_brew_x86" {
   name          = "imagebuilder-worker-brew-x86"
   image_id      = data.aws_ami.rhel8_x86.id
   instance_type = "t3.medium"
-  key_name      = "mhayden"
+  key_name      = "tgunders"
 
   # Allow the instance to assume the brew_infrastructure IAM role.
   iam_instance_profile {
