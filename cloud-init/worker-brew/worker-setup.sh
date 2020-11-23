@@ -1,3 +1,18 @@
+# Forward systemd journal to the console for easier viewing.
+# This is done at the beginning of this script so we log all errors.
+mkdir -p /etc/systemd/journald.conf.d/
+tee /etc/systemd/journald.conf.d/forward-to-console.conf > /dev/null << EOF
+[Journal]
+ForwardToConsole=yes
+MaxLevelConsole=6
+EOF
+
+# Ensure the SELinux contexts are correct.
+restorecon -Rv /etc/systemd
+
+# Restart journald to pick up the console log change.
+systemctl restart systemd-journald
+
 # Basic function to retry a command up to 5 times.
 function retry {
     local count=0
@@ -72,20 +87,6 @@ rm -f /tmp/brew_keys.json
 
 # Ensure osbuild-composer's configuration files have correct ownership.
 chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
-
-# Forward systemd journal to the console for easier viewing.
-mkdir -p /etc/systemd/journald.conf.d/
-tee /etc/systemd/journald.conf.d/forward-to-console.conf > /dev/null << EOF
-[Journal]
-ForwardToConsole=yes
-MaxLevelConsole=6
-EOF
-
-# Ensure the SELinux contexts are correct.
-restorecon -Rv /etc/systemd
-
-# Restart journald to pick up the console log change.
-systemctl restart systemd-journald
 
 # Prepare osbuild-composer's remote worker services and sockets.
 # NOTE(mhayden): Enable these and disable the socket above once we have
