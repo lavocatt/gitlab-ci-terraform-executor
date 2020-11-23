@@ -69,7 +69,7 @@ resource "aws_instance" "composer_brew" {
   instance_type = "t3.small"
 
   # TODO(mhayden): Remove this key once we know everything is working.
-  key_name = "mhayden"
+  key_name = "tgunders"
 
   # Allow the instance to assume the brew_infrastructure IAM role.
   iam_instance_profile = aws_iam_instance_profile.brew_infrastructure.name

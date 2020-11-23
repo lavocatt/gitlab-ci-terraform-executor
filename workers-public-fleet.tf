@@ -22,7 +22,7 @@ resource "aws_launch_template" "worker_x86" {
   name          = "imagebuilder-worker-x86"
   image_id      = data.aws_ami.rhel8_x86.id
   instance_type = "t3.medium"
-  key_name      = "mhayden"
+  key_name      = "tgunders"
 
   # NOTE(mhayden): We will use instance roles later as part of COMPOSER-685.
   #   iam_instance_profile {
