@@ -7,6 +7,7 @@ data "template_file" "composer_internal_user_data" {
   vars = {
     # Add any variables here to pass to the setup script when the instance
     # boots.
+    osbuild_commit  = var.osbuild_commit
     composer_commit = var.composer_commit
     osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
