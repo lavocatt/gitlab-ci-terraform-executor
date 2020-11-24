@@ -95,9 +95,6 @@ jq -r ".composer_key" /tmp/composer_keys.json | base64 -d - > ${COMPOSER_DIR}/co
 jq -r ".composer_crt" /tmp/composer_keys.json | base64 -d - > ${COMPOSER_DIR}/composer-crt.pem
 rm -f /tmp/composer_keys.json
 
-# Ensure osbuild-composer's configuration files have correct ownership.
-chown -R _osbuild-composer:_osbuild-composer $COMPOSER_DIR
-
 # Set up storage on composer.
 if ! grep ${STATE_DIR} /proc/mounts; then
   # Ensure EBS is fully connected first.
@@ -131,10 +128,6 @@ if ! grep ${STATE_DIR} /proc/mounts; then
   rm -f ${STATE_DIR}/.provisioning_check
 fi
 
-# Start osbuild-composer and a default worker.
-# NOTE(mhayden): Use a remote worker setup later once we know this works.
-# systemctl enable --now osbuild-composer.socket
-
 # Enable access logging for osbuild-composer.
 mkdir /etc/systemd/system/osbuild-composer.service.d/
 tee /etc/systemd/system/osbuild-composer.service.d/override.conf << EOF
@@ -145,8 +138,6 @@ EOF
 systemctl daemon-reload
 
 # Prepare osbuild-composer's remote worker services and sockets.
-# NOTE(mhayden): Enable these and disable the socket above once we have
-# certificates and keys provisioned.
 systemctl mask osbuild-worker@1.service
 systemctl enable --now osbuild-remote-worker.socket
 systemctl enable --now osbuild-composer-api.socket
