@@ -48,7 +48,7 @@ EOF
 
 # Deploy the dnf repository file for osbuild.
 # TODO(tgunders): drop this as soon as composer can be installed without the worker.
-tee /etc/yum.repos.d/composer.repo > /dev/null << EOF
+tee /etc/yum.repos.d/osbuild.repo > /dev/null << EOF
 [osbuild]
 name = osbuild commit ${OSBUILD_COMMIT}
 baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild/rhel-8.3/x86_64/${OSBUILD_COMMIT}
