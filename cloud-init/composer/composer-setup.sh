@@ -145,6 +145,8 @@ EOF
 systemctl daemon-reload
 
 # Prepare osbuild-composer's remote worker services and sockets.
+# NOTE(mhayden): Enable these and disable the socket above once we have
+# certificates and keys provisioned.
 systemctl mask osbuild-worker@1.service
 systemctl enable --now osbuild-remote-worker.socket
-systemctl enable --now osbuild-composer.socket
+systemctl enable --now osbuild-composer-api.socket
