@@ -50,7 +50,7 @@ resource "aws_ebs_volume" "composer_internal" {
   type      = "gp2"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Internal Composer" },
+    var.imagebuilder_tags, { Name = "Image Builder internal composer" },
   )
 }
 
