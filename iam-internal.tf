@@ -100,3 +100,53 @@ resource "aws_iam_role_policy_attachment" "internal_composer_read_keys" {
   role       = aws_iam_role.internal_composer.name
   policy_arn = aws_iam_policy.internal_composer_read_keys.arn
 }
+
+# Create a policy that allows internal composer/workers to send log data to
+# cloudwatch.
+data "aws_iam_policy_document" "internal_cloudwatch" {
+  statement {
+    sid = "1"
+
+    actions = [
+      "cloudwatch:PutMetricData",
+      "ec2:DescribeVolumes",
+      "ec2:DescribeTags",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "2"
+
+    actions = [
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams",
+      "logs:DescribeLogGroups",
+      "logs:CreateLogStream",
+      "logs:CreateLogGroup"
+    ]
+
+    resources = [
+      aws_cloudwatch_log_group.internal_composer.arn,
+      aws_cloudwatch_log_stream.internal_composer_syslog.arn
+    ]
+  }
+}
+
+# Load the CloudWatch policy.
+resource "aws_iam_policy" "internal_cloudwatch" {
+  name   = "internal_worker_read_keys"
+  policy = data.aws_iam_policy_document.internal_cloudwatch.json
+}
+
+# Attach the CloudWatch policy to both roles.
+resource "aws_iam_role_policy_attachment" "internal_cloudwatch_composer" {
+  role       = aws_iam_role.internal_worker.name
+  policy_arn = aws_iam_policy.internal_cloudwatch.arn
+}
+
+resource "aws_iam_role_policy_attachment" "internal_cloudwatch_worker" {
+  role       = aws_iam_role.internal_composer.name
+  policy_arn = aws_iam_policy.internal_cloudwatch.arn
+}
