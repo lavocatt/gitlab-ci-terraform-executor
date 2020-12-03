@@ -3,7 +3,7 @@
 
 # The default tags for all resources created by Terraform.
 variable "imagebuilder_tags" {
-  type        = map
+  type        = map(any)
   description = "Required AWS tags for Image Builder"
   default = {
     ServiceOwner : "Image Builder"
@@ -25,17 +25,22 @@ variable "worker_instance_types" {
   ]
 }
 
-variable composer_commit {
+variable "composer_commit" {
   type        = string
   description = "The Git SHA of osbuild-composer to deploy on both the composer and worker nodes."
 }
 
-variable osbuild_commit {
+variable "osbuild_commit" {
   type        = string
   description = "The Git SHA of osbuild to deploy on the worker nodes."
 }
 
-variable composer_host_internal {
+variable "composer_host_internal" {
   type        = string
   description = "Hostname of the composer instance on the internal network."
+}
+
+variable "TFC_WORKSPACE_NAME" {
+  type    = string
+  default = ""
 }

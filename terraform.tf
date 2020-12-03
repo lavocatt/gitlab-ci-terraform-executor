@@ -22,7 +22,7 @@ terraform {
     organization = "imagebuilder"
 
     workspaces {
-      name = "imagebuilder-deployment"
+      prefix = "imagebuilder-"
     }
   }
 }

@@ -9,10 +9,40 @@ on:
 jobs:
   terraform:
     name: 'Terraform'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       ACTIONS_VARS: github_actions.auto.tfvars
     steps:
+
+      - name: Set Terraform workspace
+        run: |
+          #!/bin/bash
+          set -euxo pipefail
+
+          # Assume staging by default.
+          # NOTE(mhayden): Our original workspace on Terraform Cloud is called
+          # deployment, but this will be 'staging' soon. This line should be
+          # changed to 'staging' later.
+          export TF_WORKSPACE=deployment
+
+          # Deploy to stable for pushed to stable (when PR is merged).
+          if [[ $GITHUB_REF =~ stable$ ]]; then
+            export TF_WORKSPACE=stable
+          fi
+
+          # Run plan against stable if this PR is targeted for stable.
+          # NOTE(mhayden): GITHUB_BASE_REF is empty if not a PR.
+          if [[ "${GITHUB_BASE_REF:-}" == stable ]]; then
+            export TF_WORKSPACE=stable
+          fi
+
+          echo "TF_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
+
+      - name: Check Terraform Workspace
+        run: |
+          #!/bin/bash
+          set -euxo pipefail
+          echo $TF_WORKSPACE
 
       - name: Checkout
         uses: actions/checkout@v2
