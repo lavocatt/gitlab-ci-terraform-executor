@@ -20,10 +20,7 @@ jobs:
           set -euxo pipefail
 
           # Assume staging by default.
-          # NOTE(mhayden): Our original workspace on Terraform Cloud is called
-          # deployment, but this will be 'staging' soon. This line should be
-          # changed to 'staging' later.
-          export TF_WORKSPACE=deployment
+          export TF_WORKSPACE=staging
 
           # Deploy to stable for pushed to stable (when PR is merged).
           if [[ $GITHUB_REF =~ stable$ ]]; then
