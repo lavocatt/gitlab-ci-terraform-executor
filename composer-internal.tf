@@ -39,6 +39,10 @@ resource "aws_network_interface" "composer_internal" {
     aws_security_group.internal_allow_trusted.id
   ]
 
+  tags = merge(
+    var.imagebuilder_tags, { Name = "Image Builder internal composer (${local.workspace_name})" },
+  )
+
 }
 
 # Provision an EBS storage volume for composer's persistent data.
@@ -50,7 +54,7 @@ resource "aws_ebs_volume" "composer_internal" {
   type      = "gp2"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal composer" },
+    var.imagebuilder_tags, { Name = "Image Builder internal composer (${local.workspace_name})" },
   )
 }
 
@@ -86,6 +90,6 @@ resource "aws_instance" "composer_internal" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Internal Composer" },
+    var.imagebuilder_tags, { Name = "Internal Composer (${local.workspace_name})" },
   )
 }
