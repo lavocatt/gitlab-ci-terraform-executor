@@ -1,7 +1,7 @@
 # Create a policy that lets EC2 assume the role.
 data "aws_iam_policy_document" "internal_infrastructure_ec2_principal" {
   statement {
-    sid = "1"
+    sid = "AllowEC2AssumeRole"
 
     actions = ["sts:AssumeRole"]
 
@@ -15,39 +15,43 @@ data "aws_iam_policy_document" "internal_infrastructure_ec2_principal" {
 # Create roles for the internal composer and workers to use.
 resource "aws_iam_role" "internal_worker" {
   name = "internal_worker"
+  path = "/${local.workspace_name}/"
 
   assume_role_policy = data.aws_iam_policy_document.internal_infrastructure_ec2_principal.json
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal worker role" },
+    var.imagebuilder_tags, { Name = "Image Builder internal worker role (${local.workspace_name})" },
   )
 }
 
 resource "aws_iam_role" "internal_composer" {
   name = "internal_composer"
+  path = "/${local.workspace_name}/"
 
   assume_role_policy = data.aws_iam_policy_document.internal_infrastructure_ec2_principal.json
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal composer role" },
+    var.imagebuilder_tags, { Name = "Image Builder internal composer role (${local.workspace_name})" },
   )
 }
 
 # Link instance profiles to the roles.
 resource "aws_iam_instance_profile" "internal_worker" {
   name = "internal_worker"
+  path = "/${local.workspace_name}/"
   role = aws_iam_role.internal_worker.name
 }
 
 resource "aws_iam_instance_profile" "internal_composer" {
   name = "internal_composer"
+  path = "/${local.workspace_name}/"
   role = aws_iam_role.internal_composer.name
 }
 
 # Create policies that allows for reading secrets.
 data "aws_iam_policy_document" "internal_worker_read_keys" {
   statement {
-    sid = "1"
+    sid = "WorkerReadSecrets"
 
     actions = [
       "secretsmanager:GetResourcePolicy",
@@ -64,7 +68,7 @@ data "aws_iam_policy_document" "internal_worker_read_keys" {
 
 data "aws_iam_policy_document" "internal_composer_read_keys" {
   statement {
-    sid = "1"
+    sid = "ComposerReadSecrets"
 
     actions = [
       "secretsmanager:GetResourcePolicy",
@@ -82,11 +86,13 @@ data "aws_iam_policy_document" "internal_composer_read_keys" {
 # Load the internal secrets policies.
 resource "aws_iam_policy" "internal_worker_read_keys" {
   name   = "internal_worker_read_keys"
+  path   = "/${local.workspace_name}/"
   policy = data.aws_iam_policy_document.internal_worker_read_keys.json
 }
 
 resource "aws_iam_policy" "internal_composer_read_keys" {
   name   = "internal_composer_read_keys"
+  path   = "/${local.workspace_name}/"
   policy = data.aws_iam_policy_document.internal_composer_read_keys.json
 }
 
@@ -105,7 +111,7 @@ resource "aws_iam_role_policy_attachment" "internal_composer_read_keys" {
 # cloudwatch.
 data "aws_iam_policy_document" "internal_cloudwatch_logging" {
   statement {
-    sid = "1"
+    sid = "BasicCloudWatchUsage"
 
     actions = [
       "cloudwatch:PutMetricData",
@@ -117,7 +123,7 @@ data "aws_iam_policy_document" "internal_cloudwatch_logging" {
   }
 
   statement {
-    sid = "2"
+    sid = "CloudWatchSendLogs"
 
     actions = [
       "logs:PutLogEvents",
@@ -137,6 +143,7 @@ data "aws_iam_policy_document" "internal_cloudwatch_logging" {
 # Load the CloudWatch policy.
 resource "aws_iam_policy" "internal_cloudwatch_logging" {
   name   = "internal_cloudwatch_logging"
+  path   = "/${local.workspace_name}/"
   policy = data.aws_iam_policy_document.internal_cloudwatch_logging.json
 }
 
