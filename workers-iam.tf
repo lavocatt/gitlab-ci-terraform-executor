@@ -36,10 +36,8 @@ data "aws_iam_policy_document" "vmimport_s3" {
     ]
 
     resources = [
-      "arn:aws:s3:::imagebuilder-service-stage",
-      "arn:aws:s3:::imagebuilder-service-stage/*",
-      "arn:aws:s3:::imagebuilder-service-stable",
-      "arn:aws:s3:::imagebuilder-service-stable/*"
+      "arn:aws:s3:::imagebuilder-service-${local.workspace_name}",
+      "arn:aws:s3:::imagebuilder-service-${local.workspace_name}/*",
     ]
   }
 }
@@ -63,20 +61,17 @@ data "aws_iam_policy_document" "vmimport_ec2" {
 
 # Load the vmimport S3/EC2 policies
 resource "aws_iam_policy" "vmimport_s3" {
-  name   = "vmimport_s3"
-  path   = "/${local.workspace_name}/"
+  name   = "vmimport_s3_${local.workspace_name}"
   policy = data.aws_iam_policy_document.vmimport_s3.json
 }
 resource "aws_iam_policy" "vmimport_ec2" {
-  name   = "vmimport_ec2"
-  path   = "/${local.workspace_name}/"
+  name   = "vmimport_ec2_${local.workspace_name}"
   policy = data.aws_iam_policy_document.vmimport_ec2.json
 }
 
 # Create the vmimport role.
 resource "aws_iam_role" "vmimport" {
-  name = "vmimport"
-  path = "/${local.workspace_name}/"
+  name = "vmimport_${local.workspace_name}"
 
   assume_role_policy = data.aws_iam_policy_document.vmimport_trust.json
 
@@ -147,16 +142,14 @@ data "aws_iam_policy_document" "spotfleet_iam_spot_policy" {
 
 # Load the spot fleet policy.
 resource "aws_iam_policy" "spotfleet_iam_spot_policy" {
-  name   = "spotfleet_iam_spot_policy"
-  path   = "/${local.workspace_name}/"
+  name   = "spotfleet_iam_spot_policy_${local.workspace_name}"
   policy = data.aws_iam_policy_document.spotfleet_iam_spot_policy.json
 }
 
 # Create the spot fleet role.
 resource "aws_iam_role" "spot_fleet_tagging_role" {
   assume_role_policy = data.aws_iam_policy_document.spotfleet_iam_role_policy.json
-  path               = "/${local.workspace_name}/"
-  name               = "imagebuilder-spot-fleet-role"
+  name               = "imagebuilder_spot_fleet_role_${local.workspace_name}"
 }
 
 # Attach the tagging policy to the spot fleet.role
@@ -170,19 +163,19 @@ resource "aws_iam_role_policy_attachment" "spotfleet_iam_spot_policy" {
 }
 
 ##############################################################################
-## STAGE
-# Create S3 bucket for stage workers to upload images.
-resource "aws_s3_bucket" "imagebuilder_stage" {
-  bucket = "imagebuilder-service-stage"
+## S3
+# Create S3 bucket for workers to upload images.
+resource "aws_s3_bucket" "imagebuilder_s3" {
+  bucket = "imagebuilder_service_${local.workspace_name}"
   acl    = "private"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder S3 bucket for Stage" },
+    var.imagebuilder_tags, { Name = "Image Builder S3 bucket - ${local.workspace_name}" },
   )
 }
 
 # Generate policy to allow workers to upload images to S3.
-data "aws_iam_policy_document" "imagebuilder_stage" {
+data "aws_iam_policy_document" "imagebuilder_s3" {
   statement {
     sid = "1"
 
@@ -194,91 +187,33 @@ data "aws_iam_policy_document" "imagebuilder_stage" {
     ]
 
     resources = [
-      "arn:aws:s3:::imagebuilder-service-stage",
-      "arn:aws:s3:::imagebuilder-service-stage/*"
+      aws_s3_bucket.imagebuilder_s3.arn,
+      "${aws_s3_bucket.imagebuilder_s3.arn}/*"
     ]
   }
 }
 
 # Create policy based on s3 upload policy document.
-resource "aws_iam_policy" "imagebuilder_stage_workers_s3" {
-  name   = "imagebuilder-stage-workers-s3"
-  policy = data.aws_iam_policy_document.imagebuilder_stage.json
+resource "aws_iam_policy" "imagebuilder_workers_s3" {
+  name   = "imagebuilder_workers_s3_${local.workspace_name}"
+  policy = data.aws_iam_policy_document.imagebuilder_s3.json
 }
 
-# Create the stage IAM user.
-resource "aws_iam_user" "imagebuilder_stage" {
-  name = "imagebuilder-stage"
-  path = "/workers/"
+# Create the IAM user.
+resource "aws_iam_user" "imagebuilder_worker" {
+  name = "imagebuilder_worker_${local.workspace_name}"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder Stage User" },
+    var.imagebuilder_tags, { Name = "Image Builder Worker - ${local.workspace_name}" },
   )
 }
 
 # Attach policies.
-resource "aws_iam_user_policy_attachment" "imagebuilder_stage_s3" {
-  user       = aws_iam_user.imagebuilder_stage.name
-  policy_arn = aws_iam_policy.imagebuilder_stage_workers_s3.arn
+resource "aws_iam_user_policy_attachment" "imagebuilder_s3" {
+  user       = aws_iam_user.imagebuilder_worker.name
+  policy_arn = aws_iam_policy.imagebuilder_workers_s3.arn
 }
-resource "aws_iam_user_policy_attachment" "imagebuilder_stage_vmimport" {
-  user       = aws_iam_user.imagebuilder_stage.name
-  policy_arn = aws_iam_policy.vmimport_ec2.arn
-}
-
-##############################################################################
-## STABLE
-# Create S3 bucket for stable workers to upload images.
-resource "aws_s3_bucket" "imagebuilder_stable" {
-  bucket = "imagebuilder-service-stable"
-  acl    = "private"
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder S3 bucket for Stable" },
-  )
-}
-
-# Policy to allow workers to upload images to S3.
-data "aws_iam_policy_document" "imagebuilder_stable" {
-  statement {
-    sid = "1"
-
-    actions = [
-      "s3:PutObject",
-      "s3:GetObject",
-      "s3:ListBucket",
-      "s3:DeleteObject"
-    ]
-
-    resources = [
-      "arn:aws:s3:::imagebuilder-service-stable",
-      "arn:aws:s3:::imagebuilder-service-stable/*"
-    ]
-  }
-}
-
-# Create policy based on s3 upload policy document.
-resource "aws_iam_policy" "imagebuilder_stable_workers_s3" {
-  name   = "imagebuilder-stable-workers-s3"
-  policy = data.aws_iam_policy_document.imagebuilder_stable.json
-}
-
-# Create the stable IAM user.
-resource "aws_iam_user" "imagebuilder_stable" {
-  name = "imagebuilder-stable"
-  path = "/workers/"
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder stable User" },
-  )
-}
-
-# Attach policies.
-resource "aws_iam_user_policy_attachment" "imagebuilder_stable_s3" {
-  user       = aws_iam_user.imagebuilder_stable.name
-  policy_arn = aws_iam_policy.imagebuilder_stable_workers_s3.arn
-}
-resource "aws_iam_user_policy_attachment" "imagebuilder_stable_vmimport" {
-  user       = aws_iam_user.imagebuilder_stable.name
+resource "aws_iam_user_policy_attachment" "imagebuilder_vmimport" {
+  user       = aws_iam_user.imagebuilder_worker.name
   policy_arn = aws_iam_policy.vmimport_ec2.arn
 }
