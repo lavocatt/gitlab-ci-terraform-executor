@@ -23,7 +23,7 @@ resource "aws_vpc_endpoint" "external_vpc_s3" {
 ## PUBLIC SECURITY GROUPS
 # Allow ssh access.
 resource "aws_security_group" "allow_ssh" {
-  name        = "allow-ssh"
+  name        = "external_allow_ssh_${local.workspace_name}"
   description = "Allow SSH access"
   vpc_id      = data.aws_vpc.external_vpc.id
 
@@ -36,13 +36,13 @@ resource "aws_security_group" "allow_ssh" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "allow-ssh" },
+    var.imagebuilder_tags, { Name = "external_allow_ssh_${local.workspace_name}" },
   )
 }
 
 # Allow cockpit.
 resource "aws_security_group" "allow_cockpit" {
-  name        = "allow-cockpit"
+  name        = "external_allow_cockpit_${local.workspace_name}"
   description = "Allow cockpit access"
   vpc_id      = data.aws_vpc.external_vpc.id
 
@@ -55,13 +55,13 @@ resource "aws_security_group" "allow_cockpit" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "allow-cockpit" },
+    var.imagebuilder_tags, { Name = "external_allow_cockpit_${local.workspace_name}" },
   )
 }
 
 # Allow ICMP.
 resource "aws_security_group" "allow_icmp" {
-  name        = "allow-icmp"
+  name        = "external_allow_icmp_${local.workspace_name}"
   description = "Allow ICMP access"
   vpc_id      = data.aws_vpc.external_vpc.id
 
@@ -74,13 +74,13 @@ resource "aws_security_group" "allow_icmp" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "allow-icmp" },
+    var.imagebuilder_tags, { Name = "external_allow_icmp_${local.workspace_name}" },
   )
 }
 
 # Allow egress.
 resource "aws_security_group" "allow_egress" {
-  name        = "allow-egress"
+  name        = "external_allow_egress_${local.workspace_name}"
   description = "Allow egress traffic"
   vpc_id      = data.aws_vpc.external_vpc.id
 
@@ -92,7 +92,7 @@ resource "aws_security_group" "allow_egress" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "allow-egress" },
+    var.imagebuilder_tags, { Name = "external_allow_egress_${local.workspace_name}" },
   )
 }
 
@@ -100,7 +100,7 @@ resource "aws_security_group" "allow_egress" {
 ## INTERNAL SECURITY GROUPS
 # Allow egress.
 resource "aws_security_group" "internal_allow_egress" {
-  name        = "internal-allow-egress"
+  name        = "internal_allow_egress_${local.workspace_name}"
   description = "Allow egress traffic"
   vpc_id      = data.aws_vpc.internal_vpc.id
 
@@ -112,13 +112,13 @@ resource "aws_security_group" "internal_allow_egress" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "internal-allow-egress" },
+    var.imagebuilder_tags, { Name = "internal_allow_egress_${local.workspace_name}" },
   )
 }
 
 # Allow ingress from internal networks.
 resource "aws_security_group" "internal_allow_trusted" {
-  name        = "internal-allow-trusted"
+  name        = "internal_allow_trusted_${local.workspace_name}"
   description = "Allow trusted access"
   vpc_id      = data.aws_vpc.internal_vpc.id
 
@@ -130,6 +130,6 @@ resource "aws_security_group" "internal_allow_trusted" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "internal-allow-trusted" },
+    var.imagebuilder_tags, { Name = "internal_allow_trusted_${local.workspace_name}" },
   )
 }
