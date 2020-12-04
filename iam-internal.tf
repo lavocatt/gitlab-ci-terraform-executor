@@ -20,7 +20,7 @@ resource "aws_iam_role" "internal_worker" {
   assume_role_policy = data.aws_iam_policy_document.internal_infrastructure_ec2_principal.json
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal worker role (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "Image Builder internal worker role - ${local.workspace_name}" },
   )
 }
 
@@ -31,7 +31,7 @@ resource "aws_iam_role" "internal_composer" {
   assume_role_policy = data.aws_iam_policy_document.internal_infrastructure_ec2_principal.json
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal composer role (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "Image Builder internal composer role - ${local.workspace_name}" },
   )
 }
 
