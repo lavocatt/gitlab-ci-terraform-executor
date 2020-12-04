@@ -3,7 +3,7 @@
 # Set up a policy to allow Packer to do the things it needs to do with AWS.
 data "aws_iam_policy_document" "packer" {
   statement {
-    sid = "1"
+    sid = "PackerPolicy"
 
     actions = [
       "ec2:AttachVolume",
@@ -53,13 +53,14 @@ data "aws_iam_policy_document" "packer" {
 # Load the packer policy into IAM.
 resource "aws_iam_policy" "packer" {
   name   = "packer"
+  path   = "/${local.workspace_name}/"
   policy = data.aws_iam_policy_document.packer.json
 }
 
 # Create the Packer user.
 resource "aws_iam_user" "packer" {
   name = "packer"
-  path = "/packer/"
+  path = "/${local.workspace_name}/"
 
   tags = merge(
     var.imagebuilder_tags, { Name = "Image Builder Packer User" },
