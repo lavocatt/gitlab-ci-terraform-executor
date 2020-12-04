@@ -40,7 +40,7 @@ resource "aws_network_interface" "composer_internal" {
   ]
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal composer (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "🏗 Internal Composer (${local.workspace_name})" },
   )
 
 }
@@ -54,7 +54,7 @@ resource "aws_ebs_volume" "composer_internal" {
   type      = "gp2"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal composer (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "🏗 Internal Composer (${local.workspace_name})" },
   )
 }
 
@@ -90,6 +90,6 @@ resource "aws_instance" "composer_internal" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Internal Composer (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "🏗 Internal Composer (${local.workspace_name})" },
   )
 }
