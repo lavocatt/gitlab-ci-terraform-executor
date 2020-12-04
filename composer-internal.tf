@@ -30,7 +30,7 @@ resource "aws_network_interface" "composer_internal" {
 
   # Take the 10th IP in the primary internal network block.
   private_ips = [
-    cidrhost(data.aws_subnet.internal_subnet_primary.cidr_block, 10)
+    cidrhost(data.aws_subnet.internal_subnet_primary.cidr_block, local.network_interface_ip_address_index)
   ]
 
   # Allow all egress as well as ingress from trusted internal networks.
