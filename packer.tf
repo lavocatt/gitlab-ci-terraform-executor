@@ -52,18 +52,16 @@ data "aws_iam_policy_document" "packer" {
 
 # Load the packer policy into IAM.
 resource "aws_iam_policy" "packer" {
-  name   = "packer"
-  path   = "/${local.workspace_name}/"
+  name   = "packer_${local.workspace_name}"
   policy = data.aws_iam_policy_document.packer.json
 }
 
 # Create the Packer user.
 resource "aws_iam_user" "packer" {
-  name = "packer"
-  path = "/${local.workspace_name}/"
+  name = "packer_${local.workspace_name}"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder Packer User" },
+    var.imagebuilder_tags, { Name = "Image Builder Packer User - ${local.workspace_name}" },
   )
 }
 

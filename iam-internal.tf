@@ -14,8 +14,7 @@ data "aws_iam_policy_document" "internal_infrastructure_ec2_principal" {
 
 # Create roles for the internal composer and workers to use.
 resource "aws_iam_role" "internal_worker" {
-  name = "internal_worker"
-  path = "/${local.workspace_name}/"
+  name = "internal_worker_${local.workspace_name}"
 
   assume_role_policy = data.aws_iam_policy_document.internal_infrastructure_ec2_principal.json
 
@@ -25,8 +24,7 @@ resource "aws_iam_role" "internal_worker" {
 }
 
 resource "aws_iam_role" "internal_composer" {
-  name = "internal_composer"
-  path = "/${local.workspace_name}/"
+  name = "internal_composer_${local.workspace_name}"
 
   assume_role_policy = data.aws_iam_policy_document.internal_infrastructure_ec2_principal.json
 
@@ -37,14 +35,12 @@ resource "aws_iam_role" "internal_composer" {
 
 # Link instance profiles to the roles.
 resource "aws_iam_instance_profile" "internal_worker" {
-  name = "internal_worker"
-  path = "/${local.workspace_name}/"
+  name = "internal_worker_${local.workspace_name}"
   role = aws_iam_role.internal_worker.name
 }
 
 resource "aws_iam_instance_profile" "internal_composer" {
-  name = "internal_composer"
-  path = "/${local.workspace_name}/"
+  name = "internal_composer_${local.workspace_name}"
   role = aws_iam_role.internal_composer.name
 }
 
@@ -85,14 +81,12 @@ data "aws_iam_policy_document" "internal_composer_read_keys" {
 
 # Load the internal secrets policies.
 resource "aws_iam_policy" "internal_worker_read_keys" {
-  name   = "internal_worker_read_keys"
-  path   = "/${local.workspace_name}/"
+  name   = "internal_worker_read_keys_${local.workspace_name}"
   policy = data.aws_iam_policy_document.internal_worker_read_keys.json
 }
 
 resource "aws_iam_policy" "internal_composer_read_keys" {
-  name   = "internal_composer_read_keys"
-  path   = "/${local.workspace_name}/"
+  name   = "internal_composer_read_keys_${local.workspace_name}"
   policy = data.aws_iam_policy_document.internal_composer_read_keys.json
 }
 
@@ -142,8 +136,7 @@ data "aws_iam_policy_document" "internal_cloudwatch_logging" {
 
 # Load the CloudWatch policy.
 resource "aws_iam_policy" "internal_cloudwatch_logging" {
-  name   = "internal_cloudwatch_logging"
-  path   = "/${local.workspace_name}/"
+  name   = "internal_cloudwatch_logging_${local.workspace_name}"
   policy = data.aws_iam_policy_document.internal_cloudwatch_logging.json
 }
 
