@@ -30,7 +30,7 @@ data "template_file" "worker_internal_user_data" {
 # Create a launch template that specifies almost everything about our workers.
 # This eliminates a lot of repeated code for the actual spot fleet itself.
 resource "aws_launch_template" "worker_internal_x86" {
-  name          = "imagebuilder-worker-internal-x86"
+  name          = "imagebuilder_worker_internal_x86_${local.workspace_name}"
   image_id      = data.aws_ami.rhel8_x86.id
   instance_type = "t3.medium"
   key_name      = "tgunders"
@@ -64,7 +64,7 @@ resource "aws_launch_template" "worker_internal_x86" {
 
   # Apply tags to the spot fleet definition itself.
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal worker" },
+    var.imagebuilder_tags, { Name = "Image Builder internal worker - ${local.workspace_name}" },
   )
 
   # Apply tags to the instances created in the fleet.
@@ -72,7 +72,7 @@ resource "aws_launch_template" "worker_internal_x86" {
     resource_type = "instance"
 
     tags = merge(
-      var.imagebuilder_tags, { Name = "Image Builder internal worker" },
+      var.imagebuilder_tags, { Name = "Image Builder internal worker - ${local.workspace_name}" },
     )
   }
 
@@ -81,7 +81,7 @@ resource "aws_launch_template" "worker_internal_x86" {
     resource_type = "volume"
 
     tags = merge(
-      var.imagebuilder_tags, { Name = "Image Builder internal worker" },
+      var.imagebuilder_tags, { Name = "Image Builder internal worker - ${local.workspace_name}" },
     )
   }
 }
@@ -125,6 +125,6 @@ resource "aws_spot_fleet_request" "workers_internal_x86" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder internal worker fleet" },
+    var.imagebuilder_tags, { Name = "Image Builder internal worker fleet - ${local.workspace_name}" },
   )
 }
