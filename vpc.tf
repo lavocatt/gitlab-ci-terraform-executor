@@ -35,6 +35,10 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["10.0.0.0/8"]
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   tags = merge(
     var.imagebuilder_tags, { Name = "external_allow_ssh_${local.workspace_name}" },
   )
@@ -52,6 +56,10 @@ resource "aws_security_group" "allow_cockpit" {
     to_port     = 9090
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/8"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   tags = merge(
@@ -73,6 +81,10 @@ resource "aws_security_group" "allow_icmp" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   tags = merge(
     var.imagebuilder_tags, { Name = "external_allow_icmp_${local.workspace_name}" },
   )
@@ -89,6 +101,10 @@ resource "aws_security_group" "allow_egress" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   tags = merge(
@@ -111,6 +127,10 @@ resource "aws_security_group" "internal_allow_egress" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   tags = merge(
     var.imagebuilder_tags, { Name = "internal_allow_egress_${local.workspace_name}" },
   )
@@ -127,6 +147,10 @@ resource "aws_security_group" "internal_allow_trusted" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["10.0.0.0/8"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   tags = merge(
