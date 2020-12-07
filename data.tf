@@ -53,6 +53,23 @@ data "aws_ami" "rhel8_x86" {
   }
 }
 
+# Get the RHEL 8 image with osbuild-composer pre-installed that was created
+# by packer.
+data "aws_ami" "rhel8_x86_prebuilt" {
+  owners      = ["self"]
+  most_recent = true
+
+  # Get the image that matches our composer_commit and osbuild_commit.
+  filter {
+    name   = "tag:composer_commit"
+    values = [var.composer_commit]
+  }
+  filter {
+    name   = "tag:osbuild_commit"
+    values = [var.osbuild_commit]
+  }
+}
+
 ##############################################################################
 ## VPC
 # Find the details for the internal VPC at AWS.

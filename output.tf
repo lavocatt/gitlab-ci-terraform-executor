@@ -21,7 +21,11 @@ output "external_subnets" {
 }
 
 output "rhel8_x86" {
-  value = "${data.aws_ami.rhel8_x86.name} (${data.aws_ami.rhel8_x86.id})"
+  value = "RHEL 8 cloud access: ${data.aws_ami.rhel8_x86.name} (${data.aws_ami.rhel8_x86.id})"
+}
+
+output "rhel8_x86_prebuilt" {
+  value = "RHEL 8 pre-built: ${data.aws_ami.rhel8_x86_prebuilt.name} (${data.aws_ami.rhel8_x86_prebuilt.id})"
 }
 
 output "workspace_name" {
