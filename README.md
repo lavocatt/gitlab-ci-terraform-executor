@@ -41,3 +41,17 @@ the configuration.
 
 Provide a brief comment above each resource section and provide additional
 comments within the section whenever possible.
+
+## Branches
+
+This repository has two branches which correspond to different deployment
+workspaces:
+
+* `main` - Corresponds to the `staging` workspace in Terraform and the staging
+  deployment inside AWS.
+* `stable` - Corresponds to the `stable` workspace in Terraform and the stable
+  deployment inside AWS.
+
+All pull requests for new changes must be made against `main` (and that is the
+default branch in GitHub). Once the change merges and the changes are verified
+in AWS, the change can be proposed for the `stable` branch.
