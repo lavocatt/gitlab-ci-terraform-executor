@@ -13,24 +13,6 @@ restorecon -Rv /etc/systemd
 # Restart journald to pick up the console log change.
 systemctl restart systemd-journald
 
-# Basic function to retry a command up to 5 times.
-function retry {
-    local count=0
-    local retries=5
-    until "$@"; do
-        exit=$?
-        count=$((count + 1))
-        if [[ $count -lt $retries ]]; then
-            echo "Retrying command..."
-            sleep 1
-        else
-            echo "Command failed after ${retries} retries. Giving up."
-            return $exit
-        fi
-    done
-    return 0
-}
-
 # Variables for the script.
 COMPOSER_DIR=/etc/osbuild-composer
 
