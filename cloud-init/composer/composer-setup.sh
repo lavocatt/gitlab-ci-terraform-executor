@@ -36,43 +36,6 @@ EBS_STORAGE=/dev/nvme1n1
 STATE_DIR=/var/lib/osbuild-composer
 COMPOSER_DIR=/etc/osbuild-composer
 
-# Deploy the dnf repository file for osbuild-composer.
-tee /etc/yum.repos.d/composer.repo > /dev/null << EOF
-[composer]
-name = osbuild-composer commit ${COMPOSER_COMMIT}
-baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild-composer/rhel-8.3/x86_64/${COMPOSER_COMMIT}
-enabled = 1
-gpgcheck = 0
-priority = 5
-EOF
-
-# Deploy the dnf repository file for osbuild.
-# TODO(tgunders): drop this as soon as composer can be installed without the worker.
-tee /etc/yum.repos.d/osbuild.repo > /dev/null << EOF
-[osbuild]
-name = osbuild commit ${OSBUILD_COMMIT}
-baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild/rhel-8.3/x86_64/${OSBUILD_COMMIT}
-enabled = 1
-gpgcheck = 0
-priority = 5
-EOF
-
-# Ensure we have an updated dnf cache.
-retry dnf makecache
-
-# Update all existing packages to their latest version.
-retry dnf -y upgrade
-
-# Install required packages.
-retry dnf -y install jq osbuild-composer unzip
-
-# Set up the AWS CLI.
-pushd /tmp
-  curl --retry 5 -Ls -o awscli.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-  unzip awscli.zip
-  aws/install
-popd
-
 # Deploy a customized osbuild-composer configuration.
 mkdir ${COMPOSER_DIR}
 tee ${COMPOSER_DIR}/osbuild-composer.toml > /dev/null << EOF
@@ -127,15 +90,6 @@ if ! grep ${STATE_DIR} /proc/mounts; then
   touch ${STATE_DIR}/.provisioning_check
   rm -f ${STATE_DIR}/.provisioning_check
 fi
-
-# Enable access logging for osbuild-composer.
-mkdir /etc/systemd/system/osbuild-composer.service.d/
-tee /etc/systemd/system/osbuild-composer.service.d/override.conf << EOF
-[Service]
-ExecStart=
-ExecStart=/usr/libexec/osbuild-composer/osbuild-composer -v
-EOF
-systemctl daemon-reload
 
 # Prepare osbuild-composer's remote worker services and sockets.
 systemctl mask osbuild-worker@1.service

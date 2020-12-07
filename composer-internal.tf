@@ -70,11 +70,11 @@ resource "aws_volume_attachment" "composer_internal" {
 
 # Provision the AWS isntance for composer.
 resource "aws_instance" "composer_internal" {
-  ami           = data.aws_ami.rhel8_x86.id
+  ami           = data.aws_ami.rhel8_x86_prebuilt.id
   instance_type = "t3.small"
 
   # TODO(mhayden): Remove this key once we know everything is working.
-  key_name = "tgunders"
+  key_name = "mhayden"
 
   # Allow the instance to assume the internal_composer IAM role.
   iam_instance_profile = aws_iam_instance_profile.internal_composer.name

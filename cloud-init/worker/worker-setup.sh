@@ -34,42 +34,6 @@ function retry {
 # Variables for the script.
 COMPOSER_DIR=/etc/osbuild-composer
 
-# Deploy the dnf repository file for osbuild-composer.
-tee /etc/yum.repos.d/composer.repo > /dev/null << EOF
-[composer]
-name = osbuild-composer commit ${COMPOSER_COMMIT}
-baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild-composer/rhel-8.3/x86_64/${COMPOSER_COMMIT}
-enabled = 1
-gpgcheck = 0
-priority = 5
-EOF
-
-# Deploy the dnf repository file for osbuild.
-tee /etc/yum.repos.d/osbuild.repo > /dev/null << EOF
-[osbuild]
-name = osbuild commit ${OSBUILD_COMMIT}
-baseurl = http://osbuild-composer-repos.s3-website.us-east-2.amazonaws.com/osbuild/rhel-8.3/x86_64/${OSBUILD_COMMIT}
-enabled = 1
-gpgcheck = 0
-priority = 5
-EOF
-
-# Ensure we have an updated dnf cache.
-retry dnf makecache
-
-# Update all existing packages to their latest version.
-retry dnf -y upgrade
-
-# Install required packages.
-retry dnf -y install jq osbuild-composer-worker python3 unzip
-
-# Set up the AWS CLI.
-pushd /tmp
-  curl --retry 5 -Ls -o awscli.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-  unzip awscli.zip
-  aws/install
-popd
-
 # Set up /etc/hosts
 # TODO(mhayden): We need to convert this to DNS later when we launch.
 cat <<< "${COMPOSER_ADDRESS} ${COMPOESR_HOST}" >> /etc/hosts
