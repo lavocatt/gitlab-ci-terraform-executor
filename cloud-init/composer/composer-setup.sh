@@ -1,18 +1,3 @@
-# Forward systemd journal to the console for easier viewing.
-# This is done at the beginning of this script so we log all errors.
-mkdir -p /etc/systemd/journald.conf.d/
-tee /etc/systemd/journald.conf.d/forward-to-console.conf > /dev/null << EOF
-[Journal]
-ForwardToConsole=yes
-MaxLevelConsole=6
-EOF
-
-# Ensure the SELinux contexts are correct.
-restorecon -Rv /etc/systemd
-
-# Restart journald to pick up the console log change.
-systemctl restart systemd-journald
-
 # Variables for the script.
 EBS_STORAGE=/dev/nvme1n1
 STATE_DIR=/var/lib/osbuild-composer
