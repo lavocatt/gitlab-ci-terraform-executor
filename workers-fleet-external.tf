@@ -1,19 +1,21 @@
 ##############################################################################
 ## WORKER SPOT FLEETS
-# Set up the cloud-init user data for worker instances.
-data "template_file" "worker_user_data" {
-  template = file("cloud-init/worker-variables.template")
 
-  vars = {
-    # Add any variables here to pass to the setup script when the instance
-    # boots.
-    node_hostname = "worker-fleet-testing"
+locals {
+  # Set up the cloud-init user data for worker instances.s
+  worker_user_data = templatefile(
+    "cloud-init/worker-variables.template",
+    {
+      # Add any variables here to pass to the setup script when the instance
+      # boots.
+      node_hostname = "worker-fleet-testing"
 
-    # 💣 Split off most of the setup script to avoid shenanigans with
-    # Terraform's template interpretation that destroys Bash variables.
-    # https://github.com/hashicorp/terraform/issues/15933
-    setup_script = file("cloud-init/worker-setup.sh")
-  }
+      # 💣 Split off most of the setup script to avoid shenanigans with
+      # Terraform's template interpretation that destroys Bash variables.
+      # https://github.com/hashicorp/terraform/issues/15933
+      setup_script = file("cloud-init/worker-setup.sh")
+    }
+  )
 }
 
 # Create a launch template that specifies almost everything about our workers.
@@ -30,7 +32,7 @@ resource "aws_launch_template" "worker_x86" {
   #   }
 
   # Assemble the cloud-init userdata file.
-  user_data = base64encode(data.template_file.worker_user_data.rendered)
+  user_data = base64encode(local.worker_user_data)
 
   # Get the security group for the instances.
   vpc_security_group_ids = [

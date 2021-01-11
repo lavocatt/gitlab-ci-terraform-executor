@@ -1,30 +1,32 @@
 ##############################################################################
 ## WORKER SPOT FLEETS
-# Set up the cloud-init user data for worker instances.
-data "template_file" "worker_internal_user_data" {
-  template = file("cloud-init/worker/worker-variables.template")
 
-  vars = {
-    # Add any variables here to pass to the setup script when the instance
-    # boots.
-    osbuild_commit  = var.osbuild_commit
-    composer_commit = var.composer_commit
+locals {
+  # Set up the cloud-init user data for worker instances.
+  worker_internal_user_data = templatefile(
+    "cloud-init/worker/worker-variables.template",
+    {
+      # Add any variables here to pass to the setup script when the instance
+      # boots.
+      osbuild_commit  = var.osbuild_commit
+      composer_commit = var.composer_commit
 
-    # Change these to worker certs later.
-    osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
+      # Change these to worker certs later.
+      osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
-    # TODO(mhayden): Remove the address below once DNS is working.
-    composer_host    = var.composer_host_internal
-    composer_address = aws_instance.composer_internal.private_ip
+      # TODO(mhayden): Remove the address below once DNS is working.
+      composer_host    = var.composer_host_internal
+      composer_address = aws_instance.composer_internal.private_ip
 
-    # Provide the ARN to the secret that contains keys/certificates
-    worker_ssl_keys_arn = data.aws_secretsmanager_secret.internal_worker_keys.arn
+      # Provide the ARN to the secret that contains keys/certificates
+      worker_ssl_keys_arn = data.aws_secretsmanager_secret.internal_worker_keys.arn
 
-    # 💣 Split off most of the setup script to avoid shenanigans with
-    # Terraform's template interpretation that destroys Bash variables.
-    # https://github.com/hashicorp/terraform/issues/15933
-    setup_script = file("cloud-init/worker/worker-setup.sh")
-  }
+      # 💣 Split off most of the setup script to avoid shenanigans with
+      # Terraform's template interpretation that destroys Bash variables.
+      # https://github.com/hashicorp/terraform/issues/15933
+      setup_script = file("cloud-init/worker/worker-setup.sh")
+    }
+  )
 }
 
 # Create a launch template that specifies almost everything about our workers.
@@ -41,7 +43,7 @@ resource "aws_launch_template" "worker_internal_x86" {
   }
 
   # Assemble the cloud-init userdata file.
-  user_data = base64encode(data.template_file.worker_internal_user_data.rendered)
+  user_data = base64encode(local.worker_internal_user_data)
 
   # Get the security group for the instances.
   vpc_security_group_ids = [

@@ -1,24 +1,26 @@
 ##############################################################################
 ## INTERNAL COMPOSER DEPLOYMENT
-# Assemble cloud-init user data for the instance.
-data "template_file" "composer_internal_user_data" {
-  template = file("cloud-init/composer/composer-variables.template")
 
-  vars = {
-    # Add any variables here to pass to the setup script when the instance
-    # boots.
-    osbuild_commit  = var.osbuild_commit
-    composer_commit = var.composer_commit
-    osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
+locals {
+  # Assemble cloud-init user data for the instance.
+  composer_internal_user_data = templatefile(
+    "cloud-init/composer/composer-variables.template",
+    {
+      # Add any variables here to pass to the setup script when the instance
+      # boots.
+      osbuild_commit  = var.osbuild_commit
+      composer_commit = var.composer_commit
+      osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
-    # Provide the ARN to the secret that contains keys/certificates
-    composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
+      # Provide the ARN to the secret that contains keys/certificates
+      composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
 
-    # 💣 Split off most of the setup script to avoid shenanigans with
-    # Terraform's template interpretation that destroys Bash variables.
-    # https://github.com/hashicorp/terraform/issues/15933
-    setup_script = file("cloud-init/composer/composer-setup.sh")
-  }
+      # 💣 Split off most of the setup script to avoid shenanigans with
+      # Terraform's template interpretation that destroys Bash variables.
+      # https://github.com/hashicorp/terraform/issues/15933
+      setup_script = file("cloud-init/composer/composer-setup.sh")
+    }
+  )
 }
 
 # Create a network interface with security groups and a static IP address.
@@ -80,7 +82,7 @@ resource "aws_instance" "composer_internal" {
   iam_instance_profile = aws_iam_instance_profile.internal_composer.name
 
   # Pass the user data that we generated.
-  user_data = base64encode(data.template_file.composer_internal_user_data.rendered)
+  user_data = base64encode(local.composer_internal_user_data)
 
   # Attach the network interface with the static IP address as the primary
   # network interface.
