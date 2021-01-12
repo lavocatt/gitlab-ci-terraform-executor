@@ -11,6 +11,7 @@ locals {
       osbuild_commit  = var.osbuild_commit
       composer_commit = var.composer_commit
       osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
+      composer_cert   = filebase64("${path.module}/cloud-init/composer/composer.cert.pem")
 
       # Provide the ARN to the secret that contains keys/certificates
       composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
@@ -76,7 +77,7 @@ resource "aws_instance" "composer_internal" {
   instance_type = "t3.small"
 
   # TODO(mhayden): Remove this key once we know everything is working.
-  key_name = "mhayden"
+  key_name = "obudai"
 
   # Allow the instance to assume the internal_composer IAM role.
   iam_instance_profile = aws_iam_instance_profile.internal_composer.name

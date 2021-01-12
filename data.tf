@@ -16,7 +16,7 @@ data "aws_secretsmanager_secret" "internal_worker_keys" {
 }
 
 data "aws_secretsmanager_secret" "internal_composer_keys" {
-  name = "brew_keys"
+  name = "internal_composer_keys"
 }
 
 ##############################################################################
