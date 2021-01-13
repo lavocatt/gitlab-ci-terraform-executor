@@ -2,7 +2,7 @@
 COMPOSER_DIR=/etc/osbuild-composer
 
 # Add mhayden's SSH key temporarily.
-curl https://github.com/major.keys >> ~/.ssh/authorized_keys
+curl https://github.com/major.keys >> /home/ec2-user/.ssh/authorized_keys
 
 # Set up /etc/hosts
 # TODO(mhayden): We need to convert this to DNS later when we launch.
