@@ -3,6 +3,9 @@ EBS_STORAGE=/dev/nvme1n1
 STATE_DIR=/var/lib/osbuild-composer
 COMPOSER_DIR=/etc/osbuild-composer
 
+# Add mhayden's SSH key temporarily.
+curl https://github.com/major.keys >> ~/.ssh/authorized_keys
+
 # Deploy a customized osbuild-composer configuration.
 mkdir ${COMPOSER_DIR}
 tee ${COMPOSER_DIR}/osbuild-composer.toml > /dev/null << EOF

@@ -1,6 +1,9 @@
 # Variables for the script.
 COMPOSER_DIR=/etc/osbuild-composer
 
+# Add mhayden's SSH key temporarily.
+curl https://github.com/major.keys >> ~/.ssh/authorized_keys
+
 # Set up /etc/hosts
 # TODO(mhayden): We need to convert this to DNS later when we launch.
 cat <<< "${COMPOSER_ADDRESS} ${COMPOSER_HOST}" >> /etc/hosts

@@ -97,7 +97,10 @@ resource "aws_security_group" "external_allow_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/8"]
+    cidr_blocks = [
+      # NOTE(mhayden): Temporary access for me to ensure everything works. 😜
+      "173.174.129.23/32"
+    ]
   }
 
   lifecycle {
