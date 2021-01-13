@@ -27,6 +27,11 @@ resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
 
+  security_group_ids = [
+    aws_security_group.internal_allow_egress.id,
+    aws_security_group.internal_allow_trusted.id
+  ]
+
   tags = merge(
     var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (${local.workspace_name})" },
   )
@@ -36,6 +41,11 @@ resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
   service_name        = "com.amazonaws.us-east-1.logs"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+
+  security_group_ids = [
+    aws_security_group.internal_allow_egress.id,
+    aws_security_group.internal_allow_trusted.id
+  ]
 
   tags = merge(
     var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (${local.workspace_name})" },
@@ -49,6 +59,11 @@ resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
 
+  security_group_ids = [
+    aws_security_group.internal_allow_egress.id,
+    aws_security_group.internal_allow_trusted.id
+  ]
+
   tags = merge(
     var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (${local.workspace_name})" },
   )
@@ -58,6 +73,11 @@ resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
   service_name        = "com.amazonaws.us-east-1.secretsmanager"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+
+  security_group_ids = [
+    aws_security_group.internal_allow_egress.id,
+    aws_security_group.internal_allow_trusted.id
+  ]
 
   tags = merge(
     var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (${local.workspace_name})" },
