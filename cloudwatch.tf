@@ -5,7 +5,7 @@ resource "aws_cloudwatch_log_group" "internal_composer" {
   name = "internal_composer_${local.workspace_name}"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "📜 Internal composer log group for ${local.workspace_name}" },
+    var.imagebuilder_tags, { Name = "Internal composer log group for ${local.workspace_name}" },
   )
 }
 
@@ -22,7 +22,7 @@ resource "aws_cloudwatch_log_group" "external_composer" {
   name = "external_composer_${local.workspace_name}"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "📜 External composer log group for ${local.workspace_name}" },
+    var.imagebuilder_tags, { Name = "External composer log group for ${local.workspace_name}" },
   )
 }
 
