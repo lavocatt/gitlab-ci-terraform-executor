@@ -67,29 +67,6 @@ resource "aws_security_group" "allow_ssh" {
   )
 }
 
-# Allow cockpit.
-resource "aws_security_group" "allow_cockpit" {
-  name        = "external_allow_cockpit_${local.workspace_name}"
-  description = "Allow cockpit access"
-  vpc_id      = data.aws_vpc.external_vpc.id
-
-  ingress {
-    description = "cockpit"
-    from_port   = 9090
-    to_port     = 9090
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/8"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "external_allow_cockpit_${local.workspace_name}" },
-  )
-}
-
 # Allow ICMP.
 resource "aws_security_group" "allow_icmp" {
   name        = "external_allow_icmp_${local.workspace_name}"

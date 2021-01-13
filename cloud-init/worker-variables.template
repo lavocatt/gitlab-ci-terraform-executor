@@ -1,7 +1,0 @@
-#!/bin/bash
-set -euxo pipefail
-
-# Variables from Terraform
-SYSTEM_HOSTNAME=${node_hostname}
-
-${setup_script}
