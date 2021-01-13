@@ -43,9 +43,10 @@ resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.internal_allow_egress.id,
-    aws_security_group.internal_allow_trusted.id
+    aws_security_group.external_allow_ingress.id
   ]
+
+  subnet_ids = data.aws_subnet_ids.external_subnets.ids
 
   tags = merge(
     var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (external)" },
@@ -75,9 +76,10 @@ resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.internal_allow_egress.id,
-    aws_security_group.internal_allow_trusted.id
+    aws_security_group.external_allow_ingress.id
   ]
+
+  subnet_ids = data.aws_subnet_ids.external_subnets.ids
 
   tags = merge(
     var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (external)" },
@@ -154,6 +156,28 @@ resource "aws_security_group" "external_allow_egress" {
 
   tags = merge(
     var.imagebuilder_tags, { Name = "external_allow_egress_${local.workspace_name}" },
+  )
+}
+
+# Allow ingress.
+resource "aws_security_group" "external_allow_ingress" {
+  name        = "external_allow_ingress_${local.workspace_name}"
+  description = "Allow ingress traffic"
+  vpc_id      = data.aws_vpc.external_vpc.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "external_allow_ingress_${local.workspace_name}" },
   )
 }
 

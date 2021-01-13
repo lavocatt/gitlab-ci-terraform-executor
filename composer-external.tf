@@ -81,7 +81,7 @@ resource "aws_instance" "composer_external" {
   key_name = "obudai"
 
   # Allow the instance to assume the external IAM role.
-  iam_instance_profile = aws_iam_instance_profile.external_composer.name
+  iam_instance_profile = aws_iam_instance_profile.internal_composer.name
 
   # Pass the user data that we generated.
   user_data = base64encode(local.composer_external_user_data)
