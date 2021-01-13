@@ -19,27 +19,6 @@ resource "aws_vpc_endpoint" "external_vpc_s3" {
   )
 }
 
-# CloudWatch Logs endpoint enables us to access CloudWatch Logs from
-# the internal network and to avoid bandwidth charges.
-resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
-  vpc_id              = data.aws_vpc.internal_vpc.id
-  service_name        = "com.amazonaws.us-east-1.logs"
-  private_dns_enabled = true
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder CloudWatch Logs VPC endpoint" },
-  )
-}
-resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
-  vpc_id              = data.aws_vpc.external_vpc.id
-  service_name        = "com.amazonaws.us-east-1.logs"
-  private_dns_enabled = true
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder CloudWatch Logs VPC endpoint" },
-  )
-}
-
 ##############################################################################
 ## PUBLIC SECURITY GROUPS
 # Allow ssh access.
