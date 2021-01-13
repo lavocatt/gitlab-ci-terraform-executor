@@ -7,7 +7,7 @@ resource "aws_vpc_endpoint" "internal_vpc_s3" {
   service_name = "com.amazonaws.us-east-1.s3"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder S3 VPC endpoint" },
+    var.imagebuilder_tags, { Name = "📦 S3 VPC endpoint (${local.workspace_name})" },
   )
 }
 resource "aws_vpc_endpoint" "external_vpc_s3" {
@@ -15,7 +15,7 @@ resource "aws_vpc_endpoint" "external_vpc_s3" {
   service_name = "com.amazonaws.us-east-1.s3"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder S3 VPC endpoint" },
+    var.imagebuilder_tags, { Name = "📦 S3 VPC endpoint (${local.workspace_name})" },
   )
 }
 
@@ -28,7 +28,7 @@ resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
   private_dns_enabled = true
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder CloudWatch Logs VPC endpoint" },
+    var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (${local.workspace_name})" },
   )
 }
 resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
@@ -38,7 +38,29 @@ resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
   private_dns_enabled = true
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder CloudWatch Logs VPC endpoint" },
+    var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (${local.workspace_name})" },
+  )
+}
+
+# Endpoint to reach AWS Secrets Manager.
+resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
+  vpc_id              = data.aws_vpc.internal_vpc.id
+  service_name        = "com.amazonaws.us-east-1.secretsmanager"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (${local.workspace_name})" },
+  )
+}
+resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
+  vpc_id              = data.aws_vpc.external_vpc.id
+  service_name        = "com.amazonaws.us-east-1.secretsmanager"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (${local.workspace_name})" },
   )
 }
 
