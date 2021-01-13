@@ -87,7 +87,7 @@ resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
 ##############################################################################
 ## PUBLIC SECURITY GROUPS
 # Allow ssh access.
-resource "aws_security_group" "allow_ssh" {
+resource "aws_security_group" "external_allow_ssh" {
   name        = "external_allow_ssh_${local.workspace_name}"
   description = "Allow SSH access"
   vpc_id      = data.aws_vpc.external_vpc.id
@@ -110,7 +110,7 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 # Allow ICMP.
-resource "aws_security_group" "allow_icmp" {
+resource "aws_security_group" "external_allow_icmp" {
   name        = "external_allow_icmp_${local.workspace_name}"
   description = "Allow ICMP access"
   vpc_id      = data.aws_vpc.external_vpc.id
@@ -133,7 +133,7 @@ resource "aws_security_group" "allow_icmp" {
 }
 
 # Allow egress.
-resource "aws_security_group" "allow_egress" {
+resource "aws_security_group" "external_allow_egress" {
   name        = "external_allow_egress_${local.workspace_name}"
   description = "Allow egress traffic"
   vpc_id      = data.aws_vpc.external_vpc.id

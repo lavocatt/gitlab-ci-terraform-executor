@@ -14,9 +14,15 @@ data "aws_caller_identity" "current" {}
 data "aws_secretsmanager_secret" "internal_worker_keys" {
   name = "brew_keys"
 }
+data "aws_secretsmanager_secret" "external_worker_keys" {
+  name = "service_keys"
+}
 
 data "aws_secretsmanager_secret" "internal_composer_keys" {
   name = "internal_composer_keys"
+}
+data "aws_secretsmanager_secret" "external_composer_keys" {
+  name = "external_composer_keys"
 }
 
 ##############################################################################
@@ -100,4 +106,9 @@ data "aws_vpc" "external_vpc" {
 # Find all of the subnet IDs from the default VPC.
 data "aws_subnet_ids" "external_subnets" {
   vpc_id = data.aws_vpc.external_vpc.id
+}
+
+# Find all of the subnet details from the external VPC.
+data "aws_subnet" "external_subnet_primary" {
+  id = sort(data.aws_subnet_ids.external_subnets.ids)[0]
 }
