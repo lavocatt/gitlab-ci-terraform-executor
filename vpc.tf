@@ -32,6 +32,8 @@ resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
     aws_security_group.internal_allow_trusted.id
   ]
 
+  subnet_ids = data.aws_subnet_ids.internal_subnets.ids
+
   tags = merge(
     var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (internal)" },
   )
@@ -43,6 +45,7 @@ resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
   private_dns_enabled = true
 
   security_group_ids = [
+    aws_security_group.external_allow_egress.id,
     aws_security_group.external_allow_ingress.id
   ]
 
@@ -65,6 +68,8 @@ resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
     aws_security_group.internal_allow_trusted.id
   ]
 
+  subnet_ids = data.aws_subnet_ids.internal_subnets.ids
+
   tags = merge(
     var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (internal)" },
   )
@@ -76,6 +81,7 @@ resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
   private_dns_enabled = true
 
   security_group_ids = [
+    aws_security_group.external_allow_egress.id,
     aws_security_group.external_allow_ingress.id
   ]
 
