@@ -7,7 +7,7 @@ resource "aws_vpc_endpoint" "internal_vpc_s3" {
   service_name = "com.amazonaws.us-east-1.s3"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "📦 S3 VPC endpoint (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "📦 S3 VPC endpoint (internal)" },
   )
 }
 resource "aws_vpc_endpoint" "external_vpc_s3" {
@@ -15,7 +15,7 @@ resource "aws_vpc_endpoint" "external_vpc_s3" {
   service_name = "com.amazonaws.us-east-1.s3"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "📦 S3 VPC endpoint (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "📦 S3 VPC endpoint (external)" },
   )
 }
 
@@ -33,7 +33,7 @@ resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
   ]
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (internal)" },
   )
 }
 resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
@@ -48,7 +48,7 @@ resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
   ]
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (external)" },
   )
 }
 
@@ -65,7 +65,7 @@ resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
   ]
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (internal)" },
   )
 }
 resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
@@ -80,7 +80,7 @@ resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
   ]
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (external)" },
   )
 }
 
