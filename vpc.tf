@@ -45,7 +45,7 @@ resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.external_allow_egress.id
+    aws_security_group.external_vpc_endpoints.id
   ]
 
   subnet_ids = data.aws_subnet_ids.external_subnets.ids
@@ -92,99 +92,6 @@ resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
 
 ##############################################################################
 ## PUBLIC SECURITY GROUPS
-# Allow ssh access.
-resource "aws_security_group" "external_allow_ssh" {
-  name        = "external_allow_ssh_${local.workspace_name}"
-  description = "Allow SSH access"
-  vpc_id      = data.aws_vpc.external_vpc.id
-
-  ingress {
-    description = "ssh"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [
-      # NOTE(mhayden): Temporary access for me to ensure everything works. 😜
-      "173.174.129.23/32"
-    ]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "external_allow_ssh_${local.workspace_name}" },
-  )
-}
-
-# Allow ICMP.
-resource "aws_security_group" "external_allow_icmp" {
-  name        = "external_allow_icmp_${local.workspace_name}"
-  description = "Allow ICMP access"
-  vpc_id      = data.aws_vpc.external_vpc.id
-
-  ingress {
-    description = "ICMP"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "external_allow_icmp_${local.workspace_name}" },
-  )
-}
-
-# Allow egress.
-resource "aws_security_group" "external_allow_egress" {
-  name        = "external_allow_egress_${local.workspace_name}"
-  description = "Allow egress traffic"
-  vpc_id      = data.aws_vpc.external_vpc.id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "external_allow_egress_${local.workspace_name}" },
-  )
-}
-
-# Allow ingress.
-resource "aws_security_group" "external_allow_ingress" {
-  name        = "external_allow_ingress_${local.workspace_name}"
-  description = "Allow ingress traffic"
-  vpc_id      = data.aws_vpc.external_vpc.id
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "external_allow_ingress_${local.workspace_name}" },
-  )
-}
-
 # Set up a security group for VPC endpoints which require an interface.
 resource "aws_security_group" "external_vpc_endpoints" {
   name        = "external_vpc_endpoints_${local.workspace_name}"
@@ -233,7 +140,7 @@ resource "aws_security_group" "external_composer" {
   ingress {
     description = "ICMP"
     from_port   = 0
-    to_port     = 0
+    to_port     = 8
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -285,7 +192,7 @@ resource "aws_security_group" "external_workers" {
   ingress {
     description = "ICMP"
     from_port   = 0
-    to_port     = 0
+    to_port     = 8
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -303,7 +210,7 @@ resource "aws_security_group" "external_workers" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "external_composer_${local.workspace_name}" },
+    var.imagebuilder_tags, { Name = "external_workers_${local.workspace_name}" },
   )
 }
 
