@@ -45,8 +45,7 @@ resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.external_allow_egress.id,
-    aws_security_group.external_allow_ingress.id
+    aws_security_group.external_allow_egress.id
   ]
 
   subnet_ids = data.aws_subnet_ids.external_subnets.ids
@@ -81,8 +80,7 @@ resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.external_allow_egress.id,
-    aws_security_group.external_allow_ingress.id
+    aws_security_group.external_vpc_endpoints.id
   ]
 
   subnet_ids = data.aws_subnet_ids.external_subnets.ids
@@ -184,6 +182,35 @@ resource "aws_security_group" "external_allow_ingress" {
 
   tags = merge(
     var.imagebuilder_tags, { Name = "external_allow_ingress_${local.workspace_name}" },
+  )
+}
+
+# Set up a security group for VPC endpoints which require an interface.
+resource "aws_security_group" "external_vpc_endpoints" {
+  name        = "external_vpc_endpoints_${local.workspace_name}"
+  description = "Allow ingress traffic"
+  vpc_id      = data.aws_vpc.external_vpc.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "external_vpc_endpoints_${local.workspace_name}" },
   )
 }
 
