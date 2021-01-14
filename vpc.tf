@@ -95,7 +95,7 @@ resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
 # Set up a security group for VPC endpoints which require an interface.
 resource "aws_security_group" "external_vpc_endpoints" {
   name        = "external_vpc_endpoints_${local.workspace_name}"
-  description = "External VPC endpoints"
+  description = "Allow ingress traffic"
   vpc_id      = data.aws_vpc.external_vpc.id
 
   ingress {
