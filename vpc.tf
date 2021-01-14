@@ -214,6 +214,99 @@ resource "aws_security_group" "external_vpc_endpoints" {
   )
 }
 
+# Security group for composer instances.
+resource "aws_security_group" "external_composer" {
+  name        = "external_composer_${local.workspace_name}"
+  description = "External composer"
+  vpc_id      = data.aws_vpc.external_vpc.id
+
+  # NOTE(mhayden): Temporary access for me to ensure everything works. 😜
+  ingress {
+    description = "ssh for mhayden"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["173.174.129.23/32"]
+  }
+
+  # Allow all ICMP traffic.
+  ingress {
+    description = "ICMP"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow connections from remote workers.
+  ingress {
+    description = "remote worker connection"
+    from_port   = 8700
+    to_port     = 8700
+    protocol    = "tcp"
+    security_groups = [
+      aws_security_group.external_workers.id
+    ]
+  }
+
+  # Allow all egress traffic.
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "external_composer_${local.workspace_name}" },
+  )
+}
+
+# Security group for worker instances.
+resource "aws_security_group" "external_workers" {
+  name        = "external_workers_${local.workspace_name}"
+  description = "External workers"
+  vpc_id      = data.aws_vpc.external_vpc.id
+
+  # NOTE(mhayden): Temporary access for me to ensure everything works. 😜
+  ingress {
+    description = "ssh for mhayden"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["173.174.129.23/32"]
+  }
+
+  # Allow all ICMP traffic.
+  ingress {
+    description = "ICMP"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow all egress traffic.
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "external_composer_${local.workspace_name}" },
+  )
+}
+
 ##############################################################################
 ## INTERNAL SECURITY GROUPS
 # Allow egress.

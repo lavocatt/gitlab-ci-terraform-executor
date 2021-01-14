@@ -47,9 +47,7 @@ resource "aws_launch_template" "worker_external_x86" {
 
   # Get the security group for the instances.
   vpc_security_group_ids = [
-    aws_security_group.external_allow_icmp.id,
-    aws_security_group.external_allow_egress.id,
-    aws_security_group.external_allow_ssh.id
+    aws_security_group.external_workers.id
   ]
 
   # Ensure the latest version of the template is marked as the default one.

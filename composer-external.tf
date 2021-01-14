@@ -38,9 +38,7 @@ resource "aws_network_interface" "composer_external" {
 
   # Allow all egress as well as ingress from trusted external networks.
   security_groups = [
-    aws_security_group.external_allow_icmp.id,
-    aws_security_group.external_allow_egress.id,
-    aws_security_group.external_allow_ssh.id
+    aws_security_group.external_composer.id
   ]
 
   tags = merge(
