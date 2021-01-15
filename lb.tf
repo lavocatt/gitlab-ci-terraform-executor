@@ -39,7 +39,7 @@ resource "aws_lb_listener" "external_composer" {
 
 resource "aws_lb_target_group" "external_composer" {
   # Only letters, numbers, and hyphens allowed in the name for these.
-  name        = "external-composer"
+  name        = "external-composer-${local.workspace_name}"
   port        = 443
   protocol    = "TCP"
   target_type = "instance"
