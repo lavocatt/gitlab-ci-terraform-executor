@@ -15,7 +15,7 @@ resource "aws_lb" "external_composer_lb" {
   load_balancer_type = "network"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "External Composer LB (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "External Composer LB ${local.workspace_name}" },
   )
 
   subnet_mapping {
@@ -46,7 +46,7 @@ resource "aws_lb_target_group" "external_composer" {
   vpc_id      = data.aws_vpc.external_vpc.id
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "External Composer Target Group (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "External Composer Target Group ${local.workspace_name}" },
   )
 }
 
