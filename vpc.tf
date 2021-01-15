@@ -139,8 +139,8 @@ resource "aws_security_group" "external_composer" {
   # Allow all ICMP traffic.
   ingress {
     description = "ICMP"
-    from_port   = 0
-    to_port     = 8
+    from_port   = -1
+    to_port     = -1
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -191,8 +191,8 @@ resource "aws_security_group" "external_workers" {
   # Allow all ICMP traffic.
   ingress {
     description = "ICMP"
-    from_port   = 0
-    to_port     = 8
+    from_port   = -1
+    to_port     = -1
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
