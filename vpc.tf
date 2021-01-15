@@ -145,6 +145,15 @@ resource "aws_security_group" "external_composer" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Use the non-standard port for access to osbuild-composer's API.
+  ingress {
+    description = "osbuild-composer API"
+    from_port   = 9876
+    to_port     = 9876
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Allow connections from remote workers.
   ingress {
     description = "remote worker connection"
