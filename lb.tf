@@ -39,11 +39,18 @@ resource "aws_lb_listener" "external_composer" {
 
 resource "aws_lb_target_group" "external_composer" {
   # Only letters, numbers, and hyphens allowed in the name for these.
-  name        = "external-composer-${local.workspace_name}"
+  # NOTE(mhayden): Random UUID here helps prevent dependency issues in AWs.
+  # See https://stackoverflow.com/questions/57183814/error-deleting-target-group-resourceinuse-when-changing-target-ports-in-aws-thr
+  name        = "external-composer-${substr(uuid(), 0, 3)}-${local.workspace_name}"
   port        = 443
   protocol    = "TCP"
   target_type = "instance"
   vpc_id      = data.aws_vpc.external_vpc.id
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [name]
+  }
 
   tags = merge(
     var.imagebuilder_tags, { Name = "External Composer Target Group ${local.workspace_name}" },
