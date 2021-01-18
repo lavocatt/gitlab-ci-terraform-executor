@@ -1,6 +1,5 @@
 ##############################################################################
 ## EXTERNAL COMPOSER DEPLOYMENT
-
 data "template_file" "external_composer_cloud_config" {
   template = file("${path.module}/cloud-init/partials/composer.cfg")
 
@@ -13,7 +12,7 @@ data "template_file" "external_composer_cloud_config" {
     composer_cert   = filebase64("${path.module}/cloud-init/composer/composer.cert.pem")
 
     # Provide the ARN to the secret that contains keys/certificates
-    composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
+    composer_ssl_keys_arn = data.aws_secretsmanager_secret.external_composer_keys.arn
 
     # Provide the ARN to the secret that contains keys/certificates
     subscription_manager_command = data.aws_secretsmanager_secret.subscription_manager_command.arn
