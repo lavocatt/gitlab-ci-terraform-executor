@@ -16,6 +16,9 @@ locals {
       # Provide the ARN to the secret that contains keys/certificates
       composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
 
+      # TODO: pick dns name from the right availability zone
+      secrets_manager_endpoint_domain = aws_vpc_endpoint.internal_vpc_secretsmanager.dns_entry[0]["dns_name"]
+
       # 💣 Split off most of the setup script to avoid shenanigans with
       # Terraform's template interpretation that destroys Bash variables.
       # https://github.com/hashicorp/terraform/issues/15933

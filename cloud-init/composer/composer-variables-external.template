@@ -7,5 +7,7 @@ COMPOSER_COMMIT=${composer_commit}
 OSBUILD_CA_CERT=${osbuild_ca_cert}
 COMPOSER_CERT=${composer_cert}
 COMPOSER_SSL_KEYS_ARN=${composer_ssl_keys_arn}
+# External deployment can directly access the secrets manager
+SECRETS_MANAGER_ENDPOINT_URL=https://secretsmanager.us-east-1.amazonaws.com/
 
 ${setup_script}
