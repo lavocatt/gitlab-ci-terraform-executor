@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 source /tmp/cloud_init_vars
 
 # Deploy the osbuild CA certificate.

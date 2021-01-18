@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 EBS_STORAGE=/dev/nvme1n1
 STATE_DIR=/var/lib/osbuild-composer
 

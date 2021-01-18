@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 source /tmp/cloud_init_vars
 
 # Adjust composer to listen on a non-standard port that is less likely to be
