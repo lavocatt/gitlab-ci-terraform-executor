@@ -4,7 +4,7 @@
 locals {
   # Assemble cloud-init user data for the instance.
   composer_internal_user_data = templatefile(
-    "cloud-init/composer/composer-variables.template",
+    "cloud-init/composer/composer-variables-internal.template",
     {
       # Add any variables here to pass to the setup script when the instance
       # boots.
