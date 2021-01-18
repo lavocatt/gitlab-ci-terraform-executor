@@ -2,6 +2,8 @@
 set -euo pipefail
 source /tmp/cloud_init_vars
 
+echo "Setting up composer services."
+
 # Adjust composer to listen on a non-standard port that is less likely to be
 # scanned and probed.
 # TODO(mhayden): We need access restrictions on the network level at some

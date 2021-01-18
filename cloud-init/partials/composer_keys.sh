@@ -2,6 +2,8 @@
 set -euo pipefail
 source /tmp/cloud_init_vars
 
+echo "Deploying keys and certificates."
+
 # Deploy the osbuild CA certificate.
 base64 -d - <<< ${OSBUILD_CA_CERT} > ${COMPOSER_DIR}/ca-crt.pem
 

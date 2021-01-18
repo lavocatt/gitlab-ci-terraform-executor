@@ -4,6 +4,8 @@ set -euo pipefail
 EBS_STORAGE=/dev/nvme1n1
 STATE_DIR=/var/lib/osbuild-composer
 
+echo "Setting up composer storage."
+
 # Set up storage on composer.
 if ! grep ${STATE_DIR} /proc/mounts; then
   # Ensure EBS is fully connected first.
