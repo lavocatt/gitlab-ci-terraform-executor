@@ -1,32 +1,72 @@
 ##############################################################################
 ## WORKER SPOT FLEETS
+data "template_file" "internal_workers_cloud_config" {
+  template = file("${path.module}/cloud-init/partials/worker.cfg")
 
-locals {
-  # Set up the cloud-init user data for worker instances.
-  worker_internal_user_data = templatefile(
-    "cloud-init/worker/worker-variables.template",
-    {
-      # Add any variables here to pass to the setup script when the instance
-      # boots.
-      osbuild_commit  = var.osbuild_commit
-      composer_commit = var.composer_commit
+  vars = {
+    # Add any variables here to pass to the setup script when the instance
+    # boots.
+    osbuild_commit  = var.osbuild_commit
+    composer_commit = var.composer_commit
 
-      # Change these to worker certs later.
-      osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
+    # Change these to worker certs later.
+    osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
-      # TODO(mhayden): Remove the address below once DNS is working.
-      composer_host    = var.composer_host_internal
-      composer_address = aws_instance.composer_internal.private_ip
+    # TODO(mhayden): Remove the address below once DNS is working.
+    composer_host    = var.composer_host_internal
+    composer_address = aws_instance.composer_internal.private_ip
 
-      # Provide the ARN to the secret that contains keys/certificates
-      worker_ssl_keys_arn = data.aws_secretsmanager_secret.internal_worker_keys.arn
+    # Provide the ARN to the secret that contains keys/certificates
+    worker_ssl_keys_arn = data.aws_secretsmanager_secret.internal_worker_keys.arn
 
-      # 💣 Split off most of the setup script to avoid shenanigans with
-      # Terraform's template interpretation that destroys Bash variables.
-      # https://github.com/hashicorp/terraform/issues/15933
-      setup_script = file("cloud-init/worker/worker-setup.sh")
-    }
-  )
+    # Provide the ARN to the secret that contains keys/certificates
+    subscription_manager_command = data.aws_secretsmanager_secret.subscription_manager_command.arn
+
+    # TODO: pick dns name from the right availability zone
+    secrets_manager_endpoint_domain = aws_vpc_endpoint.internal_vpc_secretsmanager.dns_entry[0]["dns_name"]
+
+    # Set the hostname of the instance.
+    system_hostname = "${local.workspace_name}-internal-workers.aws.composer.osbuild.org"
+  }
+}
+
+# Render a multi-part cloud-init config making use of the part
+# above, and other source files
+data "template_cloudinit_config" "internal_workers_cloud_init" {
+  gzip          = true
+  base64_encode = true
+
+  # Main cloud-config configuration file.
+  part {
+    filename     = "init.cfg"
+    content_type = "text/cloud-config"
+    content      = data.template_file.internal_workers_cloud_config.rendered
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/set_hostname.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/subscription_manager.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/worker_keys.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/worker_hosts.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/worker_service.sh")
+  }
 }
 
 # Create a launch template that specifies almost everything about our workers.
@@ -43,7 +83,7 @@ resource "aws_launch_template" "worker_internal_x86" {
   }
 
   # Assemble the cloud-init userdata file.
-  user_data = base64encode(local.worker_internal_user_data)
+  user_data = data.template_cloudinit_config.internal_workers_cloud_init.rendered
 
   # Get the security group for the instances.
   vpc_security_group_ids = [
