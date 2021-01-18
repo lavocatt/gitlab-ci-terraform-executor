@@ -22,10 +22,9 @@ resource "aws_vpc_endpoint" "external_vpc_s3" {
 # CloudWatch Logs endpoint enables us to access CloudWatch Logs from
 # the internal network and to avoid bandwidth charges.
 resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
-  vpc_id              = data.aws_vpc.internal_vpc.id
-  service_name        = "com.amazonaws.us-east-1.logs"
-  vpc_endpoint_type   = "Interface"
-  private_dns_enabled = true
+  vpc_id            = data.aws_vpc.internal_vpc.id
+  service_name      = "com.amazonaws.us-east-1.logs"
+  vpc_endpoint_type = "Interface"
 
   security_group_ids = [
     aws_security_group.internal_allow_egress.id,
@@ -57,10 +56,9 @@ resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
 
 # Endpoint to reach AWS Secrets Manager.
 resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
-  vpc_id              = data.aws_vpc.internal_vpc.id
-  service_name        = "com.amazonaws.us-east-1.secretsmanager"
-  vpc_endpoint_type   = "Interface"
-  private_dns_enabled = true
+  vpc_id            = data.aws_vpc.internal_vpc.id
+  service_name      = "com.amazonaws.us-east-1.secretsmanager"
+  vpc_endpoint_type = "Interface"
 
   security_group_ids = [
     aws_security_group.internal_allow_egress.id,
