@@ -57,7 +57,8 @@ data "aws_iam_policy_document" "external_worker_read_keys" {
     ]
 
     resources = [
-      data.aws_secretsmanager_secret.external_worker_keys.arn
+      data.aws_secretsmanager_secret.external_worker_keys.arn,
+      data.aws_secretsmanager_secret.subscription_manager_command.arn
     ]
   }
 }
@@ -74,7 +75,8 @@ data "aws_iam_policy_document" "external_composer_read_keys" {
     ]
 
     resources = [
-      data.aws_secretsmanager_secret.external_composer_keys.arn
+      data.aws_secretsmanager_secret.external_composer_keys.arn,
+      data.aws_secretsmanager_secret.subscription_manager_command.arn
     ]
   }
 }

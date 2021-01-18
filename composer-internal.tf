@@ -1,30 +1,68 @@
 ##############################################################################
 ## INTERNAL COMPOSER DEPLOYMENT
 
-locals {
-  # Assemble cloud-init user data for the instance.
-  composer_internal_user_data = templatefile(
-    "cloud-init/composer/composer-variables-internal.template",
-    {
-      # Add any variables here to pass to the setup script when the instance
-      # boots.
-      osbuild_commit  = var.osbuild_commit
-      composer_commit = var.composer_commit
-      osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
-      composer_cert   = filebase64("${path.module}/cloud-init/composer/composer.cert.pem")
+data "template_file" "internal_composer_cloud_config" {
+  template = file("${path.module}/cloud-init/partials/composer.cfg")
 
-      # Provide the ARN to the secret that contains keys/certificates
-      composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
+  vars = {
+    # Add any variables here to pass to the setup script when the instance
+    # boots.
+    osbuild_commit  = var.osbuild_commit
+    composer_commit = var.composer_commit
+    osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
+    composer_cert   = filebase64("${path.module}/cloud-init/composer/composer.cert.pem")
 
-      # TODO: pick dns name from the right availability zone
-      secrets_manager_endpoint_domain = aws_vpc_endpoint.internal_vpc_secretsmanager.dns_entry[0]["dns_name"]
+    # Provide the ARN to the secret that contains keys/certificates
+    composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
 
-      # 💣 Split off most of the setup script to avoid shenanigans with
-      # Terraform's template interpretation that destroys Bash variables.
-      # https://github.com/hashicorp/terraform/issues/15933
-      setup_script = file("cloud-init/composer/composer-setup.sh")
-    }
-  )
+    # Provide the ARN to the secret that contains keys/certificates
+    subscription_manager_command = data.aws_secretsmanager_secret.subscription_manager_command.arn
+
+    # TODO: pick dns name from the right availability zone
+    secrets_manager_endpoint_domain = aws_vpc_endpoint.internal_vpc_secretsmanager.dns_entry[0]["dns_name"]
+
+    # Set the hostname of the instance.
+    system_hostname = "${local.workspace_name}-internal-composer.aws.composer.osbuild.org"
+  }
+}
+
+# Render a multi-part cloud-init config making use of the part
+# above, and other source files
+data "template_cloudinit_config" "internal_composer_cloud_init" {
+  gzip          = true
+  base64_encode = true
+
+  # Main cloud-config configuration file.
+  part {
+    filename     = "init.cfg"
+    content_type = "text/cloud-config"
+    content      = data.template_file.internal_composer_cloud_config.rendered
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/set_hostname.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/subscription_manager.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/composer_keys.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/composer_storage.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/composer_service.sh")
+  }
 }
 
 # Create a network interface with security groups and a static IP address.
@@ -83,7 +121,7 @@ resource "aws_instance" "composer_internal" {
   iam_instance_profile = aws_iam_instance_profile.internal_composer.name
 
   # Pass the user data that we generated.
-  user_data = base64encode(local.composer_internal_user_data)
+  user_data_base64 = data.template_cloudinit_config.internal_composer_cloud_init.rendered
 
   # Attach the network interface with the static IP address as the primary
   # network interface.
