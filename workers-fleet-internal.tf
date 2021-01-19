@@ -26,7 +26,7 @@ data "template_file" "internal_workers_cloud_config" {
     secrets_manager_endpoint_domain = aws_vpc_endpoint.internal_vpc_secretsmanager.dns_entry[0]["dns_name"]
 
     # Set the hostname of the instance.
-    system_hostname = "${local.workspace_name}-internal-workers.aws.composer.osbuild.org"
+    system_hostname_prefix = "${local.workspace_name}-internal-worker"
   }
 }
 

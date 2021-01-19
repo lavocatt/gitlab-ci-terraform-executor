@@ -21,7 +21,7 @@ data "template_file" "external_composer_cloud_config" {
     secrets_manager_endpoint_domain = "secretsmanager.us-east-1.amazonaws.com"
 
     # Set the hostname of the instance.
-    system_hostname = "${local.workspace_name}-external-composer.aws.composer.osbuild.org"
+    system_hostname_prefix = "${local.workspace_name}-external-composer"
   }
 }
 
