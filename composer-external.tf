@@ -64,6 +64,17 @@ data "template_cloudinit_config" "external_composer_cloud_init" {
   }
 }
 
+# Set up an elastic IP address for the network interface to ensure that the
+# public IP address does not change between deployments.
+resource "aws_eip" "lb" {
+  network_interface = aws_network_interface.composer_external.id
+  vpc               = true
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "🏗 External Composer (${local.workspace_name})" },
+  )
+}
+
 # Create a network interface with security groups and a static IP address.
 # NOTE(mhayden): We must create this network interface separately from the
 # aws_instance resources so the network interface is not destroyed and
