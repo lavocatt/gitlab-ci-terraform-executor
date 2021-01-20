@@ -43,8 +43,10 @@ data "aws_iam_policy_document" "vmimport_s3" {
     ]
 
     resources = [
-      "arn:aws:s3:::imagebuilder-service-${local.workspace_name}",
-      "arn:aws:s3:::imagebuilder-service-${local.workspace_name}/*",
+      "arn:aws:s3:::imagebuilder.service.staging",
+      "arn:aws:s3:::imagebuilder.service.staging/*",
+      "arn:aws:s3:::imagebuilder.service.stable",
+      "arn:aws:s3:::imagebuilder.service.stable/*"
     ]
   }
 }
@@ -55,11 +57,14 @@ data "aws_iam_policy_document" "vmimport_ec2" {
     sid = "VMImportEC2Policy"
 
     actions = [
-      "ec2:ModifySnapshotAttribute",
       "ec2:CopySnapshot",
-      "ec2:RegisterImage",
       "ec2:Describe*",
-      "ec2:ImportSnapshot"
+      "ec2:ModifySnapshotAttribute",
+      "ec2:DeleteTags",
+      "ec2:CreateTags",
+      "ec2:RegisterImage",
+      "ec2:ImportSnapshot",
+      "ec2:ModifyImageAttribute"
     ]
 
     resources = ["*"]
