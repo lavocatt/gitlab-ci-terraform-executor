@@ -38,10 +38,9 @@ resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
   )
 }
 resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
-  vpc_id              = data.aws_vpc.external_vpc.id
-  service_name        = "com.amazonaws.us-east-1.logs"
-  vpc_endpoint_type   = "Interface"
-  private_dns_enabled = true
+  vpc_id            = data.aws_vpc.external_vpc.id
+  service_name      = "com.amazonaws.us-east-1.logs"
+  vpc_endpoint_type = "Interface"
 
   security_group_ids = [
     aws_security_group.external_vpc_endpoints.id
@@ -72,10 +71,9 @@ resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
   )
 }
 resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
-  vpc_id              = data.aws_vpc.external_vpc.id
-  service_name        = "com.amazonaws.us-east-1.secretsmanager"
-  vpc_endpoint_type   = "Interface"
-  private_dns_enabled = true
+  vpc_id            = data.aws_vpc.external_vpc.id
+  service_name      = "com.amazonaws.us-east-1.secretsmanager"
+  vpc_endpoint_type = "Interface"
 
   security_group_ids = [
     aws_security_group.external_vpc_endpoints.id
