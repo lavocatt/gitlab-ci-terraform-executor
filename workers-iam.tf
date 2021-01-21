@@ -3,13 +3,6 @@
 # NOTE(mhayden): Much of this policy comes from the AWS docs for vmimport:
 # https://docs.aws.amazon.com/vm-import/latest/userguide/vmie_prereqs.html
 
-# NOTE(mhayden): 🛑 Before making changes here, be sure you have tested them
-# first. At the moment, osbuild-composer can only use the default vmimport
-# role that is shared between staging/stable environments. If you make a
-# change to this vmimport role in staging, you will be making a change in
-# the stable deployment *at the same time*. 😬
-# Refer to: https://github.com/osbuild/osbuild-composer/issues/1170
-
 # Create vmimport trust policy.
 data "aws_iam_policy_document" "vmimport_trust" {
   statement {
@@ -73,22 +66,22 @@ data "aws_iam_policy_document" "vmimport_ec2" {
 
 # Load the vmimport S3/EC2 policies
 resource "aws_iam_policy" "vmimport_s3" {
-  name   = "vmimport_s3"
+  name   = "vmimport_s3_${local.workspace_name}"
   policy = data.aws_iam_policy_document.vmimport_s3.json
 }
 resource "aws_iam_policy" "vmimport_ec2" {
-  name   = "vmimport_ec2"
+  name   = "vmimport_ec2_${local.workspace_name}"
   policy = data.aws_iam_policy_document.vmimport_ec2.json
 }
 
 # Create the vmimport role.
 resource "aws_iam_role" "vmimport" {
-  name = "vmimport"
+  name = "vmimport_${local.workspace_name}"
 
   assume_role_policy = data.aws_iam_policy_document.vmimport_trust.json
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder vmimport role" },
+    var.imagebuilder_tags, { Name = "Image Builder vmimport role - ${local.workspace_name}" },
   )
 }
 
