@@ -54,14 +54,6 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: Prepare lambda function
-        run: |
-          #!/bin/bash
-          pushd lambda
-            zip pozorbot.zip pozorbot.py
-          popd
-          mv lambda/pozorbot.zip .
-
       - name: Terraform Init
         id: init
         run: terraform init

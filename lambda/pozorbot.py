@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# Lambda function to send telegram messages.
 import json
 import os
 import logging
