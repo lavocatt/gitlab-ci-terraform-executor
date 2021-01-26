@@ -52,7 +52,7 @@ resource "null_resource" "pip" {
   }
 
   provisioner "local-exec" {
-    command = "pip install -r ${path.root}/requirements.txt -t lambda/lib"
+    command = "pip3 install -r ${path.root}/requirements.txt -t lambda/lib"
   }
 }
 
