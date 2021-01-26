@@ -11,6 +11,9 @@ terraform {
     aws = {
       source = "hashicorp/aws"
     }
+    null = {
+      source = "hashicorp/null"
+    }
     random = {
       source = "hashicorp/random"
     }
