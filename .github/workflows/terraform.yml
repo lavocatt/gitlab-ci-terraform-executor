@@ -15,14 +15,6 @@ jobs:
       ACTIONS_VARS: github_actions.auto.tfvars
     steps:
 
-      - name: Install requirements
-        run: |
-          #!/bin/bash
-          curl --retry 10 -Lso /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-          sudo python3 /tmp/get-pip.py
-          sudo ln -sf /usr/local/bin/pip /usr/bin/pip
-          /usr/bin/pip --version
-
       - name: Set Terraform workspace
         run: |
           #!/bin/bash
@@ -43,12 +35,6 @@ jobs:
           fi
 
           echo "TF_WORKSPACE=${TF_WORKSPACE}" >> $GITHUB_ENV
-
-      - name: Check Terraform Workspace
-        run: |
-          #!/bin/bash
-          set -euxo pipefail
-          echo $TF_WORKSPACE
 
       - name: Checkout
         uses: actions/checkout@v2

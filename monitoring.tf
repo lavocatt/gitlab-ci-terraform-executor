@@ -44,24 +44,10 @@ resource "aws_iam_role" "pozorbot_lambda_role" {
   )
 }
 
-# Prepare Lambda package (https://github.com/hashicorp/terraform/issues/8344#issuecomment-345807204)
-resource "null_resource" "pip" {
-  triggers = {
-    main         = base64sha256(file("lambda/pozorbot.py"))
-    requirements = base64sha256(file("lambda/requirements.txt"))
-  }
-
-  provisioner "local-exec" {
-    command = "/usr/bin/pip install -r ${path.root}/lambda/requirements.txt -t lambda/lib"
-  }
-}
-
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "${path.root}/lambda/"
   output_path = "${path.root}/pozorbot.zip"
-
-  depends_on = [null_resource.pip]
 }
 
 # Pozorbot lambda function to send alerts to telegram.
