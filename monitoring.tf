@@ -12,7 +12,7 @@ resource "aws_sqs_queue" "image_builder_pozorbot" {
   # or one of these symbols: _ . : / = + - @
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "Pozorbot Message Queue (${local.workspace_name})" }
+    { Name = "Pozorbot Message Queue - ${local.workspace_name}" }
   )
 }
 
@@ -50,7 +50,8 @@ resource "aws_lambda_function" "pozorbot_lambda" {
 
   environment {
     variables = {
-      foo = "bar"
+      TOKEN = "token_value",
+      USER_ID = "user_id_value"
     }
   }
 
