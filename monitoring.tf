@@ -3,7 +3,7 @@
 
 # AWS SNS queue to hold messages sent by monitoring.
 resource "aws_sqs_queue" "image_builder_pozorbot" {
-  name                        = "image-builder-pozorbot-${local.workspace_name}"
+  name                        = "image-builder-pozorbot-${local.workspace_name}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
 
@@ -16,17 +16,14 @@ resource "aws_sqs_queue" "image_builder_pozorbot" {
 # Policy for Pozorbot lambda role.
 data "aws_iam_policy_document" "pozorbot_lambda_policy" {
   statement {
-    sid = "AllowEC2AssumeRole"
-
     actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "sts:AssumeRole"
     ]
 
-    resources = [
-      "arn:aws:logs:*:*:*"
-    ]
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
 
     effect = "Allow"
   }
