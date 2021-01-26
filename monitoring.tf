@@ -40,7 +40,7 @@ resource "aws_iam_role" "pozorbot_lambda_role" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "🚨 Pozorbot lambda role (${local.workspace_name})" }
+    { Name = "Pozorbot lambda role - ${local.workspace_name}" }
   )
 }
 
@@ -52,7 +52,7 @@ resource "null_resource" "pip" {
   }
 
   provisioner "local-exec" {
-    command = "pip3 install -r ${path.root}/requirements.txt -t lambda/lib"
+    command = "pip3 install -r ${path.root}/lambda/requirements.txt -t lambda/lib"
   }
 }
 
@@ -82,7 +82,7 @@ resource "aws_lambda_function" "pozorbot_lambda" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "🚨 Pozorbot lambda (${local.workspace_name})" }
+    { Name = "Pozorbot lambda ${local.workspace_name}" }
   )
 }
 
