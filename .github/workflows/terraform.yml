@@ -20,6 +20,7 @@ jobs:
           #!/bin/bash
           curl --retry 10 -Lso /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
           sudo python3 /tmp/get-pip.py
+          sudo ln -sf /usr/local/bin/pip /usr/bin/pip
 
       - name: Set Terraform workspace
         run: |
