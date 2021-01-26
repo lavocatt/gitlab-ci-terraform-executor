@@ -7,9 +7,12 @@ resource "aws_sqs_queue" "image_builder_pozorbot" {
   fifo_queue                  = true
   content_based_deduplication = true
 
+  # SQS has tight restrictions on tags.
+  # Tag values may only contain unicode letters, digits, whitespace,
+  # or one of these symbols: _ . : / = + - @
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "🚨 Monitoring message queue (${local.workspace_name})" }
+    { Name = "Pozorbot Message Queue (${local.workspace_name})" }
   )
 }
 
