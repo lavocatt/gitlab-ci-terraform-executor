@@ -152,3 +152,14 @@ resource "aws_iam_role_policy_attachment" "external_cloudwatch_worker" {
   role       = aws_iam_role.external_composer.name
   policy_arn = aws_iam_policy.external_cloudwatch_logging.arn
 }
+
+# Attach the monitoring client policy.
+resource "aws_iam_role_policy_attachment" "external_pozorbot_composer" {
+  role       = aws_iam_role.external_worker.name
+  policy_arn = aws_iam_policy.pozorbot_client_sqs.arn
+}
+
+resource "aws_iam_role_policy_attachment" "external_pozorbot_worker" {
+  role       = aws_iam_role.external_composer.name
+  policy_arn = aws_iam_policy.pozorbot_client_sqs.arn
+}

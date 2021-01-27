@@ -163,3 +163,14 @@ resource "aws_iam_role_policy_attachment" "internal_cloudwatch_worker" {
   role       = aws_iam_role.internal_composer.name
   policy_arn = aws_iam_policy.internal_cloudwatch_logging.arn
 }
+
+# Attach the monitoring client policy.
+resource "aws_iam_role_policy_attachment" "internal_pozorbot_composer" {
+  role       = aws_iam_role.internal_worker.name
+  policy_arn = aws_iam_policy.pozorbot_client_sqs.arn
+}
+
+resource "aws_iam_role_policy_attachment" "internal_pozorbot_worker" {
+  role       = aws_iam_role.internal_composer.name
+  policy_arn = aws_iam_policy.pozorbot_client_sqs.arn
+}

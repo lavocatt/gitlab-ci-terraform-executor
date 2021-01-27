@@ -178,3 +178,28 @@ resource "aws_lambda_event_source_mapping" "pozorbot_sqs" {
   event_source_arn = aws_sqs_queue.image_builder_pozorbot.arn
   function_name    = aws_lambda_function.pozorbot_lambda.arn
 }
+
+##############################################################################
+## MONITORING CLIENTS
+
+# Create policy to allow clients to send monitoring messages into SQS
+data "aws_iam_policy_document" "pozorbot_client_sqs" {
+  statement {
+    sid = "PozorbotClientSQS"
+
+    actions = [
+      "sqs:GetQueueAttributes",
+      "sqs:SendMessage"
+    ]
+
+    resources = [
+      aws_sqs_queue.image_builder_pozorbot.arn
+    ]
+  }
+}
+
+# Load the lambda secrets policy into IAM.
+resource "aws_iam_policy" "pozorbot_client_sqs" {
+  name   = "pozorbot_client_sqs_${local.workspace_name}"
+  policy = data.aws_iam_policy_document.pozorbot_client_sqs.json
+}
