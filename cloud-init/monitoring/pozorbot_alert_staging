@@ -1,0 +1,9 @@
+#!/bin/bash
+# Send alerts to pozorbot.
+# Monit's environment variables are documented here:
+# https://mmonit.com/monit/documentation/monit.html#ENVIRONMENT
+
+QUEUE_URL=https://queue.amazonaws.com/933752197999/image-builder-pozorbot-staging
+MESSAGE="🚨 ${MONIT_EVENT} for ${MONIT_SERVICE} on ${MONIT_HOST} at ${MONIT_DATE}"
+RESULT=$(aws sqs send-message --queue-url $QUEUE_URL --message-body "${MESSAGE}")
+echo $RESULT
