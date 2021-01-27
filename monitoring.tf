@@ -14,6 +14,40 @@ resource "aws_sqs_queue" "image_builder_pozorbot" {
   )
 }
 
+# Create a cloudwatch log group to receive logs from the lambda function.
+resource "aws_cloudwatch_log_group" "pozorbot_cloudwatch_logs" {
+  name = "pozorbot_logs_${local.workspace_name}"
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "Pozorbot ${local.workspace_name}" },
+  )
+}
+
+# Create policy to allow the lambda function to log to cloudwatch.
+data "aws_iam_policy_document" "pozorbot_lambda_cloudwatch" {
+  statement {
+    sid = "PozorbotCloudwatch"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+
+    # Asterisk on the end allows the lambda to write to various log streams
+    # inside this log group.
+    resources = [
+      "${aws_cloudwatch_log_group.pozorbot_cloudwatch_logs.arn}:*"
+    ]
+  }
+}
+
+# Load the lambda cloudwatch policy into IAM.
+resource "aws_iam_policy" "pozorbot_lambda_cloudwatch" {
+  name   = "pozorbot_lambda_cloudwatch_${local.workspace_name}"
+  policy = data.aws_iam_policy_document.pozorbot_lambda_cloudwatch.json
+}
+
 # Create policy to allow the lambda function to watch SQS.
 data "aws_iam_policy_document" "pozorbot_lambda_sqs" {
   statement {
@@ -63,6 +97,12 @@ resource "aws_iam_role" "pozorbot_lambda_role" {
     var.imagebuilder_tags,
     { Name = "Pozorbot lambda role - ${local.workspace_name}" }
   )
+}
+
+# Attach the lambda cloudwatch policy to the pozorbot lambda role.
+resource "aws_iam_role_policy_attachment" "pozorbot_lambda_cloudwatch" {
+  role       = aws_iam_role.pozorbot_lambda_role.name
+  policy_arn = aws_iam_policy.pozorbot_lambda_cloudwatch.arn
 }
 
 # Attach the lambda SQS policy to the pozorbot lambda role.
