@@ -32,14 +32,20 @@ bot_token = get_bot_token()
 CHAT_ID = os.environ['CHAT_ID']
 
 # Assemble telegram URL.
-TELEGRAM_URL = "https://api.telegram.org/bot{bot_token}/sendMessage"
+TELEGRAM_URL = f"https://api.telegram.org/bot{bot_token}/sendMessage"
 
 
 def send_message(payload):
     # Send a message to telegram.
     http = urllib3.PoolManager()
     headers = {"Content-Type": "application/json"}
-    http.request('POST', TELEGRAM_URL, fields=payload, headers=headers)
+    http.request(
+        'POST',
+        TELEGRAM_URL,
+        body=json.dumps(payload),
+        headers=headers,
+        retries=3
+    )
 
 
 def lambda_handler(event, context):
@@ -51,9 +57,8 @@ def lambda_handler(event, context):
     # Loop over the messages and send them to telegram.
     for record in event['Records']:
         try:
-            message = record["body"]
             payload = {
-                "text": message.encode("utf8"),
+                "text": record["body"],
                 "chat_id": CHAT_ID
             }
             send_message(payload)
