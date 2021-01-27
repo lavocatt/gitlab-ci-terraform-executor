@@ -132,7 +132,7 @@ resource "aws_lambda_function" "pozorbot_lambda" {
   environment {
     variables = {
       TOKEN   = "token_value",
-      USER_ID = "user_id_value"
+      CHAT_ID = "-550500291"
     }
   }
 
