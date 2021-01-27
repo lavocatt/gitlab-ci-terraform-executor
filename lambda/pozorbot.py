@@ -4,7 +4,7 @@ import boto3
 import json
 import os
 import logging
-import requests
+import urllib3
 
 # Initializing a logger and settign it to INFO.
 logger = logging.getLogger()
@@ -35,6 +35,13 @@ CHAT_ID = os.environ['CHAT_ID']
 TELEGRAM_URL = "https://api.telegram.org/bot{bot_token}/sendMessage"
 
 
+def send_message(payload):
+    # Send a message to telegram.
+    http = urllib3.PoolManager()
+    headers = {"Content-Type": "application/json"}
+    http.request('POST', TELEGRAM_URL, fields=payload, headers=headers)
+
+
 def lambda_handler(event, context):
     # Handle an incoming SQS message in lambda.
 
@@ -49,6 +56,7 @@ def lambda_handler(event, context):
                 "text": message.encode("utf8"),
                 "chat_id": CHAT_ID
             }
-            requests.post(TELEGRAM_URL, payload)
+            send_message(payload)
+
         except Exception as e:
             raise e
