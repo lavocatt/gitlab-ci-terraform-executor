@@ -19,7 +19,7 @@ resource "aws_sqs_queue" "image_builder_pozorbot" {
 # Create policy to allow the lambda function to watch SQS.
 data "aws_iam_policy_document" "pozorbot_lambda_sqs" {
   statement {
-    sid = "WorkerReadSecrets"
+    sid = "PozorbotSQS"
 
     actions = [
       "sqs:DeleteMessage",
