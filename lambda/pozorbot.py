@@ -17,7 +17,7 @@ def get_bot_token():
     session = boto3.session.Session()
     client = session.client(
         service_name='secretsmanager',
-        region_name=os.environ['AWS_REGION']
+        region_name=os.environ['SECRET_REGION']
     )
     secret_response = client.get_secret_value(
         SecretId=os.environ['SECRET_NAME']
