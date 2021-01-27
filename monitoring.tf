@@ -3,9 +3,7 @@
 
 # AWS SNS queue to hold messages sent by monitoring.
 resource "aws_sqs_queue" "image_builder_pozorbot" {
-  name                        = "image-builder-pozorbot-${local.workspace_name}.fifo"
-  fifo_queue                  = true
-  content_based_deduplication = true
+  name = "image-builder-pozorbot-${local.workspace_name}"
 
   # SQS has tight restrictions on tags.
   # Tag values may only contain unicode letters, digits, whitespace,
