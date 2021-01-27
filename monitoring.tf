@@ -15,8 +15,10 @@ resource "aws_sqs_queue" "image_builder_pozorbot" {
 }
 
 # Create a cloudwatch log group to receive logs from the lambda function.
+# NOTE(mhayden): AWS chooses the cloudwatch log group name automatically, so
+# the path below **must be** /aws/lambda/{function_name}.
 resource "aws_cloudwatch_log_group" "pozorbot_cloudwatch_logs" {
-  name = "pozorbot_logs_${local.workspace_name}"
+  name = "/aws/lambda/pozorbot_${local.workspace_name}"
 
   tags = merge(
     var.imagebuilder_tags, { Name = "Pozorbot ${local.workspace_name}" },
