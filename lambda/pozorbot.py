@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # Lambda function to send telegram messages.
+import boto3
+import base64
 import json
 import os
 import logging
@@ -9,10 +11,29 @@ from botocore.vendored import requests
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# Get data from environment variables.
-TOKEN = os.environ['TOKEN']
+
+def get_bot_token():
+    # Retrieve bot token secret from AWS Secrets Manager.
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=os.environ['AWS_REGION']
+    )
+    secret_response = client.get_secret_value(
+        SecretId=os.environ['SECRET_NAME']
+    )
+    secrets = json.loads(secret_response)
+    return secrets['telegram_bot_token']
+
+
+# Get the token from Secrets Manager
+bot_token = get_bot_token()
+
+# Get chat ID from environment variables.
 CHAT_ID = os.environ['CHAT_ID']
-TELEGRAM_URL = "https://api.telegram.org/bot{}/sendMessage".format(TOKEN)
+
+# Assemble telegram URL.
+TELEGRAM_URL = "https://api.telegram.org/bot{bot_token}/sendMessage"
 
 
 def lambda_handler(event, context):

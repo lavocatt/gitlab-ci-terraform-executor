@@ -2,6 +2,9 @@
 
 ##############################################################################
 ## GENERAL
+# Get our current AWS region.
+data "aws_region" "current" {}
+
 # Get the availability zones in our region.
 data "aws_availability_zones" "available" {
   state = "available"
@@ -25,6 +28,9 @@ data "aws_secretsmanager_secret" "external_composer_keys" {
 }
 data "aws_secretsmanager_secret" "subscription_manager_command" {
   name = "subscription-manager-command"
+}
+data "aws_secretsmanager_secret" "pozorbot" {
+  name = "pozorbot"
 }
 
 ##############################################################################

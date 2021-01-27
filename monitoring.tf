@@ -73,6 +73,30 @@ resource "aws_iam_policy" "pozorbot_lambda_sqs" {
   policy = data.aws_iam_policy_document.pozorbot_lambda_sqs.json
 }
 
+# Create policy to allow the lambda to read secrets from secrets manager.
+data "aws_iam_policy_document" "pozorbot_read_secrets" {
+  statement {
+    sid = "WorkerReadSecrets"
+
+    actions = [
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:ListSecretVersionIds"
+    ]
+
+    resources = [
+      data.aws_secretsmanager_secret.pozorbot.arn
+    ]
+  }
+}
+
+# Load the lambda secrets policy into IAM.
+resource "aws_iam_policy" "pozorbot_read_secrets" {
+  name   = "pozorbot_read_secrets_${local.workspace_name}"
+  policy = data.aws_iam_policy_document.pozorbot_read_secrets.json
+}
+
 # Role policy for the lambda function.
 data "aws_iam_policy_document" "pozorbot_lambda_policy" {
   statement {
@@ -113,6 +137,12 @@ resource "aws_iam_role_policy_attachment" "pozorbot_lambda_sqs" {
   policy_arn = aws_iam_policy.pozorbot_lambda_sqs.arn
 }
 
+# Attach the lambda secrets policy to the pozorbot lambda role.
+resource "aws_iam_role_policy_attachment" "pozorbot_lambda_secrets" {
+  role       = aws_iam_role.pozorbot_lambda_role.name
+  policy_arn = aws_iam_policy.pozorbot_read_secrets.arn
+}
+
 # Package the python script into a zip file.
 data "archive_file" "lambda_zip" {
   type        = "zip"
@@ -131,8 +161,9 @@ resource "aws_lambda_function" "pozorbot_lambda" {
 
   environment {
     variables = {
-      TOKEN   = "token_value",
-      CHAT_ID = "-550500291"
+      AWS_REGION  = data.aws_region.current.name,
+      CHAT_ID     = "-550500291",
+      SECRET_NAME = "pozorbot"
     }
   }
 
