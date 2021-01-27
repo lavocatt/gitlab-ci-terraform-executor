@@ -157,7 +157,7 @@ resource "aws_lambda_function" "pozorbot_lambda" {
   function_name    = "pozorbot_${local.workspace_name}"
   role             = aws_iam_role.pozorbot_lambda_role.arn
   handler          = "pozorbot.lambda_handler"
-  runtime          = "python3.6"
+  runtime          = "python3.8"
 
   environment {
     variables = {
