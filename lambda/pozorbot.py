@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # Lambda function to send telegram messages.
 import boto3
-import base64
 import json
 import os
 import logging
-from botocore.vendored import requests
+import requests
 
 # Initializing a logger and settign it to INFO.
 logger = logging.getLogger()
