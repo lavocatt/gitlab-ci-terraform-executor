@@ -22,7 +22,7 @@ def get_bot_token():
     secret_response = client.get_secret_value(
         SecretId=os.environ['SECRET_NAME']
     )
-    secrets = json.loads(secret_response)
+    secrets = json.loads(secret_response['SecretString'])
     return secrets['telegram_bot_token']
 
 
