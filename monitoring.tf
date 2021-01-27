@@ -16,7 +16,30 @@ resource "aws_sqs_queue" "image_builder_pozorbot" {
   )
 }
 
-# Policy for Pozorbot lambda role.
+# Create policy to allow the lambda function to watch SQS.
+data "aws_iam_policy_document" "pozorbot_lambda_sqs" {
+  statement {
+    sid = "WorkerReadSecrets"
+
+    actions = [
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:ReceiveMessage"
+    ]
+
+    resources = [
+      aws_sqs_queue.image_builder_pozorbot.arn
+    ]
+  }
+}
+
+# Load the lambda SQS policy into IAM.
+resource "aws_iam_policy" "pozorbot_lambda_sqs" {
+  name   = "pozorbot_lambda_sqs_${local.workspace_name}"
+  policy = data.aws_iam_policy_document.pozorbot_lambda_sqs.json
+}
+
+# Role policy for the lambda function.
 data "aws_iam_policy_document" "pozorbot_lambda_policy" {
   statement {
     actions = [
@@ -44,6 +67,13 @@ resource "aws_iam_role" "pozorbot_lambda_role" {
   )
 }
 
+# Attach the lambda SQS policy to the pozorbot lambda role.
+resource "aws_iam_role_policy_attachment" "pozorbot_lambda_sqs" {
+  role       = aws_iam_role.pozorbot_lambda_role.name
+  policy_arn = aws_iam_policy.pozorbot_lambda_sqs.arn
+}
+
+# Package the python script into a zip file.
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "${path.root}/lambda/"
