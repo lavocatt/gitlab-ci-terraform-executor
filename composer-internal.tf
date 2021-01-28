@@ -10,7 +10,6 @@ data "template_file" "internal_composer_cloud_config" {
     osbuild_commit  = var.osbuild_commit
     composer_commit = var.composer_commit
     osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
-    composer_cert   = filebase64("${path.module}/cloud-init/composer/composer.cert.pem")
 
     # Provide the ARN to the secret that contains keys/certificates
     composer_ssl_keys_arn = data.aws_secretsmanager_secret.internal_composer_keys.arn
