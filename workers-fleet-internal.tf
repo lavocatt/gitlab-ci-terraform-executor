@@ -13,7 +13,7 @@ data "template_file" "internal_workers_cloud_config" {
     osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
     # TODO(mhayden): Remove the address below once DNS is working.
-    composer_host    = var.composer_host_internal
+    composer_host    = local.workspace_name == "staging" ? var.composer_host_internal_staging : var.composer_host_internal
     composer_address = aws_instance.composer_internal.private_ip
 
     # Provide the ARN to the secret that contains keys/certificates

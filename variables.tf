@@ -40,9 +40,19 @@ variable "composer_host_internal" {
   description = "Hostname of the composer instance on the internal network."
 }
 
+variable "composer_host_internal_staging" {
+  type        = string
+  description = "Hostname of the staging composer instance on the internal network."
+}
+
 variable "composer_host_external" {
   type        = string
   description = "Hostname of the composer instance on the internal network."
+}
+
+variable "composer_host_external_staging" {
+  type        = string
+  description = "Hostname of the staging composer instance on the internal network."
 }
 
 variable "TFC_WORKSPACE_NAME" {
