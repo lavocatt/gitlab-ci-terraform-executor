@@ -12,7 +12,9 @@ data "template_file" "external_workers_cloud_config" {
     # Change these to worker certs later.
     osbuild_ca_cert = filebase64("${path.module}/files/osbuild-ca-cert.pem")
 
-    composer_host = local.workspace_name == "staging" ? var.composer_host_external_staging : var.composer_host_external
+    # TODO(mhayden): Remove the address below once DNS is working.
+    composer_host    = local.workspace_name == "staging" ? var.composer_host_external_staging : var.composer_host_external
+    composer_address = aws_instance.composer_external.private_ip
 
     # Provide the ARN to the secret that contains keys/certificates
     worker_ssl_keys_arn = data.aws_secretsmanager_secret.internal_worker_keys.arn
@@ -54,6 +56,11 @@ data "template_cloudinit_config" "external_workers_cloud_init" {
   part {
     content_type = "text/x-shellscript"
     content      = file("${path.module}/cloud-init/partials/worker_keys.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/worker_hosts.sh")
   }
 
   part {
