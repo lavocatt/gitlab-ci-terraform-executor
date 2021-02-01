@@ -61,11 +61,6 @@ data "template_cloudinit_config" "internal_composer_cloud_init" {
 
   part {
     content_type = "text/x-shellscript"
-    content      = file("${path.module}/cloud-init/partials/logging.sh")
-  }
-
-  part {
-    content_type = "text/x-shellscript"
     content      = file("${path.module}/cloud-init/partials/composer_service.sh")
   }
 }
