@@ -23,6 +23,9 @@ data "template_file" "internal_composer_cloud_config" {
 
     # Set the hostname of the instance.
     system_hostname_prefix = "${local.workspace_name}-internal-composer"
+
+    # Set the CloudWatch log group.
+    cloudwatch_log_group = "${local.workspace_name}_internal"
   }
 }
 

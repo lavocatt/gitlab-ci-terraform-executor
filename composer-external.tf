@@ -22,6 +22,9 @@ data "template_file" "external_composer_cloud_config" {
 
     # Set the hostname of the instance.
     system_hostname_prefix = "${local.workspace_name}-external-composer"
+
+    # Set the CloudWatch log group.
+    cloudwatch_log_group = "${local.workspace_name}_external"
   }
 }
 

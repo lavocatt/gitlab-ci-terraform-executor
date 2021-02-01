@@ -27,6 +27,9 @@ data "template_file" "internal_workers_cloud_config" {
 
     # Set the hostname of the instance.
     system_hostname_prefix = "${local.workspace_name}-internal-worker"
+
+    # Set the CloudWatch log group.
+    cloudwatch_log_group = "${local.workspace_name}_internal"
   }
 }
 
