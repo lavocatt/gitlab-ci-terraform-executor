@@ -83,7 +83,7 @@ resource "aws_launch_template" "worker_external_x86" {
 
   # Allow the instance to assume the external_worker IAM role.
   iam_instance_profile {
-    name = aws_iam_instance_profile.internal_worker.name
+    name = aws_iam_instance_profile.external_worker.name
   }
 
   # Assemble the cloud-init userdata file.
