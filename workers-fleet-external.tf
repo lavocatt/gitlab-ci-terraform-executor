@@ -17,7 +17,7 @@ data "template_file" "external_workers_cloud_config" {
     composer_address = aws_instance.composer_external.private_ip
 
     # Provide the ARN to the secret that contains keys/certificates
-    worker_ssl_keys_arn = data.aws_secretsmanager_secret.internal_worker_keys.arn
+    worker_ssl_keys_arn = data.aws_secretsmanager_secret.external_worker_keys.arn
 
     # Provide the ARN to the secret that contains keys/certificates
     subscription_manager_command = data.aws_secretsmanager_secret.subscription_manager_command.arn
