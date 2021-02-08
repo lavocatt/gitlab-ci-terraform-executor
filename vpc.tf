@@ -20,7 +20,7 @@ resource "aws_vpc_endpoint" "external_vpc_s3" {
 }
 
 # CloudWatch Logs endpoint enables us to access CloudWatch Logs from
-# the internal network and to avoid bandwidth charges.
+# the internal network.
 resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
   vpc_id            = data.aws_vpc.internal_vpc.id
   service_name      = "com.amazonaws.us-east-1.logs"
@@ -35,21 +35,6 @@ resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
 
   tags = merge(
     var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (internal)" },
-  )
-}
-resource "aws_vpc_endpoint" "external_vpc_cloudwatch_logs" {
-  vpc_id            = data.aws_vpc.external_vpc.id
-  service_name      = "com.amazonaws.us-east-1.logs"
-  vpc_endpoint_type = "Interface"
-
-  security_group_ids = [
-    aws_security_group.external_vpc_endpoints.id
-  ]
-
-  subnet_ids = data.aws_subnet_ids.external_subnets.ids
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (external)" },
   )
 }
 
@@ -70,53 +55,9 @@ resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
     var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (internal)" },
   )
 }
-resource "aws_vpc_endpoint" "external_vpc_secretsmanager" {
-  vpc_id            = data.aws_vpc.external_vpc.id
-  service_name      = "com.amazonaws.us-east-1.secretsmanager"
-  vpc_endpoint_type = "Interface"
-
-  security_group_ids = [
-    aws_security_group.external_vpc_endpoints.id
-  ]
-
-  subnet_ids = data.aws_subnet_ids.external_subnets.ids
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (external)" },
-  )
-}
 
 ##############################################################################
 ## PUBLIC SECURITY GROUPS
-# Set up a security group for VPC endpoints which require an interface.
-resource "aws_security_group" "external_vpc_endpoints" {
-  name        = "external_vpc_endpoints_${local.workspace_name}"
-  description = "Allow ingress traffic"
-  vpc_id      = data.aws_vpc.external_vpc.id
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "external_vpc_endpoints_${local.workspace_name}" },
-  )
-}
-
 # Security group for composer instances.
 resource "aws_security_group" "external_composer" {
   name        = "external_composer_${local.workspace_name}"
