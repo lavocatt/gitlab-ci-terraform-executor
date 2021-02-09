@@ -143,9 +143,9 @@ resource "aws_iam_role_policy_attachment" "schutzbot_receiver_lambda_secrets" {
 }
 
 resource "null_resource" "schutzbot_receiver_prepare_lambda" {
-  triggers = {
-    schutzbot_receiver_lambda = sha1(file("${path.module}/lambda/schutzbot_receiver/schutzbot_receiver.py"))
-  }
+  # triggers = {
+  #   schutzbot_receiver_lambda = sha1(file("${path.module}/lambda/schutzbot_receiver/schutzbot_receiver.py"))
+  # }
 
   provisioner "local-exec" {
     command = "/usr/bin/pip3 install --system --target lambda/schutzbot_receiver/ boto3 flask"
@@ -202,7 +202,7 @@ resource "aws_api_gateway_resource" "schutzbot_receiver_resource" {
 resource "aws_api_gateway_method" "schutzbot_receiver_method" {
   rest_api_id   = aws_api_gateway_rest_api.schutzbot_receiver_api.id
   resource_id   = aws_api_gateway_resource.schutzbot_receiver_resource.id
-  http_method   = "ANY"
+  http_method   = "POST"
   authorization = "NONE"
 }
 
@@ -222,7 +222,6 @@ resource "aws_api_gateway_deployment" "schutzbot_receiver_deployment" {
   ]
 
   rest_api_id = aws_api_gateway_rest_api.schutzbot_receiver_api.id
-  stage_name  = "test"
 }
 
 resource "aws_lambda_permission" "schutzbot_receiver_permission" {
@@ -230,7 +229,7 @@ resource "aws_lambda_permission" "schutzbot_receiver_permission" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.schutzbot_receiver_lambda.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.schutzbot_receiver_api.execution_arn}/*/*"
+  source_arn    = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.schutzbot_receiver_api.id}/*/${aws_api_gateway_method.schutzbot_receiver_method.http_method}${aws_api_gateway_resource.schutzbot_receiver_resource.path}"
 }
 
 ##############################################################################
