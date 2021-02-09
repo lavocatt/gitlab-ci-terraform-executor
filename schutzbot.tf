@@ -155,7 +155,7 @@ resource "null_resource" "schutzbot_receiver_prepare_lambda" {
 # Package the python script into a zip file.
 data "archive_file" "schutzbot_receiver_lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.root}/lambda/"
+  source_dir  = "${path.root}/lambda/schutzbot_receiver"
   output_path = "${path.root}/schutzbot_receiver.zip"
 
   depends_on = [
