@@ -31,7 +31,3 @@ output "rhel8_x86_prebuilt" {
 output "workspace_name" {
   value = local.workspace_name
 }
-
-output "schutzbot_receiver_url" {
-  value = aws_api_gateway_deployment.schutzbot_receiver_deployment.invoke_url
-}

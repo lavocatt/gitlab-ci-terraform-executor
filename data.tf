@@ -32,14 +32,6 @@ data "aws_secretsmanager_secret" "subscription_manager_command" {
 data "aws_secretsmanager_secret" "pozorbot" {
   name = "pozorbot"
 }
-data "aws_secretsmanager_secret" "schutzbot_receiver" {
-  name = "schutzbot_receiver"
-}
-
-# Get the lambda layer for the schutzbot receiver.
-data "aws_lambda_layer_version" "schutzbot_receiver" {
-  layer_name = "schutzbot_receiver_layer"
-}
 
 ##############################################################################
 ## EC2
