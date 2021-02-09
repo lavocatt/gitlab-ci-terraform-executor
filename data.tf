@@ -36,6 +36,11 @@ data "aws_secretsmanager_secret" "schutzbot_receiver" {
   name = "schutzbot_receiver"
 }
 
+# Get the lambda layer for the schutzbot receiver.
+data "aws_lambda_layer_version" "schutzbot_receiver" {
+  layer_name = "schutzbot_receiver_layer"
+}
+
 ##############################################################################
 ## EC2
 # Get the RHEL 8 image in AWS that we will use (provided by Cloud Access).

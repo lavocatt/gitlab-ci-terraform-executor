@@ -142,25 +142,11 @@ resource "aws_iam_role_policy_attachment" "schutzbot_receiver_lambda_secrets" {
   policy_arn = aws_iam_policy.schutzbot_receiver_read_secrets.arn
 }
 
-resource "null_resource" "schutzbot_receiver_prepare_lambda" {
-  # triggers = {
-  #   schutzbot_receiver_lambda = sha1(file("${path.module}/lambda/schutzbot_receiver/schutzbot_receiver.py"))
-  # }
-
-  provisioner "local-exec" {
-    command = "/usr/bin/pip3 install --system --target lambda/schutzbot_receiver/ boto3 flask"
-  }
-}
-
 # Package the python script into a zip file.
 data "archive_file" "schutzbot_receiver_lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.root}/lambda/schutzbot_receiver"
+  source_file = "${path.root}/lambda/schutzbot_receiver.py"
   output_path = "${path.root}/schutzbot_receiver.zip"
-
-  depends_on = [
-    null_resource.schutzbot_receiver_prepare_lambda
-  ]
 }
 
 # Schutzbot receiver lambda function.
@@ -171,6 +157,8 @@ resource "aws_lambda_function" "schutzbot_receiver_lambda" {
   role             = aws_iam_role.schutzbot_receiver_lambda_role.arn
   handler          = "schutzbot_receiver.github_webhook_endpoint"
   runtime          = "python3.8"
+
+  layers = [data.aws_lambda_layer_version.schutzbot_receiver.arn]
 
   environment {
     variables = {
