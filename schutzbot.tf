@@ -148,7 +148,7 @@ resource "null_resource" "schutzbot_receiver_prepare_lambda" {
   }
 
   provisioner "local-exec" {
-    command = "/usr/bin/pip3 install --target lambda/schutzbot_receiver/ boto3 flask"
+    command = "/usr/bin/pip3 install --system --target lambda/schutzbot_receiver/ boto3 flask"
   }
 }
 
