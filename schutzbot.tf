@@ -75,7 +75,7 @@ resource "aws_iam_policy" "schutzbot_receiver_sqs" {
 # Create policy to allow the lambda to read secrets from secrets manager.
 data "aws_iam_policy_document" "schutzbot_receiver_read_secrets" {
   statement {
-    sid = "WorkerReadSecrets"
+    sid = "SchutzbotReceiverReadSecrets"
 
     actions = [
       "secretsmanager:GetResourcePolicy",
