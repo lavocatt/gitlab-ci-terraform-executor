@@ -14,10 +14,34 @@ resource "aws_sqs_queue" "schutzbot_webhook_sqs" {
   )
 }
 
+# SQS policy that allows anonymous sending of messages.
+data "aws_iam_policy_document" "schutzbot_webhook_sendmessage" {
+  statement {
+    sid = "SchutzbotSQSAnonymous"
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions = ["sqs:SendMessage"]
+
+    resources = [
+      aws_sqs_queue.schutzbot_webhook_sqs.arn
+    ]
+  }
+}
+
+# Attach the SQS policy to the queue.
+resource "aws_sqs_queue_policy" "test" {
+  queue_url = aws_sqs_queue.schutzbot_webhook_sqs.id
+  policy    = data.aws_iam_policy_document.schutzbot_webhook_sendmessage.json
+}
+
 # IAM policy to allow sending, receiving, and deleting messages.
 data "aws_iam_policy_document" "schutzbot_webhook_sqs" {
   statement {
-    sid = "PozorbotSQS"
+    sid = "SchutzbotSQS"
 
     actions = [
       "sqs:DeleteMessage",
