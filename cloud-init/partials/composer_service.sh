@@ -20,3 +20,6 @@ systemctl daemon-reload
 systemctl mask osbuild-worker@1.service
 systemctl enable --now osbuild-remote-worker.socket
 systemctl enable --now osbuild-composer-api.socket
+
+# Now that everything is configured, ensure monit is monitoring everything.
+systemctl enable --now monit
