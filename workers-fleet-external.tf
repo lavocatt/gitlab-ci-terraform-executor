@@ -138,7 +138,7 @@ resource "aws_spot_fleet_request" "workers_external_x86" {
 
   # Keep the fleet at the target_capacity at all times.
   fleet_type      = "maintain"
-  target_capacity = 1
+  target_capacity = local.spot_fleet_worker_count
 
   # IAM role that the spot fleet service can use.
   iam_fleet_role = aws_iam_role.spot_fleet_tagging_role.arn
