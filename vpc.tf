@@ -4,7 +4,7 @@
 # in the same region.
 resource "aws_vpc_endpoint" "internal_vpc_s3" {
   vpc_id       = data.aws_vpc.internal_vpc.id
-  service_name = "com.amazonaws.us-east-1.s3"
+  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
 
   tags = merge(
     var.imagebuilder_tags, { Name = "📦 S3 VPC endpoint (internal)" },
@@ -12,7 +12,7 @@ resource "aws_vpc_endpoint" "internal_vpc_s3" {
 }
 resource "aws_vpc_endpoint" "external_vpc_s3" {
   vpc_id       = data.aws_vpc.external_vpc.id
-  service_name = "com.amazonaws.us-east-1.s3"
+  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
 
   tags = merge(
     var.imagebuilder_tags, { Name = "📦 S3 VPC endpoint (external)" },
@@ -23,7 +23,7 @@ resource "aws_vpc_endpoint" "external_vpc_s3" {
 # the internal network.
 resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
   vpc_id            = data.aws_vpc.internal_vpc.id
-  service_name      = "com.amazonaws.us-east-1.logs"
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.logs"
   vpc_endpoint_type = "Interface"
 
   security_group_ids = [
@@ -41,7 +41,7 @@ resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
 # Endpoint to reach AWS Secrets Manager.
 resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
   vpc_id            = data.aws_vpc.internal_vpc.id
-  service_name      = "com.amazonaws.us-east-1.secretsmanager"
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.secretsmanager"
   vpc_endpoint_type = "Interface"
 
   security_group_ids = [

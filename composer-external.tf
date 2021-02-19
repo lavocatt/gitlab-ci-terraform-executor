@@ -17,8 +17,8 @@ data "template_file" "external_composer_cloud_config" {
     subscription_manager_command = data.aws_secretsmanager_secret.subscription_manager_command.arn
 
     # TODO: pick dns name from the right availability zone
-    secrets_manager_endpoint_domain = "secretsmanager.us-east-1.amazonaws.com"
-    cloudwatch_logs_endpoint_domain = "logs.us-east-1.amazonaws.com"
+    secrets_manager_endpoint_domain = "secretsmanager.${data.aws_region.current.name}.amazonaws.com"
+    cloudwatch_logs_endpoint_domain = "logs.${data.aws_region.current.name}.amazonaws.com"
 
     # Set the hostname of the instance.
     system_hostname_prefix = "${local.workspace_name}-external-composer"
