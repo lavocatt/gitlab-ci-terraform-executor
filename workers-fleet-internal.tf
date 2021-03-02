@@ -1,7 +1,7 @@
 ##############################################################################
 ## WORKER SPOT FLEETS
 data "template_file" "internal_workers_cloud_config" {
-  template = file("${path.module}/cloud-init/partials/worker.cfg")
+  template = file("${path.module}/cloud-init/partials/worker_internal.cfg")
 
   vars = {
     # Add any variables here to pass to the setup script when the instance
