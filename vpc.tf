@@ -64,15 +64,6 @@ resource "aws_security_group" "external_composer" {
   description = "External composer"
   vpc_id      = data.aws_vpc.external_vpc.id
 
-  # NOTE(mhayden): Temporary access for me and obudai to ensure everything works. 😜
-  ingress {
-    description = "ssh for mhayden and obudai"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["173.174.129.23/32", "185.185.130.88/32"]
-  }
-
   # Allow all ICMP traffic.
   ingress {
     description = "ICMP"
@@ -124,15 +115,6 @@ resource "aws_security_group" "external_workers" {
   name        = "external_workers_${local.workspace_name}"
   description = "External workers"
   vpc_id      = data.aws_vpc.external_vpc.id
-
-  # NOTE(mhayden): Temporary access for me and obudai to ensure everything works. 😜
-  ingress {
-    description = "ssh for mhayden and obudai"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["173.174.129.23/32", "185.185.130.88/32"]
-  }
 
   # Allow all ICMP traffic.
   ingress {
