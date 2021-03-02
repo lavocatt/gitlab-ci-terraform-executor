@@ -22,6 +22,9 @@ data "template_file" "external_workers_cloud_config" {
     # Provide the ARN to the secret that contains keys/certificates
     subscription_manager_command = data.aws_secretsmanager_secret.subscription_manager_command.arn
 
+    # Provide the ARN to the secret that contains keys/certificates
+    gcp_service_account_image_builder_arn = data.aws_secretsmanager_secret.gcp_service_account_image_builder.arn
+
     # TODO: pick dns name from the right availability zone
     secrets_manager_endpoint_domain = "secretsmanager.${data.aws_region.current.name}.amazonaws.com"
     cloudwatch_logs_endpoint_domain = "logs.${data.aws_region.current.name}.amazonaws.com"
@@ -60,6 +63,11 @@ data "template_cloudinit_config" "external_workers_cloud_init" {
   part {
     content_type = "text/x-shellscript"
     content      = file("${path.module}/cloud-init/partials/worker_keys.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/worker_external_gcp_creds.sh")
   }
 
   part {

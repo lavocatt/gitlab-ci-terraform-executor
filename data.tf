@@ -26,6 +26,9 @@ data "aws_secretsmanager_secret" "internal_composer_keys" {
 data "aws_secretsmanager_secret" "external_composer_keys" {
   name = "external_composer_keys"
 }
+data "aws_secretsmanager_secret" "gcp_service_account_image_builder" {
+  name = "gcp_service_account_image_builder"
+}
 data "aws_secretsmanager_secret" "subscription_manager_command" {
   name = "subscription-manager-command"
 }
