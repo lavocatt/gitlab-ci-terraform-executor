@@ -29,6 +29,10 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       "s3:GetObject",
     ]
     effect = "Allow"
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
     resources = [
       "${aws_s3_bucket.rpmrepo_s3.arn}/data/public/*",
       "${aws_s3_bucket.rpmrepo_s3.arn}/data/ref/*",
@@ -45,6 +49,10 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       variable = "aws:SourceVpce"
     }
     effect = "Allow"
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
     resources = [
       "${aws_s3_bucket.rpmrepo_s3.arn}/data/rhvpn/*",
     ]
