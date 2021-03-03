@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       "s3:GetObject",
     ]
     condition {
-      test     = "ArnEquals"
+      test     = "StringEquals"
       values   = [aws_vpc_endpoint.internal_vpc_rpmrepo.id]
       variable = "aws:SourceVpce"
     }
