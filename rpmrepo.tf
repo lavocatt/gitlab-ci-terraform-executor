@@ -16,7 +16,7 @@
 
 resource "aws_s3_bucket" "rpmrepo_s3" {
   acl    = "private"
-  bucket = "rpmrepo"
+  bucket = "rpmrepo.storage"
   tags = merge(
     var.imagebuilder_tags,
     { Name = "RPMrepo Storage" },
