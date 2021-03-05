@@ -59,6 +59,7 @@ data "aws_iam_policy_document" "external_worker_read_keys" {
     resources = [
       data.aws_secretsmanager_secret.external_worker_keys.arn,
       data.aws_secretsmanager_secret.subscription_manager_command.arn,
+      data.aws_secretsmanager_secret.gcp_service_account_image_builder.arn,
       data.aws_secretsmanager_secret.azure_account_image_builder.arn
     ]
   }
