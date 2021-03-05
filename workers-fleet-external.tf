@@ -16,15 +16,11 @@ data "template_file" "external_workers_cloud_config" {
     composer_host    = local.workspace_name == "staging" ? var.composer_host_external_staging : var.composer_host_external
     composer_address = aws_instance.composer_external.private_ip
 
-    # Provide the ARN to the secret that contains keys/certificates
-    worker_ssl_keys_arn = data.aws_secretsmanager_secret.external_worker_keys.arn
-
-    # Provide the ARN to the secret that contains keys/certificates
-    subscription_manager_command = data.aws_secretsmanager_secret.subscription_manager_command.arn
-
-    # Provide the ARN to the secret that contains keys/certificates
+    # Provide the ARNs to the secrets that contains keys/certificates
+    worker_ssl_keys_arn                   = data.aws_secretsmanager_secret.external_worker_keys.arn
+    subscription_manager_command          = data.aws_secretsmanager_secret.subscription_manager_command.arn
     gcp_service_account_image_builder_arn = data.aws_secretsmanager_secret.gcp_service_account_image_builder.arn
-    azure_account_image_builder_arn = data.aws_secretsmanager_secret.azure_account_image_builder.arn
+    azure_account_image_builder_arn       = data.aws_secretsmanager_secret.azure_account_image_builder.arn
 
     # TODO: pick dns name from the right availability zone
     secrets_manager_endpoint_domain = "secretsmanager.${data.aws_region.current.name}.amazonaws.com"
