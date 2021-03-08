@@ -1,14 +1,14 @@
 ##############################################################################
 ## RPMrepo
 #
-# This file defines all the resources needed by the RPMrepo snapshot
+# This file defines most of the resources needed by the RPMrepo snapshot
 # infrastructure. It currently uses the following setup:
 #
-#   * A dedicated S3 bucket called `rpmrepo`, which has public and private
-#     data.
+#   * A dedicated S3 bucket called `rpmrepo.storage`, which has public and
+#     private data with an attached IAM policy.
 #
-#   * A VPC Endpoint Interface for S3 is used to provide access to RH-private
-#     data in the dedicated S3 bucket.
+#   * The VPC Endpoint Interface for S3 is used to provide access to RH-private
+#     data in the S3 bucket.
 #
 
 ##############################################################################
