@@ -4,7 +4,7 @@
 # This file defines most of the resources needed by the RPMrepo snapshot
 # infrastructure. It currently uses the following setup:
 #
-#   * A dedicated S3 bucket called `rpmrepo.storage`, which has public and
+#   * A dedicated S3 bucket called `rpmrepo-storage`, which has public and
 #     private data with an attached IAM policy.
 #
 #   * The VPC Endpoint Interface for S3 is used to provide access to RH-private
@@ -19,7 +19,7 @@
 
 resource "aws_s3_bucket" "rpmrepo_s3" {
   acl    = "private"
-  bucket = "rpmrepo.storage"
+  bucket = "rpmrepo-storage"
   tags = merge(
     var.imagebuilder_tags,
     { Name = "RPMrepo Storage" },
