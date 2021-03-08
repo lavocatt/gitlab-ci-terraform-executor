@@ -59,7 +59,7 @@ resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
 # Endpoint to reach private S3 rpmrepo buckets from within the VPC.
 resource "aws_vpc_endpoint" "internal_vpc_rpmrepo" {
   vpc_id            = data.aws_vpc.internal_vpc.id
-  service_name      = "com.amazonaws.us-east-1.s3"
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
   vpc_endpoint_type = "Interface"
 
   security_group_ids = [
