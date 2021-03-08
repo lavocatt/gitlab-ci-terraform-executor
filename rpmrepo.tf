@@ -98,7 +98,7 @@ resource "aws_lambda_function" "rpmrepo_gateway" {
   role          = aws_iam_role.rpmrepo_gateway_lambda.arn
   runtime       = "python3.8"
   s3_bucket     = aws_s3_bucket.rpmrepo_s3.id
-  s3_key        = "code/rpmrepo-gateway/rpmrepo-gateway-main.zip"
+  s3_key        = "code/rpmrepo-gateway/rpmrepo-gateway-ad944f27f4504d7f787bd37fafb3bea02d14f83f.zip"
   tags = merge(
     var.imagebuilder_tags,
     { Name = "RPMrepo Gateway" },
