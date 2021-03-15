@@ -13,6 +13,9 @@
 #   * An AWS API Gateway proxy integration with AWS Lambda backend which
 #     implements the REST API of RPMrepo.
 #
+#   * An AWS Batch compute environment and job definition to execute snapshot
+#     operations.
+#
 # Apart from the resources defined here, a set of manually configured resources
 # is required:
 #
@@ -184,4 +187,187 @@ resource "aws_lambda_permission" "rpmrepo_gateway" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.rpmrepo_gateway.execution_arn}/*/*"
   statement_id  = "AllowAPIGatewayInvoke"
+}
+
+##############################################################################
+## Batch
+
+# job policies
+
+data "aws_iam_policy_document" "rpmrepo_batch_job_runtime" {
+  statement {
+    actions = [
+      "s3:Get*",
+      "s3:List*",
+      "s3:Put*",
+    ]
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.rpmrepo_s3.arn,
+      "${aws_s3_bucket.rpmrepo_s3.arn}/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "rpmrepo_batch_job_runtime" {
+  name   = "rpmrepo-batch-job-runtime"
+  policy = data.aws_iam_policy_document.rpmrepo_batch_job_runtime.json
+}
+
+data "aws_iam_policy_document" "rpmrepo_batch_job_role" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "rpmrepo_batch_job" {
+  assume_role_policy = data.aws_iam_policy_document.rpmrepo_batch_job_role.json
+  name               = "rpmrepo-batch-job"
+
+  tags = merge(
+    var.imagebuilder_tags,
+    { Name = "RPMrepo Batch Job Role" },
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "rpmrepo_batch_job_runtime" {
+  role       = aws_iam_role.rpmrepo_batch_job.name
+  policy_arn = aws_iam_policy.rpmrepo_batch_job_runtime.arn
+}
+
+# EC2 compute policies
+
+data "aws_iam_policy_document" "rpmrepo_batch_ec2" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "rpmrepo_batch_ec2" {
+  assume_role_policy = data.aws_iam_policy_document.rpmrepo_batch_ec2.json
+  name               = "rpmrepo-batch-ec2"
+
+  tags = merge(
+    var.imagebuilder_tags,
+    { Name = "RPMrepo Batch EC2 Role" },
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "rpmrepo_batch_ec2_service" {
+  role       = aws_iam_role.rpmrepo_batch_ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "rpmrepo_batch_ec2" {
+  name = "rpmrepo-batch-ec2"
+  role = aws_iam_role.rpmrepo_batch_ec2.name
+}
+
+# Batch manager policies
+
+data "aws_iam_policy_document" "rpmrepo_batch_mgr" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["batch.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "rpmrepo_batch_mgr" {
+  assume_role_policy = data.aws_iam_policy_document.rpmrepo_batch_mgr.json
+  name               = "rpmrepo-batch-mgr"
+
+  tags = merge(
+    var.imagebuilder_tags,
+    { Name = "RPMrepo Batch Manager Role" },
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "rpmrepo_batch_mgr_service" {
+  role       = aws_iam_role.rpmrepo_batch_mgr.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole"
+}
+
+# Batch compute environment
+
+resource "aws_launch_template" "rpmrepo_batch_ec2" {
+  name                   = "rpmrepo-batch-ec2"
+  update_default_version = true
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      delete_on_termination = true
+      volume_size           = 512
+    }
+  }
+
+  tags = merge(
+    var.imagebuilder_tags,
+    { Name = "RPMrepo Batch EC2 Compute" },
+  )
+}
+
+resource "aws_batch_compute_environment" "rpmrepo_batch" {
+  compute_environment_name = "rpmrepo-batch"
+  compute_resources {
+    image_id      = "ami-0ec7896dee795dfa9"
+    instance_role = aws_iam_instance_profile.rpmrepo_batch_ec2.arn
+    instance_type = [
+      "m5.large",
+    ]
+    launch_template {
+      launch_template_name = aws_launch_template.rpmrepo_batch_ec2.name
+      version              = "$Latest"
+    }
+    max_vcpus = 16
+    min_vcpus = 0
+    security_group_ids = [
+      aws_security_group.internal_allow_egress.id,
+      aws_security_group.internal_allow_trusted.id,
+    ]
+    subnets = data.aws_subnet_ids.internal_subnets.ids
+    type    = "EC2"
+  }
+  depends_on   = [aws_iam_role_policy_attachment.rpmrepo_batch_mgr_service]
+  service_role = aws_iam_role.rpmrepo_batch_mgr.arn
+  type         = "MANAGED"
+
+  tags = merge(
+    var.imagebuilder_tags,
+    { Name = "RPMrepo Batch Compute Environment" },
+  )
+}
+
+resource "aws_batch_job_queue" "rpmrepo_batch" {
+  name     = "rpmrepo-batch"
+  priority = 1
+  state    = "ENABLED"
+
+  compute_environments = [aws_batch_compute_environment.rpmrepo_batch.arn]
+  depends_on           = [aws_batch_compute_environment.rpmrepo_batch]
+
+  tags = merge(
+    var.imagebuilder_tags,
+    { Name = "RPMrepo Batch Queue" },
+  )
 }
