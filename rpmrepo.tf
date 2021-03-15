@@ -13,6 +13,40 @@
 #   * An AWS API Gateway proxy integration with AWS Lambda backend which
 #     implements the REST API of RPMrepo.
 #
+# Apart from the resources defined here, a set of manually configured resources
+# is required:
+#
+# (For these, make sure to include the `AppCode` and `ServiceOwner` tags.)
+#
+#   * An S3 bucket called `rpmrepo-external` must be created and accessible by
+#     this account. The AWS Lambda sources are fetched from it, as well as
+#     other static external input. The bucket cannot be created by terraform
+#     because its content must be populated for other terraform resources to
+#     be created.
+#
+#   * The AWS API Gateway does not attach a custom domain name, because this
+#     account currently cannot validate ACM-based certificates. Therefore, you
+#     have to manually create an ACM certificate for `*.osbuild.org.`, validate
+#     it via DNS, and wait for the validation to finish. Then you can add it
+#     as custom domain to API Gateway and create an API-mapping from the `v1`
+#     stage with the `v1` path. Note that you must also point the
+#     `rpmrepo.osbuild.org` domain with a CNAME to the endpoint URL of the
+#     custom-domain API-Gateway entry (this is different to the endpoint URL
+#     of your actual API-Gateway deployment).
+#
+
+##############################################################################
+## Configuration
+
+variable "rpmrepo_external_bucket" {
+  type        = string
+  description = "The name of the RPMrepo configuration bucket."
+}
+
+variable "rpmrepo_gateway_commit" {
+  type        = string
+  description = "The git SHA of the RPMrepo gateway to deploy."
+}
 
 ##############################################################################
 ## S3 Storage
@@ -97,8 +131,8 @@ resource "aws_lambda_function" "rpmrepo_gateway" {
   handler       = "lambda_function.lambda_handler"
   role          = aws_iam_role.rpmrepo_gateway_lambda.arn
   runtime       = "python3.8"
-  s3_bucket     = aws_s3_bucket.rpmrepo_s3.id
-  s3_key        = "code/rpmrepo-gateway/rpmrepo-gateway-ad944f27f4504d7f787bd37fafb3bea02d14f83f.zip"
+  s3_bucket     = var.rpmrepo_external_bucket
+  s3_key        = "code/rpmrepo-gateway/rpmrepo-gateway-${var.rpmrepo_gateway_commit}.zip"
   tags = merge(
     var.imagebuilder_tags,
     { Name = "RPMrepo Gateway" },
