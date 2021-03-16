@@ -192,6 +192,27 @@ resource "aws_lambda_permission" "rpmrepo_gateway" {
 ##############################################################################
 ## Batch
 
+# log policies
+
+data "aws_iam_policy_document" "rpmrepo_batch_log" {
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents",
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:logs:*:*:log-group:/aws/batch/job:*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "rpmrepo_batch_log" {
+  name   = "rpmrepo-batch-log"
+  policy = data.aws_iam_policy_document.rpmrepo_batch_log.json
+}
+
 # job policies
 
 data "aws_iam_policy_document" "rpmrepo_batch_job_runtime" {
@@ -242,6 +263,11 @@ resource "aws_iam_role_policy_attachment" "rpmrepo_batch_job_runtime" {
   policy_arn = aws_iam_policy.rpmrepo_batch_job_runtime.arn
 }
 
+resource "aws_iam_role_policy_attachment" "rpmrepo_batch_job_log" {
+  role       = aws_iam_role.rpmrepo_batch_job.name
+  policy_arn = aws_iam_policy.rpmrepo_batch_log.arn
+}
+
 # EC2 compute policies
 
 data "aws_iam_policy_document" "rpmrepo_batch_ec2" {
@@ -270,6 +296,11 @@ resource "aws_iam_role" "rpmrepo_batch_ec2" {
 resource "aws_iam_role_policy_attachment" "rpmrepo_batch_ec2_service" {
   role       = aws_iam_role.rpmrepo_batch_ec2.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_role_policy_attachment" "rpmrepo_batch_ec2_log" {
+  role       = aws_iam_role.rpmrepo_batch_ec2.name
+  policy_arn = aws_iam_policy.rpmrepo_batch_log.arn
 }
 
 resource "aws_iam_instance_profile" "rpmrepo_batch_ec2" {
