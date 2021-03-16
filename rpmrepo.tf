@@ -327,6 +327,29 @@ resource "aws_launch_template" "rpmrepo_batch_ec2" {
   )
 }
 
+resource "aws_security_group" "rpmrepo_batch_ec2" {
+  name = "rpmrepo-batch-ec2"
+
+  description = "RPMrepo Batch EC2 Job Execution"
+  vpc_id      = data.aws_vpc.internal_vpc.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    var.imagebuilder_tags,
+    { Name = "RPMrepo Batch EC2 Job Execution" },
+  )
+}
+
 resource "aws_batch_compute_environment" "rpmrepo_batch" {
   compute_environment_name = "rpmrepo-batch"
   compute_resources {
@@ -342,8 +365,7 @@ resource "aws_batch_compute_environment" "rpmrepo_batch" {
     max_vcpus = 16
     min_vcpus = 0
     security_group_ids = [
-      aws_security_group.internal_allow_egress.id,
-      aws_security_group.internal_allow_trusted.id,
+      aws_security_group.rpmrepo_batch_ec2.id,
     ]
     subnets = data.aws_subnet_ids.internal_subnets.ids
     type    = "EC2"
