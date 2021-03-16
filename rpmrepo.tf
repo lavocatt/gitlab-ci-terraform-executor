@@ -351,7 +351,7 @@ resource "aws_security_group" "rpmrepo_batch_ec2" {
 }
 
 resource "aws_batch_compute_environment" "rpmrepo_batch" {
-  compute_environment_name = "rpmrepo-batch"
+  compute_environment_name_prefix = "rpmrepo-batch"
   compute_resources {
     image_id      = "ami-0ec7896dee795dfa9"
     instance_role = aws_iam_instance_profile.rpmrepo_batch_ec2.arn
@@ -373,6 +373,11 @@ resource "aws_batch_compute_environment" "rpmrepo_batch" {
   depends_on   = [aws_iam_role_policy_attachment.rpmrepo_batch_mgr_service]
   service_role = aws_iam_role.rpmrepo_batch_mgr.arn
   type         = "MANAGED"
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [compute_resources[0].desired_vcpus]
+  }
 
   tags = merge(
     var.imagebuilder_tags,
