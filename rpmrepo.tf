@@ -192,12 +192,28 @@ resource "aws_api_gateway_integration" "rpmrepo_gateway_proxy" {
   uri                     = aws_lambda_function.rpmrepo_gateway.invoke_arn
 }
 
-resource "aws_api_gateway_deployment" "rpmrepo_gateway" {
+resource "aws_api_gateway_deployment" "rpmrepo_gateway_psi" {
+  depends_on = [
+    aws_api_gateway_integration.rpmrepo_gateway_proxy,
+  ]
+  rest_api_id = aws_api_gateway_rest_api.rpmrepo_gateway.id
+  stage_name  = "psi"
+}
+
+resource "aws_api_gateway_deployment" "rpmrepo_gateway_v1" {
   depends_on = [
     aws_api_gateway_integration.rpmrepo_gateway_proxy,
   ]
   rest_api_id = aws_api_gateway_rest_api.rpmrepo_gateway.id
   stage_name  = "v1"
+}
+
+resource "aws_api_gateway_deployment" "rpmrepo_gateway_v2" {
+  depends_on = [
+    aws_api_gateway_integration.rpmrepo_gateway_proxy,
+  ]
+  rest_api_id = aws_api_gateway_rest_api.rpmrepo_gateway.id
+  stage_name  = "v2"
 }
 
 resource "aws_lambda_permission" "rpmrepo_gateway" {
