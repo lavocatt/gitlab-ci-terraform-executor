@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       identifiers = ["*"]
     }
     resources = [
-      "${aws_s3_bucket.rpmrepo_s3.arn}",
+      aws_s3_bucket.rpmrepo_s3.arn,
     ]
   }
 
