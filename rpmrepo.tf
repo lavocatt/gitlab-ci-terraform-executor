@@ -66,6 +66,25 @@ resource "aws_s3_bucket" "rpmrepo_s3" {
 data "aws_iam_policy_document" "rpmrepo_s3" {
   statement {
     actions = [
+      "s3:ListBucket",
+    ]
+    condition {
+      test     = "StringLike"
+      values   = ["data/thread/*"]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    resources = [
+      "${aws_s3_bucket.rpmrepo_s3.arn}",
+    ]
+  }
+
+  statement {
+    actions = [
       "s3:GetObject",
     ]
     effect = "Allow"
