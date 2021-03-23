@@ -472,3 +472,39 @@ resource "aws_batch_job_queue" "rpmrepo_batch" {
     { Name = "RPMrepo Batch Queue" },
   )
 }
+
+variable "rpmrepo_batch_args" {
+  type = map(any)
+  default = {
+    repoBranch = "main",
+    repoCommit = "HEAD",
+    repoTarget = "auto",
+  }
+}
+
+resource "aws_batch_job_definition" "rpmrepo_batch_snapshot" {
+  name = "rpmrepo-batch-snapshot"
+  type = "container"
+
+  parameters = var.rpmrepo_batch_args
+
+  container_properties = <<CONTAINER_PROPERTIES
+{
+    "command": ["Ref::repoBranch", "Ref::repoCommit", "Ref::repoTarget"],
+    "executionRoleArn": "${aws_iam_role.rpmrepo_batch_job.arn}",
+    "image": "ghcr.io/osbuild/rpmrepo-snapshot",
+    "jobRoleArn": "${aws_iam_role.rpmrepo_batch_job.arn}",
+    "memory": 2048,
+    "vcpus": 1
+}
+CONTAINER_PROPERTIES
+
+  timeout {
+    attempt_duration_seconds = "86400"
+  }
+
+  tags = merge(
+    var.imagebuilder_tags,
+    { Name = "RPMrepo Batch Snapshot" },
+  )
+}
