@@ -31,11 +31,19 @@
 #     account currently cannot validate ACM-based certificates. Therefore, you
 #     have to manually create an ACM certificate for `*.osbuild.org.`, validate
 #     it via DNS, and wait for the validation to finish. Then you can add it
-#     as custom domain to API Gateway and create an API-mapping from the `v1`
-#     stage with the `v1` path. Note that you must also point the
-#     `rpmrepo.osbuild.org` domain with a CNAME to the endpoint URL of the
-#     custom-domain API-Gateway entry (this is different to the endpoint URL
-#     of your actual API-Gateway deployment).
+#     as custom domain to API Gateway and create suitable API-mappings.
+#     Note that you must also point the `rpmrepo.osbuild.org` domain with a
+#     CNAME to the endpoint URL of the custom-domain API-Gateway entry (this is
+#     different to the endpoint URL of your actual API-Gateway deployment).
+#
+#     The required API mappings are (stage -> path):
+#         psi -> psi
+#         v1  -> v1
+#         v2  -> v2
+#
+#   * The AWS Batch resource automatically creates an `/aws/batch/jobs` log
+#     group in CloudWatch. It has an infinite retention period by default. This
+#     must be manually reduced to a suitable value (e.g. 1 month).
 #
 
 ##############################################################################
