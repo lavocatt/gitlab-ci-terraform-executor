@@ -436,7 +436,7 @@ resource "aws_batch_compute_environment" "rpmrepo_batch" {
       launch_template_name = aws_launch_template.rpmrepo_batch_ec2.name
       version              = "$Latest"
     }
-    max_vcpus = 16
+    max_vcpus = 32
     min_vcpus = 0
     security_group_ids = [
       aws_security_group.rpmrepo_batch_ec2.id,
