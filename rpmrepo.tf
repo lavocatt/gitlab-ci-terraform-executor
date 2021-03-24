@@ -488,6 +488,7 @@ variable "rpmrepo_batch_args" {
     repoBranch = "main",
     repoCommit = "HEAD",
     repoTarget = "auto",
+    repoSuffix = "auto",
   }
 }
 
@@ -499,7 +500,7 @@ resource "aws_batch_job_definition" "rpmrepo_batch_snapshot" {
 
   container_properties = <<CONTAINER_PROPERTIES
 {
-    "command": ["Ref::repoBranch", "Ref::repoCommit", "Ref::repoTarget"],
+    "command": ["Ref::repoBranch", "Ref::repoCommit", "Ref::repoTarget", "Ref::repoSuffix"],
     "executionRoleArn": "${aws_iam_role.rpmrepo_batch_job.arn}",
     "image": "ghcr.io/osbuild/rpmrepo-snapshot",
     "jobRoleArn": "${aws_iam_role.rpmrepo_batch_job.arn}",
