@@ -37,6 +37,7 @@
 #     different to the endpoint URL of your actual API-Gateway deployment).
 #
 #     The required API mappings are (stage -> path):
+#         control -> control
 #         psi -> psi
 #         v1  -> v1
 #         v2  -> v2
@@ -198,6 +199,14 @@ resource "aws_api_gateway_integration" "rpmrepo_gateway_proxy" {
   rest_api_id             = aws_api_gateway_rest_api.rpmrepo_gateway.id
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.rpmrepo_gateway.invoke_arn
+}
+
+resource "aws_api_gateway_deployment" "rpmrepo_gateway_control" {
+  depends_on = [
+    aws_api_gateway_integration.rpmrepo_gateway_proxy,
+  ]
+  rest_api_id = aws_api_gateway_rest_api.rpmrepo_gateway.id
+  stage_name  = "control"
 }
 
 resource "aws_api_gateway_deployment" "rpmrepo_gateway_psi" {
