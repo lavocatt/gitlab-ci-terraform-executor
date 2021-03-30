@@ -68,7 +68,7 @@ resource "aws_s3_bucket" "rpmrepo_s3" {
   bucket = local.workspace_name == "staging" ? "rpmrepo-storage" : "rpmrepo-storage-${local.workspace_name}"
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Storage (${local.workspace_name})" },
+    { Name = "RPMrepo Storage - ${local.workspace_name}" },
   )
 }
 
@@ -154,7 +154,7 @@ resource "aws_iam_role" "rpmrepo_gateway_lambda" {
   name               = "rpmrepo-gateway-lambda-${local.workspace_name}"
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Gateway Lambda Role (${local.workspace_name})" },
+    { Name = "RPMrepo Gateway Lambda Role - ${local.workspace_name}" },
   )
 }
 
@@ -167,7 +167,7 @@ resource "aws_lambda_function" "rpmrepo_gateway" {
   s3_key        = "code/rpmrepo-gateway/rpmrepo-gateway-${var.rpmrepo_gateway_commit}.zip"
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Gateway (${local.workspace_name})" },
+    { Name = "RPMrepo Gateway - ${local.workspace_name}" },
   )
 }
 
@@ -176,7 +176,7 @@ resource "aws_api_gateway_rest_api" "rpmrepo_gateway" {
   description = "RPMrepo Web Gateway"
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Gateway (${local.workspace_name})" },
+    { Name = "RPMrepo Gateway - ${local.workspace_name}" },
   )
 }
 
@@ -307,7 +307,7 @@ resource "aws_iam_role" "rpmrepo_batch_job" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Job Role (${local.workspace_name})" },
+    { Name = "RPMrepo Batch Job Role - ${local.workspace_name}" },
   )
 }
 
@@ -342,7 +342,7 @@ resource "aws_iam_role" "rpmrepo_batch_ec2" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch EC2 Role (${local.workspace_name})" },
+    { Name = "RPMrepo Batch EC2 Role - ${local.workspace_name}" },
   )
 }
 
@@ -382,7 +382,7 @@ resource "aws_iam_role" "rpmrepo_batch_mgr" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Manager Role (${local.workspace_name})" },
+    { Name = "RPMrepo Batch Manager Role - ${local.workspace_name}" },
   )
 }
 
@@ -407,7 +407,7 @@ resource "aws_launch_template" "rpmrepo_batch_ec2" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch EC2 Compute (${local.workspace_name})" },
+    { Name = "RPMrepo Batch EC2 Compute - ${local.workspace_name}" },
   )
 }
 
@@ -430,7 +430,7 @@ resource "aws_security_group" "rpmrepo_batch_ec2" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch EC2 Job Execution (${local.workspace_name})" },
+    { Name = "RPMrepo Batch EC2 Job Execution - ${local.workspace_name}" },
   )
 }
 
@@ -465,7 +465,7 @@ resource "aws_batch_compute_environment" "rpmrepo_batch" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Compute Environment (${local.workspace_name})" },
+    { Name = "RPMrepo Batch Compute Environment - ${local.workspace_name}" },
   )
 }
 
@@ -479,7 +479,7 @@ resource "aws_batch_job_queue" "rpmrepo_batch" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Queue (${local.workspace_name})" },
+    { Name = "RPMrepo Batch Queue - ${local.workspace_name}" },
   )
 }
 
@@ -516,6 +516,6 @@ CONTAINER_PROPERTIES
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Snapshot (${local.workspace_name})" },
+    { Name = "RPMrepo Batch Snapshot - ${local.workspace_name}" },
   )
 }
