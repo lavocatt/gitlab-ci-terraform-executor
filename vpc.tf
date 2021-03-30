@@ -70,7 +70,7 @@ resource "aws_vpc_endpoint" "internal_vpc_rpmrepo" {
   subnet_ids = data.aws_subnet_ids.internal_subnets.ids
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "📸 RPMrepo Snapshots S3 endpoint (internal)" },
+    var.imagebuilder_tags, { Name = "📸 RPMrepo Snapshots S3 endpoint (internal, ${local.workspace_name})" },
   )
 }
 
