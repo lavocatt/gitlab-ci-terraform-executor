@@ -65,10 +65,10 @@ variable "rpmrepo_gateway_commit" {
 
 resource "aws_s3_bucket" "rpmrepo_s3" {
   acl    = "private"
-  bucket = "rpmrepo-storage"
+  bucket = local.workspace_name == "staging" ? "rpmrepo-storage" : "rpmrepo-storage-${local.workspace_name}"
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Storage" },
+    { Name = "RPMrepo Storage (${local.workspace_name})" },
   )
 }
 
@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       identifiers = ["*"]
     }
     resources = [
-      aws_s3_bucket.rpmrepo_s3.arn,
+      "arn:aws:s3:::rpmrepo-storage",
     ]
   }
 
@@ -102,9 +102,9 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       identifiers = ["*"]
     }
     resources = [
-      "${aws_s3_bucket.rpmrepo_s3.arn}/data/public/*",
-      "${aws_s3_bucket.rpmrepo_s3.arn}/data/ref/*",
-      "${aws_s3_bucket.rpmrepo_s3.arn}/data/thread/*",
+      "arn:aws:s3:::rpmrepo-storage/data/public/*",
+      "arn:aws:s3:::rpmrepo-storage/data/ref/*",
+      "arn:aws:s3:::rpmrepo-storage/data/thread/*",
     ]
   }
 
@@ -123,7 +123,7 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       identifiers = ["*"]
     }
     resources = [
-      "${aws_s3_bucket.rpmrepo_s3.arn}/data/rhvpn/*",
+      "arn:aws:s3:::rpmrepo-storage/data/rhvpn/*",
     ]
   }
 }
@@ -151,15 +151,15 @@ data "aws_iam_policy_document" "rpmrepo_gateway_lambda" {
 
 resource "aws_iam_role" "rpmrepo_gateway_lambda" {
   assume_role_policy = data.aws_iam_policy_document.rpmrepo_gateway_lambda.json
-  name               = "rpmrepo-gateway-lambda"
+  name               = "rpmrepo-gateway-lambda-${local.workspace_name}"
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Gateway Lambda Role" },
+    { Name = "RPMrepo Gateway Lambda Role (${local.workspace_name})" },
   )
 }
 
 resource "aws_lambda_function" "rpmrepo_gateway" {
-  function_name = "rpmrepo-gateway"
+  function_name = "rpmrepo-gateway-${local.workspace_name}"
   handler       = "lambda_function.lambda_handler"
   role          = aws_iam_role.rpmrepo_gateway_lambda.arn
   runtime       = "python3.8"
@@ -167,16 +167,16 @@ resource "aws_lambda_function" "rpmrepo_gateway" {
   s3_key        = "code/rpmrepo-gateway/rpmrepo-gateway-${var.rpmrepo_gateway_commit}.zip"
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Gateway" },
+    { Name = "RPMrepo Gateway (${local.workspace_name})" },
   )
 }
 
 resource "aws_api_gateway_rest_api" "rpmrepo_gateway" {
-  name        = "rpmrepo-gateway"
+  name        = "rpmrepo-gateway-${local.workspace_name}"
   description = "RPMrepo Web Gateway"
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Gateway" },
+    { Name = "RPMrepo Gateway (${local.workspace_name})" },
   )
 }
 
@@ -262,7 +262,7 @@ data "aws_iam_policy_document" "rpmrepo_batch_log" {
 }
 
 resource "aws_iam_policy" "rpmrepo_batch_log" {
-  name   = "rpmrepo-batch-log"
+  name   = "rpmrepo-batch-log-${local.workspace_name}"
   policy = data.aws_iam_policy_document.rpmrepo_batch_log.json
 }
 
@@ -277,14 +277,14 @@ data "aws_iam_policy_document" "rpmrepo_batch_job_runtime" {
     ]
     effect = "Allow"
     resources = [
-      aws_s3_bucket.rpmrepo_s3.arn,
-      "${aws_s3_bucket.rpmrepo_s3.arn}/*",
+      "arn:aws:s3:::rpmrepo-storage",
+      "arn:aws:s3:::rpmrepo-storage/*",
     ]
   }
 }
 
 resource "aws_iam_policy" "rpmrepo_batch_job_runtime" {
-  name   = "rpmrepo-batch-job-runtime"
+  name   = "rpmrepo-batch-job-runtime-${local.workspace_name}"
   policy = data.aws_iam_policy_document.rpmrepo_batch_job_runtime.json
 }
 
@@ -303,11 +303,11 @@ data "aws_iam_policy_document" "rpmrepo_batch_job_role" {
 
 resource "aws_iam_role" "rpmrepo_batch_job" {
   assume_role_policy = data.aws_iam_policy_document.rpmrepo_batch_job_role.json
-  name               = "rpmrepo-batch-job"
+  name               = "rpmrepo-batch-job-${local.workspace_name}"
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Job Role" },
+    { Name = "RPMrepo Batch Job Role (${local.workspace_name})" },
   )
 }
 
@@ -338,11 +338,11 @@ data "aws_iam_policy_document" "rpmrepo_batch_ec2" {
 
 resource "aws_iam_role" "rpmrepo_batch_ec2" {
   assume_role_policy = data.aws_iam_policy_document.rpmrepo_batch_ec2.json
-  name               = "rpmrepo-batch-ec2"
+  name               = "rpmrepo-batch-ec2-${local.workspace_name}"
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch EC2 Role" },
+    { Name = "RPMrepo Batch EC2 Role (${local.workspace_name})" },
   )
 }
 
@@ -357,7 +357,7 @@ resource "aws_iam_role_policy_attachment" "rpmrepo_batch_ec2_log" {
 }
 
 resource "aws_iam_instance_profile" "rpmrepo_batch_ec2" {
-  name = "rpmrepo-batch-ec2"
+  name = "rpmrepo-batch-ec2-${local.workspace_name}"
   role = aws_iam_role.rpmrepo_batch_ec2.name
 }
 
@@ -378,11 +378,11 @@ data "aws_iam_policy_document" "rpmrepo_batch_mgr" {
 
 resource "aws_iam_role" "rpmrepo_batch_mgr" {
   assume_role_policy = data.aws_iam_policy_document.rpmrepo_batch_mgr.json
-  name               = "rpmrepo-batch-mgr"
+  name               = "rpmrepo-batch-mgr-${local.workspace_name}"
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Manager Role" },
+    { Name = "RPMrepo Batch Manager Role (${local.workspace_name})" },
   )
 }
 
@@ -394,7 +394,7 @@ resource "aws_iam_role_policy_attachment" "rpmrepo_batch_mgr_service" {
 # Batch compute environment
 
 resource "aws_launch_template" "rpmrepo_batch_ec2" {
-  name                   = "rpmrepo-batch-ec2"
+  name                   = "rpmrepo-batch-ec2-${local.workspace_name}"
   update_default_version = true
 
   block_device_mappings {
@@ -407,14 +407,14 @@ resource "aws_launch_template" "rpmrepo_batch_ec2" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch EC2 Compute" },
+    { Name = "RPMrepo Batch EC2 Compute (${local.workspace_name})" },
   )
 }
 
 resource "aws_security_group" "rpmrepo_batch_ec2" {
-  name = "rpmrepo-batch-ec2"
+  name = "rpmrepo-batch-ec2-${local.workspace_name}"
 
-  description = "RPMrepo Batch EC2 Job Execution"
+  description = "RPMrepo Batch EC2 Job Execution (${local.workspace_name})"
   vpc_id      = data.aws_vpc.internal_vpc.id
 
   egress {
@@ -430,12 +430,12 @@ resource "aws_security_group" "rpmrepo_batch_ec2" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch EC2 Job Execution" },
+    { Name = "RPMrepo Batch EC2 Job Execution (${local.workspace_name})" },
   )
 }
 
 resource "aws_batch_compute_environment" "rpmrepo_batch" {
-  compute_environment_name_prefix = "rpmrepo-batch"
+  compute_environment_name_prefix = "rpmrepo-batch-${local.workspace_name}-"
   compute_resources {
     image_id      = "ami-0ec7896dee795dfa9"
     instance_role = aws_iam_instance_profile.rpmrepo_batch_ec2.arn
@@ -465,12 +465,12 @@ resource "aws_batch_compute_environment" "rpmrepo_batch" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Compute Environment" },
+    { Name = "RPMrepo Batch Compute Environment (${local.workspace_name})" },
   )
 }
 
 resource "aws_batch_job_queue" "rpmrepo_batch" {
-  name     = "rpmrepo-batch"
+  name     = "rpmrepo-batch-${local.workspace_name}"
   priority = 1
   state    = "ENABLED"
 
@@ -479,7 +479,7 @@ resource "aws_batch_job_queue" "rpmrepo_batch" {
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Queue" },
+    { Name = "RPMrepo Batch Queue (${local.workspace_name})" },
   )
 }
 
@@ -494,7 +494,7 @@ variable "rpmrepo_batch_args" {
 }
 
 resource "aws_batch_job_definition" "rpmrepo_batch_snapshot" {
-  name = "rpmrepo-batch-snapshot"
+  name = "rpmrepo-batch-snapshot-${local.workspace_name}"
   type = "container"
 
   parameters = var.rpmrepo_batch_args
@@ -516,6 +516,6 @@ CONTAINER_PROPERTIES
 
   tags = merge(
     var.imagebuilder_tags,
-    { Name = "RPMrepo Batch Snapshot" },
+    { Name = "RPMrepo Batch Snapshot (${local.workspace_name})" },
   )
 }
