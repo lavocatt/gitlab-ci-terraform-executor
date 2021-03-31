@@ -69,6 +69,14 @@ resource "aws_vpc_endpoint" "internal_vpc_rpmrepo" {
 
   subnet_ids = data.aws_subnet_ids.internal_subnets.ids
 
+  lifecycle {
+    # The ID of this resource is used in the RPMrepo gateway to redirect
+    # requests from the internal VPN. This configuration makes sure the
+    # resource is not accidentally deleted. If you need to recreate or
+    # delete it, drop this first and be aware of broken RPMrepo redirects.
+    prevent_destroy = true
+  }
+
   tags = merge(
     var.imagebuilder_tags, { Name = "📸 RPMrepo Snapshots S3 endpoint (internal, ${local.workspace_name})" },
   )
