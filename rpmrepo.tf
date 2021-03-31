@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       identifiers = ["*"]
     }
     resources = [
-      "arn:aws:s3:::rpmrepo-storage",
+      aws_s3_bucket.rpmrepo_s3.arn,
     ]
   }
 
@@ -102,9 +102,9 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       identifiers = ["*"]
     }
     resources = [
-      "arn:aws:s3:::rpmrepo-storage/data/public/*",
-      "arn:aws:s3:::rpmrepo-storage/data/ref/*",
-      "arn:aws:s3:::rpmrepo-storage/data/thread/*",
+      "${aws_s3_bucket.rpmrepo_s3.arn}/data/public/*",
+      "${aws_s3_bucket.rpmrepo_s3.arn}/data/ref/*",
+      "${aws_s3_bucket.rpmrepo_s3.arn}/data/thread/*",
     ]
   }
 
@@ -123,7 +123,7 @@ data "aws_iam_policy_document" "rpmrepo_s3" {
       identifiers = ["*"]
     }
     resources = [
-      "arn:aws:s3:::rpmrepo-storage/data/rhvpn/*",
+      "${aws_s3_bucket.rpmrepo_s3.arn}/data/rhvpn/*",
     ]
   }
 }
