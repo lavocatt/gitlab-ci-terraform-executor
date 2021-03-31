@@ -1,7 +1,5 @@
 data "aws_iam_policy_document" "gitlab_ci_ec2_principal" {
   statement {
-    sid = "AllowEC2AssumeRole"
-
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -28,8 +26,6 @@ resource "aws_iam_instance_profile" "gitlab_ci" {
 
 data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
   statement {
-    sid = "gitlab_ci_manage_instances"
-
     actions = [
       "ec2:DescribeSpotInstanceRequests",
       "ec2:CancelSpotInstanceRequests",
