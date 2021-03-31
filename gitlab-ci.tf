@@ -44,6 +44,7 @@ data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
       "ec2:DescribeAvailabilityZones",
       "ec2:DescribeSecurityGroups",
       "ec2:DescribeSubnets",
+      "ec2:DescribeVolumes",
     ]
 
     resources = ["*"]
