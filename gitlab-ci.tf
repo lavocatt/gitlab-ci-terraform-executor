@@ -60,3 +60,58 @@ resource "aws_iam_role_policy_attachment" "gitlab_ci_manage_instances" {
   role       = aws_iam_role.gitlab_ci.name
   policy_arn = aws_iam_policy.gitlab_ci_manage_instances.arn
 }
+
+resource "aws_security_group" "gitlab_ci_runner_internal" {
+  name        = "gitlab_ci_runner_internal_${local.workspace_name}"
+  description = "GitLab CI"
+  vpc_id      = data.aws_vpc.internal_vpc.id
+
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "gitlab_ci_runner_internal_${local.workspace_name}" },
+  )
+}
+
+resource "aws_security_group" "gitlab_ci_runner_external" {
+  name        = "gitlab_ci_runner_external_${local.workspace_name}"
+  description = "GitLab CI"
+  vpc_id      = data.aws_vpc.external_vpc.id
+
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+  }
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+  }
+
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "gitlab_ci_runner_external_${local.workspace_name}" },
+  )
+}
