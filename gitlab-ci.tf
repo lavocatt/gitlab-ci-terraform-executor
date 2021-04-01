@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "gitlab_ci_ec2_principal" {
 }
 
 resource "aws_iam_role" "gitlab_ci" {
-  name = "gitlab_ci-${local.workspace_name}"
+  name = "gitlab_ci_${local.workspace_name}"
 
   assume_role_policy = data.aws_iam_policy_document.gitlab_ci_ec2_principal.json
 
@@ -20,7 +20,7 @@ resource "aws_iam_role" "gitlab_ci" {
 }
 
 resource "aws_iam_instance_profile" "gitlab_ci" {
-  name = "gitlab_ci-${local.workspace_name}"
+  name = "gitlab_ci_${local.workspace_name}"
   role = aws_iam_role.gitlab_ci.name
 }
 
@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
 }
 
 resource "aws_iam_policy" "gitlab_ci_manage_instances" {
-  name   = "gitlab_ci_manage_instances-${local.workspace_name}"
+  name   = "gitlab_ci_manage_instances_${local.workspace_name}"
   policy = data.aws_iam_policy_document.gitlab_ci_manage_instances.json
 }
 
