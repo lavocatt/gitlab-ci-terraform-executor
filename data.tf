@@ -18,13 +18,13 @@ data "aws_secretsmanager_secret" "internal_worker_keys" {
   name = "brew_keys"
 }
 data "aws_secretsmanager_secret" "external_worker_keys" {
-  name = "service_keys"
+  name = "external_worker_keys"
 }
 data "aws_secretsmanager_secret" "internal_composer_keys" {
   name = "internal_composer_keys"
 }
 data "aws_secretsmanager_secret" "external_composer_keys" {
-  name = "external_composer_keys"
+  name = "external_composer_keys_v2"
 }
 data "aws_secretsmanager_secret" "gcp_service_account_image_builder" {
   name = "gcp_service_account_image_builder"
