@@ -6,5 +6,5 @@ locals {
   network_interface_ip_address_index = local.workspace_name == "staging" ? 11 : 10
 
   # Set the worker count dynamically based on the deployment environment.
-  spot_fleet_worker_count = local.workspace_name == "staging" ? 1 : 2
+  spot_fleet_worker_count = 2
 }
