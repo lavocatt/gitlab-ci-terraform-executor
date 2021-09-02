@@ -7,7 +7,7 @@ Terraform deploys pre-built images that contain:
 * Monit and monit configuration
 * Other system configuration
 
-At this time, these images are built using [Packer] in the [imagebuilder-packer] repository.
+At this time, these images are built using [Packer] in the [image-builder-packer] repository.
 
 > You may be thinking: *Why Packer?* That's a good question. This design choice
 allowed us to move quickly on the deployment since it's difficult to build
@@ -15,17 +15,17 @@ images for as service that builds images when the service is not online yet.
 It would be a great idea to change this later.
 
 [Packer]: https://www.packer.io/
-[imagebuilder-packer]: https://github.com/osbuild/imagebuilder-packer
+[image-builder-packer]: https://github.com/osbuild/image-builder-packer
 
 ## Updating images
 
-Start by changing the Ansible code within the [imagebuilder-packer] repository
+Start by changing the Ansible code within the [image-builder-packer] repository
 to include your updates. Make a pull request against the `main` branch in the
-[imagebuilder-packer] repository and ensure the GitHub Actions CI completes
+[image-builder-packer] repository and ensure the GitHub Actions CI completes
 successfully.
 
 After the change is reviewed and merged, monitor the image build in the
-[imagebuilder-packer Actions tab]. The build output at the end will include
+[image-builder-packer Actions tab]. The build output at the end will include
 the identifying tags for the images. It should look like this:
 
 ```
@@ -64,5 +64,5 @@ you are ready to deploy to production.
 
 > 🤔 NOTE: The process of updating an image without updating osbuild/osbuild-composer needs to be improved in the future.
 
-[imagebuilder-packer Actions tab]: https://github.com/osbuild/imagebuilder-packer/actions
+[image-builder-packer Actions tab]: https://github.com/osbuild/image-builder-packer/actions
 [imagebuilder-terraform Actions tab]: https://github.com/osbuild/imagebuilder-terraform/actions
