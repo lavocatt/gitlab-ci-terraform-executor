@@ -109,6 +109,7 @@ resource "aws_launch_template" "worker_external_x86" {
     ebs {
       volume_size = 50
       volume_type = "gp2"
+      encrypted   = true
     }
   }
 
