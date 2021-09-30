@@ -168,6 +168,38 @@ resource "aws_security_group" "external_workers" {
   )
 }
 
+# Security group for aoc worker instances.
+resource "aws_security_group" "workers_aoc" {
+  name        = "workers_aoc"
+  description = "AOC workers"
+  vpc_id      = data.aws_vpc.external_vpc.id
+
+  # Allow all ICMP traffic.
+  ingress {
+    description = "ICMP"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow all egress traffic.
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "workers_aoc" },
+  )
+}
+
 ##############################################################################
 ## INTERNAL SECURITY GROUPS
 # Allow egress.

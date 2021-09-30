@@ -35,6 +35,9 @@ data "aws_secretsmanager_secret" "azure_account_image_builder" {
 data "aws_secretsmanager_secret" "subscription_manager_command" {
   name = "subscription-manager-command"
 }
+data "aws_secretsmanager_secret" "offline_token" {
+  name = "offline_token"
+}
 data "aws_secretsmanager_secret" "pozorbot" {
   name = "pozorbot"
 }

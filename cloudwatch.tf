@@ -41,3 +41,19 @@ resource "aws_cloudwatch_log_stream" "external_worker_syslog" {
   name           = "worker_syslog"
   log_group_name = aws_cloudwatch_log_group.external_composer.name
 }
+
+##############################################################################
+## AOC COMPOSER SYSLOG
+# Create a log group that can contain multiple streams.
+resource "aws_cloudwatch_log_group" "workers_aoc" {
+  name = "workers_aoc"
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "Workers log group for AOC" },
+  )
+}
+
+resource "aws_cloudwatch_log_stream" "worker_aoc_syslog" {
+  name           = "worker_syslog"
+  log_group_name = aws_cloudwatch_log_group.workers_aoc.name
+}

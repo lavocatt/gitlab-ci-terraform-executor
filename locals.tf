@@ -7,4 +7,6 @@ locals {
 
   # Set the worker count dynamically based on the deployment environment.
   spot_fleet_worker_count = 2
+
+  spot_fleet_worker_aoc_count = 2
 }

@@ -55,6 +55,11 @@ variable "composer_host_external_staging" {
   description = "Hostname of the staging composer instance on the internal network."
 }
 
+variable "composer_host_aoc" {
+  type        = string
+  description = "Hostname of composer behind api.stage.openshift.com."
+}
+
 variable "TFC_WORKSPACE_NAME" {
   type    = string
   default = ""
