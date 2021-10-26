@@ -75,6 +75,7 @@ resource "aws_launch_template" "worker_aoc_x86" {
   name          = "imagebuilder_worker_aoc_x86_${local.workspace_name}"
   image_id      = data.aws_ami.rhel8_x86_prebuilt.id
   instance_type = "t3.medium"
+  key_name      = "obudai"
 
   # Allow the instance to assume the external_worker IAM role.
   iam_instance_profile {
