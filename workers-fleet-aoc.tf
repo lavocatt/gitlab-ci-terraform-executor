@@ -41,7 +41,7 @@ data "template_cloudinit_config" "workers_aoc_cloud_init" {
   part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
-    content      = data.template_file.external_workers_cloud_config.rendered
+    content      = data.template_file.workers_aoc_cloud_config.rendered
   }
 
   part {
