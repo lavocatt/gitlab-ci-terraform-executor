@@ -17,6 +17,7 @@ data "template_file" "workers_aoc_cloud_config" {
     subscription_manager_command          = data.aws_secretsmanager_secret.subscription_manager_command.arn
     gcp_service_account_image_builder_arn = data.aws_secretsmanager_secret.gcp_service_account_image_builder.arn
     azure_account_image_builder_arn       = data.aws_secretsmanager_secret.azure_account_image_builder.arn
+    aws_account_image_builder_arn         = data.aws_secretsmanager_secret.aws_account_image_builder.arn
     offline_token_arn                     = data.aws_secretsmanager_secret.offline_token.arn
 
     # TODO: pick dns name from the right availability zone
