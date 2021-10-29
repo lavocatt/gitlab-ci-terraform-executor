@@ -64,7 +64,7 @@ data "template_cloudinit_config" "external_workers_cloud_init" {
 
   part {
     content_type = "text/x-shellscript"
-    content      = file("${path.module}/cloud-init/partials/worker_external_gcp_creds.sh")
+    content      = file("${path.module}/cloud-init/partials/worker_external_creds.sh")
   }
 
   part {
