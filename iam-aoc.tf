@@ -45,7 +45,8 @@ data "aws_iam_policy_document" "worker_aoc_read_keys" {
       data.aws_secretsmanager_secret.offline_token.arn,
       data.aws_secretsmanager_secret.subscription_manager_command.arn,
       data.aws_secretsmanager_secret.gcp_service_account_image_builder.arn,
-      data.aws_secretsmanager_secret.azure_account_image_builder.arn
+      data.aws_secretsmanager_secret.azure_account_image_builder.arn,
+      data.aws_secretsmanager_secret.aws_account_image_builder.arn
     ]
   }
 }
