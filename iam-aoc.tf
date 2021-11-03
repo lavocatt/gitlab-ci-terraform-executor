@@ -14,18 +14,18 @@ data "aws_iam_policy_document" "infrastructure_ec2_principal_aoc" {
 
 # Create role for the aoc workers to use
 resource "aws_iam_role" "worker_aoc" {
-  name = "workers_aoc"
+  name = "workers_aoc_${local.workspace_name}"
 
   assume_role_policy = data.aws_iam_policy_document.infrastructure_ec2_principal_aoc.json
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder aoc worker role" },
+    var.imagebuilder_tags, { Name = "Image Builder aoc worker role - ${local.workspace_name}" },
   )
 }
 
 # Link instance profiles to the roles.
 resource "aws_iam_instance_profile" "worker_aoc" {
-  name = "worker_aoc"
+  name = "worker_aoc_${local.workspace_name}"
   role = aws_iam_role.worker_aoc.name
 }
 
@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "worker_aoc_read_keys" {
 
 # Load the external secrets policies.
 resource "aws_iam_policy" "worker_aoc_read_keys" {
-  name   = "worker_aoc_read_keys"
+  name   = "worker_aoc_read_keys_${local.workspace_name}"
   policy = data.aws_iam_policy_document.worker_aoc_read_keys.json
 }
 
@@ -109,7 +109,7 @@ data "aws_iam_policy_document" "cloudwatch_logging_aoc" {
 
 # Load the CloudWatch policy.
 resource "aws_iam_policy" "cloudwatch_logging_aoc" {
-  name   = "cloudwatch_logging_aoc"
+  name   = "cloudwatch_logging_aoc_${local.workspace_name}"
   policy = data.aws_iam_policy_document.cloudwatch_logging_aoc.json
 }
 

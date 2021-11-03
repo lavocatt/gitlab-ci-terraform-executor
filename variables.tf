@@ -57,6 +57,11 @@ variable "composer_host_external_staging" {
 
 variable "composer_host_aoc" {
   type        = string
+  description = "Hostname of composer behind api.openshift.com."
+}
+
+variable "composer_host_aoc_staging" {
+  type        = string
   description = "Hostname of composer behind api.stage.openshift.com."
 }
 

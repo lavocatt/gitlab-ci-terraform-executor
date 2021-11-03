@@ -170,7 +170,7 @@ resource "aws_security_group" "external_workers" {
 
 # Security group for aoc worker instances.
 resource "aws_security_group" "workers_aoc" {
-  name        = "workers_aoc"
+  name        = "workers_aoc_${local.workspace_name}"
   description = "AOC workers"
   vpc_id      = data.aws_vpc.external_vpc.id
 
@@ -196,7 +196,7 @@ resource "aws_security_group" "workers_aoc" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "workers_aoc" },
+    var.imagebuilder_tags, { Name = "workers_aoc_${local.workspace_name}" },
   )
 }
 

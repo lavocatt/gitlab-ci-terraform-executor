@@ -9,9 +9,7 @@ data "template_file" "workers_aoc_cloud_config" {
     osbuild_commit  = var.osbuild_commit
     composer_commit = var.composer_commit
 
-
-    composer_host = var.composer_host_aoc
-    # composer_address = aws_instance.composer_external.private_ip
+    composer_host = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
 
     # Provide the ARNs to the secrets that contains keys/certificates
     subscription_manager_command          = data.aws_secretsmanager_secret.subscription_manager_command.arn
@@ -25,10 +23,10 @@ data "template_file" "workers_aoc_cloud_config" {
     cloudwatch_logs_endpoint_domain = "logs.${data.aws_region.current.name}.amazonaws.com"
 
     # Set the hostname of the instance.
-    system_hostname_prefix = "worker-aoc"
+    system_hostname_prefix = "${local.workspace_name}-worker-aoc"
 
     # Set the CloudWatch log group.
-    cloudwatch_log_group = "workers_aoc"
+    cloudwatch_log_group = "${local.workspace_name}_workers_aoc"
   }
 }
 
@@ -74,7 +72,7 @@ data "template_cloudinit_config" "workers_aoc_cloud_init" {
 # Create a launch template that specifies almost everything about our workers.
 # This eliminates a lot of repeated code for the actual spot fleet itself.
 resource "aws_launch_template" "worker_aoc_x86" {
-  name          = "imagebuilder_worker_aoc_x86"
+  name          = "imagebuilder_worker_aoc_x86_${local.workspace_name}"
   image_id      = data.aws_ami.rhel8_x86_prebuilt.id
   instance_type = "t3.medium"
 
@@ -107,7 +105,7 @@ resource "aws_launch_template" "worker_aoc_x86" {
 
   # Apply tags to the spot fleet definition itself.
   tags = merge(
-    var.imagebuilder_tags, { Name = "🔧 AOC Worker" },
+    var.imagebuilder_tags, { Name = "🔧 AOC Worker (${local.workspace_name})" },
   )
 
   # Apply tags to the instances created in the fleet.
@@ -115,7 +113,7 @@ resource "aws_launch_template" "worker_aoc_x86" {
     resource_type = "instance"
 
     tags = merge(
-      var.imagebuilder_tags, { Name = "🔧 AOC Worker" },
+      var.imagebuilder_tags, { Name = "🔧 AOC Worker (${local.workspace_name})" },
     )
   }
 
@@ -124,7 +122,7 @@ resource "aws_launch_template" "worker_aoc_x86" {
     resource_type = "volume"
 
     tags = merge(
-      var.imagebuilder_tags, { Name = "🔧 AOC Worker" },
+      var.imagebuilder_tags, { Name = "🔧 AOC Worker (${local.workspace_name})" },
     )
   }
 }
@@ -168,6 +166,6 @@ resource "aws_spot_fleet_request" "workers_aoc_x86" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Worker fleet for aoc" },
+    var.imagebuilder_tags, { Name = "Worker fleet for aoc - ${local.workspace_name}" },
   )
 }
