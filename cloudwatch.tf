@@ -49,7 +49,7 @@ resource "aws_cloudwatch_log_group" "workers_aoc" {
   name = "${local.workspace_name}_workers_aoc"
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Workers log group for AOC (${local.workspace_name})" },
+    var.imagebuilder_tags, { Name = "Workers log group for AOC for ${local.workspace_name}" },
   )
 }
 
