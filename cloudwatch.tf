@@ -9,17 +9,6 @@ resource "aws_cloudwatch_log_group" "internal_composer" {
   )
 }
 
-# Create syslog streams
-resource "aws_cloudwatch_log_stream" "internal_composer_syslog" {
-  name           = "composer_syslog"
-  log_group_name = aws_cloudwatch_log_group.internal_composer.name
-}
-
-resource "aws_cloudwatch_log_stream" "internal_worker_syslog" {
-  name           = "worker_syslog"
-  log_group_name = aws_cloudwatch_log_group.internal_composer.name
-}
-
 ##############################################################################
 ## EXTERNAL COMPOSER SYSLOG
 # Create a log group that can contain multiple streams.
@@ -29,17 +18,6 @@ resource "aws_cloudwatch_log_group" "external_composer" {
   tags = merge(
     var.imagebuilder_tags, { Name = "External composer log group for ${local.workspace_name}" },
   )
-}
-
-# Create syslog streams
-resource "aws_cloudwatch_log_stream" "external_composer_syslog" {
-  name           = "composer_syslog"
-  log_group_name = aws_cloudwatch_log_group.external_composer.name
-}
-
-resource "aws_cloudwatch_log_stream" "external_worker_syslog" {
-  name           = "worker_syslog"
-  log_group_name = aws_cloudwatch_log_group.external_composer.name
 }
 
 ##############################################################################

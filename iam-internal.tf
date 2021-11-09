@@ -119,31 +119,16 @@ data "aws_iam_policy_document" "internal_cloudwatch_logging" {
   }
 
   statement {
-    sid = "CloudWatchPutLogEvents"
-
-    actions = [
-      "logs:PutLogEvents"
-    ]
-
-    resources = [
-      aws_cloudwatch_log_stream.internal_composer_syslog.arn,
-      aws_cloudwatch_log_stream.internal_worker_syslog.arn
-    ]
-  }
-
-  statement {
     sid = "CloudWatchDescribeLogStreams"
 
     actions = [
       "logs:PutLogEvents",
       "logs:DescribeLogStreams",
-      "logs:DescribeLogGroups",
-      "logs:CreateLogStream",
-      "logs:CreateLogGroup"
+      "logs:CreateLogStream"
     ]
 
     resources = [
-      "${aws_cloudwatch_log_group.internal_composer.arn}:log-stream:"
+      "${aws_cloudwatch_log_group.internal_composer.arn}:*"
     ]
   }
 }
