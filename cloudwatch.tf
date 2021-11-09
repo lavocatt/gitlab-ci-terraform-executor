@@ -52,8 +52,3 @@ resource "aws_cloudwatch_log_group" "workers_aoc" {
     var.imagebuilder_tags, { Name = "Workers log group for AOC for ${local.workspace_name}" },
   )
 }
-
-resource "aws_cloudwatch_log_stream" "worker_aoc_syslog" {
-  name           = "worker_syslog"
-  log_group_name = aws_cloudwatch_log_group.workers_aoc.name
-}

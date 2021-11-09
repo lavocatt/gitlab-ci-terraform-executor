@@ -79,30 +79,16 @@ data "aws_iam_policy_document" "cloudwatch_logging_aoc" {
   }
 
   statement {
-    sid = "CloudWatchPutLogEvents"
-
-    actions = [
-      "logs:PutLogEvents"
-    ]
-
-    resources = [
-      aws_cloudwatch_log_stream.worker_aoc_syslog.arn
-    ]
-  }
-
-  statement {
     sid = "CloudWatchDescribeLogStreams"
 
     actions = [
       "logs:PutLogEvents",
       "logs:DescribeLogStreams",
-      "logs:DescribeLogGroups",
       "logs:CreateLogStream",
-      "logs:CreateLogGroup"
     ]
 
     resources = [
-      "${aws_cloudwatch_log_group.workers_aoc.arn}:log-stream:"
+      "${aws_cloudwatch_log_group.workers_aoc.arn}:*"
     ]
   }
 }
