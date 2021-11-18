@@ -162,7 +162,6 @@ resource "aws_lambda_function" "pozorbot_lambda" {
   environment {
     variables = {
       SECRET_REGION = data.aws_region.current.name,
-      CHAT_ID       = "-550500291",
       SECRET_NAME   = "pozorbot"
     }
   }

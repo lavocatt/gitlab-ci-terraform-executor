@@ -11,7 +11,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def get_bot_token():
+def get_slack_url():
     # Retrieve bot token secret from AWS Secrets Manager.
     session = boto3.session.Session()
     client = session.client(
@@ -22,17 +22,7 @@ def get_bot_token():
         SecretId=os.environ['SECRET_NAME']
     )
     secrets = json.loads(secret_response['SecretString'])
-    return secrets['telegram_bot_token']
-
-
-# Get the token from Secrets Manager
-bot_token = get_bot_token()
-
-# Get chat ID from environment variables.
-CHAT_ID = os.environ['CHAT_ID']
-
-# Assemble telegram URL.
-TELEGRAM_URL = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    return secrets['slack_url']
 
 
 def send_message(payload):
@@ -41,7 +31,7 @@ def send_message(payload):
     headers = {"Content-Type": "application/json"}
     http.request(
         'POST',
-        TELEGRAM_URL,
+        get_slack_url(),
         body=json.dumps(payload),
         headers=headers,
         retries=3
@@ -58,8 +48,7 @@ def lambda_handler(event, context):
     for record in event['Records']:
         try:
             payload = {
-                "text": record["body"],
-                "chat_id": CHAT_ID
+                "text": record["body"]
             }
             send_message(payload)
 
