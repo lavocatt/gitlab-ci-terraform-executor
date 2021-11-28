@@ -19,9 +19,13 @@ variable "worker_instance_types" {
     "c5.large",
     "c5d.large",
     "c5a.large",
+    "c5ad.large",
     "c5.xlarge",
     "c5d.xlarge",
-    "c5a.xlarge"
+    "c5a.xlarge",
+    "c5ad.xlarge",
+    "c6i.large",
+    "c6i.xlarge"
   ]
 }
 
