@@ -10,17 +10,6 @@ resource "aws_cloudwatch_log_group" "internal_composer" {
 }
 
 ##############################################################################
-## EXTERNAL COMPOSER SYSLOG
-# Create a log group that can contain multiple streams.
-resource "aws_cloudwatch_log_group" "external_composer" {
-  name = "${local.workspace_name}_external"
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "External composer log group for ${local.workspace_name}" },
-  )
-}
-
-##############################################################################
 ## AOC COMPOSER SYSLOG
 # Create a log group that can contain multiple streams.
 resource "aws_cloudwatch_log_group" "workers_aoc" {

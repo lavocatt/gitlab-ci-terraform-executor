@@ -47,16 +47,6 @@ variable "composer_host_internal_staging" {
   description = "Hostname of the staging composer instance on the internal network."
 }
 
-variable "composer_host_external" {
-  type        = string
-  description = "Hostname of the composer instance on the internal network."
-}
-
-variable "composer_host_external_staging" {
-  type        = string
-  description = "Hostname of the staging composer instance on the internal network."
-}
-
 variable "composer_host_aoc" {
   type        = string
   description = "Hostname of composer behind api.openshift.com."
