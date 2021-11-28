@@ -135,6 +135,9 @@ resource "aws_autoscaling_group" "workers_aoc_x86" {
   max_size = local.spot_fleet_worker_aoc_count
   min_size = local.spot_fleet_worker_aoc_count
 
+  # Run in all availability zones
+  vpc_zone_identifier = data.aws_subnet_ids.external_subnets.ids
+
   # React faster to price changes
   capacity_rebalance = true
 
