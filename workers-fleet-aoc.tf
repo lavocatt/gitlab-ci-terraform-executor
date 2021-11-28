@@ -127,45 +127,55 @@ resource "aws_launch_template" "worker_aoc_x86" {
   }
 }
 
-# Create a spot fleet with our launch template.
-resource "aws_spot_fleet_request" "workers_aoc_x86" {
-  # Ensure we use the lowest price instances at all times.
-  allocation_strategy = "lowestPrice"
+# Create a auto-scaling group with our launch template.
+resource "aws_autoscaling_group" "workers_aoc_x86" {
+  name = "imagebuilder_workers_aoc_x86_${local.workspace_name}"
 
-  # Keep the fleet at the target_capacity at all times.
-  fleet_type      = "maintain"
-  target_capacity = local.spot_fleet_worker_aoc_count
+  # For now, specify both minimum and maximum to the same value
+  max_size = local.spot_fleet_worker_aoc_count
+  min_size = local.spot_fleet_worker_aoc_count
 
-  # IAM role that the spot fleet service can use.
-  iam_fleet_role = aws_iam_role.spot_fleet_tagging_role_aoc.arn
+  # React faster to price changes
+  capacity_rebalance = true
 
-  # Instances that reach spot expiration or are stopped due to target capacity
-  # limits should be terminated.
-  terminate_instances_with_expiration = true
+  mixed_instances_policy {
+    instances_distribution {
+      # Ensure we use the lowest price instances at all times.
+      spot_allocation_strategy = "lowest-price"
 
-  # Create a new fleet before destroying the old one.
-  # lifecycle {
-  #   create_before_destroy = true
-  # }
-
-  # Use our pre-defined launch template.
-  launch_template_config {
-    launch_template_specification {
-      id      = aws_launch_template.worker_aoc_x86.id
-      version = aws_launch_template.worker_aoc_x86.latest_version
+      # We want only spot instances
+      on_demand_base_capacity                  = 0
+      on_demand_percentage_above_base_capacity = 0
     }
 
-    dynamic "overrides" {
-      for_each = var.worker_instance_types
+    launch_template {
+      launch_template_specification {
+        launch_template_id = aws_launch_template.worker_aoc_x86.id
+      }
 
-      content {
-        instance_type = overrides.value
-        subnet_id     = data.aws_subnet.external_subnet_primary.id
+      dynamic "override" {
+        for_each = var.worker_instance_types
+
+        content {
+          instance_type = override.value
+        }
       }
     }
   }
 
-  tags = merge(
-    var.imagebuilder_tags, { Name = "Worker fleet for aoc - ${local.workspace_name}" },
-  )
+  dynamic "tag" {
+    for_each = var.imagebuilder_tags
+
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
+  }
+
+  tag {
+    key                 = "Name"
+    value               = "Worker ASG for aoc - ${local.workspace_name}"
+    propagate_at_launch = true
+  }
 }
