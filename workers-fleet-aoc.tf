@@ -178,7 +178,7 @@ resource "aws_autoscaling_group" "workers_aoc_x86" {
 
   tag {
     key                 = "Name"
-    value               = "Worker ASG for aoc - ${local.workspace_name}"
+    value               = "🔧 AOC Worker ${local.workspace_name}"
     propagate_at_launch = true
   }
 }
