@@ -2,11 +2,5 @@ locals {
   # Set the workspace_name without the imagebuilder- prefix.
   workspace_name = var.TFC_WORKSPACE_NAME != "" ? trimprefix(var.TFC_WORKSPACE_NAME, "imagebuilder-") : terraform.workspace
 
-  # Ensure that staging/stable composer get the same IP address every time.
-  network_interface_ip_address_index = local.workspace_name == "staging" ? 11 : 10
-
-  # Set the worker count dynamically based on the deployment environment.
-  spot_fleet_worker_count = 1
-
   spot_fleet_worker_aoc_count = 16
 }

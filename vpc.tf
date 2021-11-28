@@ -19,43 +19,6 @@ resource "aws_vpc_endpoint" "external_vpc_s3" {
   )
 }
 
-# CloudWatch Logs endpoint enables us to access CloudWatch Logs from
-# the internal network.
-resource "aws_vpc_endpoint" "internal_vpc_cloudwatch_logs" {
-  vpc_id            = data.aws_vpc.internal_vpc.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.logs"
-  vpc_endpoint_type = "Interface"
-
-  security_group_ids = [
-    aws_security_group.internal_allow_egress.id,
-    aws_security_group.internal_allow_trusted.id
-  ]
-
-  subnet_ids = data.aws_subnet_ids.internal_subnets.ids
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "📜 CloudWatch Logs VPC endpoint (internal)" },
-  )
-}
-
-# Endpoint to reach AWS Secrets Manager.
-resource "aws_vpc_endpoint" "internal_vpc_secretsmanager" {
-  vpc_id            = data.aws_vpc.internal_vpc.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.secretsmanager"
-  vpc_endpoint_type = "Interface"
-
-  security_group_ids = [
-    aws_security_group.internal_allow_egress.id,
-    aws_security_group.internal_allow_trusted.id
-  ]
-
-  subnet_ids = data.aws_subnet_ids.internal_subnets.ids
-
-  tags = merge(
-    var.imagebuilder_tags, { Name = "🤫 Secrets Manager VPC endpoint (internal)" },
-  )
-}
-
 # Endpoint to reach private S3 rpmrepo buckets from within the VPC.
 resource "aws_vpc_endpoint" "internal_vpc_rpmrepo" {
   vpc_id            = data.aws_vpc.internal_vpc.id

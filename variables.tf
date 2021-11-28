@@ -37,16 +37,6 @@ variable "osbuild_commit" {
   description = "The Git SHA of osbuild to deploy on the worker nodes."
 }
 
-variable "composer_host_internal" {
-  type        = string
-  description = "Hostname of the composer instance on the internal network."
-}
-
-variable "composer_host_internal_staging" {
-  type        = string
-  description = "Hostname of the staging composer instance on the internal network."
-}
-
 variable "composer_host_aoc" {
   type        = string
   description = "Hostname of composer behind api.openshift.com."
