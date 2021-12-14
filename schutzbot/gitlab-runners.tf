@@ -1,3 +1,17 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.27"
+    }
+  }
+}
+
+provider "aws" {
+  profile = "default"
+  region  = "us-east-1"
+}
+
 data "aws_iam_policy_document" "gitlab_ci_ec2_principal" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -10,17 +24,17 @@ data "aws_iam_policy_document" "gitlab_ci_ec2_principal" {
 }
 
 resource "aws_iam_role" "gitlab_ci" {
-  name = "gitlab_ci_${local.workspace_name}"
+  name = "gitlab_ci_${var.workspace_name}"
 
   assume_role_policy = data.aws_iam_policy_document.gitlab_ci_ec2_principal.json
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "Image Builder GitLab CI role" },
+  var.imagebuilder_tags, { Name = "Image Builder GitLab CI role" },
   )
 }
 
 resource "aws_iam_instance_profile" "gitlab_ci" {
-  name = "gitlab_ci_${local.workspace_name}"
+  name = "gitlab_ci_${var.workspace_name}"
   role = aws_iam_role.gitlab_ci.name
 }
 
@@ -54,7 +68,7 @@ data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
 }
 
 resource "aws_iam_policy" "gitlab_ci_manage_instances" {
-  name   = "gitlab_ci_manage_instances_${local.workspace_name}"
+  name   = "gitlab_ci_manage_instances_${var.workspace_name}"
   policy = data.aws_iam_policy_document.gitlab_ci_manage_instances.json
 }
 
@@ -64,9 +78,9 @@ resource "aws_iam_role_policy_attachment" "gitlab_ci_manage_instances" {
 }
 
 resource "aws_security_group" "gitlab_ci_runner_internal" {
-  name        = "gitlab_ci_runner_internal_${local.workspace_name}"
+  name        = "gitlab_ci_runner_internal_${var.workspace_name}"
   description = "GitLab CI"
-  vpc_id      = data.aws_vpc.internal_vpc.id
+  vpc_id      = var.internal_vpc_id
 
   egress {
     from_port   = 0
@@ -88,14 +102,14 @@ resource "aws_security_group" "gitlab_ci_runner_internal" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "gitlab_ci_runner_internal_${local.workspace_name}" },
+  var.imagebuilder_tags, { Name = "gitlab_ci_runner_internal_${var.workspace_name}" },
   )
 }
 
 resource "aws_security_group" "gitlab_ci_runner_external" {
-  name        = "gitlab_ci_runner_external_${local.workspace_name}"
+  name        = "gitlab_ci_runner_external_${var.workspace_name}"
   description = "GitLab CI"
-  vpc_id      = data.aws_vpc.external_vpc.id
+  vpc_id      = var.external_vpc_id
 
   egress {
     from_port   = 0
@@ -117,6 +131,6 @@ resource "aws_security_group" "gitlab_ci_runner_external" {
   }
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "gitlab_ci_runner_external_${local.workspace_name}" },
+  var.imagebuilder_tags, { Name = "gitlab_ci_runner_external_${var.workspace_name}" },
   )
 }
