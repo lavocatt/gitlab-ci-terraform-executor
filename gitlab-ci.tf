@@ -120,3 +120,26 @@ resource "aws_security_group" "gitlab_ci_runner_external" {
     var.imagebuilder_tags, { Name = "gitlab_ci_runner_external_${local.workspace_name}" },
   )
 }
+
+resource "aws_instance" "gitlab_ci_runner" {
+  # centos stream 8
+  ami           = "ami-0ee70e88eed976a1b"
+  key_name      = "obudai"
+  instance_type = "t3.small"
+
+  subnet_id = data.aws_subnet.internal_subnet_primary.id
+
+  vpc_security_group_ids = [
+    aws_security_group.gitlab_ci_runner_internal.id
+  ]
+  iam_instance_profile = aws_iam_instance_profile.gitlab_ci.name
+  user_data            = file("cloud-init/gitlab_ci_runner.sh")
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "gitlab_ci_runner" },
+  )
+
+  root_block_device {
+    volume_size = 40
+  }
+}
