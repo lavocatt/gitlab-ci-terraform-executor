@@ -63,6 +63,37 @@ resource "aws_iam_role_policy_attachment" "gitlab_ci_manage_instances" {
   policy_arn = aws_iam_policy.gitlab_ci_manage_instances.arn
 }
 
+# Create policies that allows for reading secrets.
+data "aws_iam_policy_document" "gitlab_ci_read_secrets" {
+  statement {
+    sid = "WorkerReadSecrets"
+
+    actions = [
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:ListSecretVersionIds"
+    ]
+
+    resources = [
+      data.aws_secretsmanager_secret.schutzbot_gitlab_runner.arn
+    ]
+  }
+}
+
+# Load the gitlab secrets policies.
+resource "aws_iam_policy" "gitlab_ci_read_secrets" {
+  name   = "gitlab_ci_read_secrets_${local.workspace_name}"
+  policy = data.aws_iam_policy_document.gitlab_ci_read_secrets.json
+}
+
+# Attach the external secrets policies to the gitlab_ci role.
+resource "aws_iam_role_policy_attachment" "gitlab_ci_read_secrets" {
+  role       = aws_iam_role.gitlab_ci.name
+  policy_arn = aws_iam_policy.gitlab_ci_read_secrets.arn
+}
+
+
 resource "aws_security_group" "gitlab_ci_runner_internal" {
   name        = "gitlab_ci_runner_internal_${local.workspace_name}"
   description = "GitLab CI"

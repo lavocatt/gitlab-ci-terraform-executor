@@ -31,6 +31,9 @@ data "aws_secretsmanager_secret" "offline_token" {
 data "aws_secretsmanager_secret" "pozorbot" {
   name = "pozorbot"
 }
+data "aws_secretsmanager_secret" "schutzbot_gitlab_runner" {
+  name = "schutzbot_gitlab_runner"
+}
 
 ##############################################################################
 ## EC2
