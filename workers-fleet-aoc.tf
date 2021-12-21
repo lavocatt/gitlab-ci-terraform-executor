@@ -163,6 +163,18 @@ resource "aws_autoscaling_group" "workers_aoc_x86" {
       }
     }
   }
+  # ASG doesn't refresh instances when a launch template is changed,
+  # therefore we must explicitly request a refresh.
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      # Wait for 5 minutes before the instance is configured
+      instance_warmup = "300"
+
+      # We always must have 80% of healthy instances
+      min_healthy_percentage = 80
+    }
+  }
 
   dynamic "tag" {
     for_each = var.imagebuilder_tags
