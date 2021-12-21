@@ -158,6 +158,9 @@ resource "aws_instance" "gitlab_ci_runner" {
   key_name      = "obudai"
   instance_type = "t3.small"
 
+  # deploy only in staging
+  count = local.workspace_name == "staging" ? 1 : 0
+
   subnet_id = data.aws_subnet.internal_subnet_primary.id
 
   vpc_security_group_ids = [
