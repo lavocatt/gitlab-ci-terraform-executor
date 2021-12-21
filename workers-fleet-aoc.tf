@@ -6,7 +6,6 @@ data "template_file" "workers_aoc_cloud_config" {
   vars = {
     # Add any variables here to pass to the setup script when the instance
     # boots.
-    osbuild_commit  = var.osbuild_commit
     composer_commit = var.composer_commit
 
     composer_host = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc

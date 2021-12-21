@@ -75,14 +75,10 @@ data "aws_ami" "rhel8_x86_prebuilt" {
   owners      = ["self"]
   most_recent = true
 
-  # Get the image that matches our composer_commit and osbuild_commit.
+  # Get the image that matches our composer_commit.
   filter {
-    name   = "tag:composer_commit"
-    values = [var.composer_commit]
-  }
-  filter {
-    name   = "tag:osbuild_commit"
-    values = [var.osbuild_commit]
+    name   = "tag:Name"
+    values = ["osbuild-composer-worker-main-${var.composer_commit}"]
   }
 }
 
