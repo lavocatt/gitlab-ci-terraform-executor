@@ -7,7 +7,7 @@ echo "Deploy cloud credentials for workers."
 # Deploy the GCP Service Account credentials file.
 /usr/local/bin/aws secretsmanager get-secret-value \
   --endpoint-url ${SECRETS_MANAGER_ENDPOINT_URL} \
-  --secret-id ${GCP_SERVICE_ACCOUNT_IMAGE_BUILDER_ARN} | jq -r ".SecretString" > ${WORKER_DIR}/gcp_credentials.json
+  --secret-id ${GCP_SERVICE_ACCOUNT_IMAGE_BUILDER_ARN} | jq -r ".SecretString" > /etc/osbuild-worker/gcp_credentials.json
 
 # Deploy the Azure credentials file.
 /usr/local/bin/aws secretsmanager get-secret-value \
