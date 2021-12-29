@@ -83,6 +83,7 @@ data "aws_iam_policy_document" "cloudwatch_logging_aoc" {
 
     actions = [
       "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
       "logs:DescribeLogStreams",
       "logs:CreateLogStream",
     ]
