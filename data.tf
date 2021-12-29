@@ -5,6 +5,8 @@
 # Get our current AWS region.
 data "aws_region" "current" {}
 
+data "aws_caller_identity" "identity" {}
+
 # Get the availability zones in our region.
 data "aws_availability_zones" "available" {
   state = "available"

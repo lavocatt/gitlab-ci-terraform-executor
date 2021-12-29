@@ -78,12 +78,22 @@ data "aws_iam_policy_document" "cloudwatch_logging_aoc" {
     resources = ["*"]
   }
 
+  # vector healthcheck needs this
+  statement {
+    sid = "CloudWatchDescribeLogGroups"
+    actions = [
+      "logs:DescribeLogGroups",
+    ]
+    resources = [
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.identity.account_id}:log-group:*"
+    ]
+  }
+
   statement {
     sid = "CloudWatchDescribeLogStreams"
 
     actions = [
       "logs:PutLogEvents",
-      "logs:DescribeLogGroups",
       "logs:DescribeLogStreams",
       "logs:CreateLogStream",
     ]
