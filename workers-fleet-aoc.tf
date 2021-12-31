@@ -152,6 +152,7 @@ resource "aws_autoscaling_group" "workers_aoc_x86" {
     launch_template {
       launch_template_specification {
         launch_template_id = aws_launch_template.worker_aoc_x86.id
+        version            = aws_launch_template.worker_aoc_x86.latest_version
       }
 
       dynamic "override" {
