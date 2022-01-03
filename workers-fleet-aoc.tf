@@ -43,6 +43,11 @@ data "template_cloudinit_config" "workers_aoc_cloud_init" {
 
   part {
     content_type = "text/x-shellscript"
+    content      = file("${path.module}/cloud-init/partials/vector.sh")
+  }
+
+  part {
+    content_type = "text/x-shellscript"
     content      = file("${path.module}/cloud-init/partials/set_hostname.sh")
   }
 
