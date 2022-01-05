@@ -28,50 +28,6 @@ data "template_file" "workers_aoc_cloud_config" {
   }
 }
 
-# Render a multi-part cloud-init config making use of the part
-# above, and other source files
-data "template_cloudinit_config" "workers_aoc_cloud_init" {
-  gzip          = true
-  base64_encode = true
-
-  # Main cloud-config configuration file.
-  part {
-    filename     = "init.cfg"
-    content_type = "text/cloud-config"
-    content      = data.template_file.workers_aoc_cloud_config.rendered
-  }
-
-  part {
-    content_type = "text/x-shellscript"
-    content      = file("${path.module}/cloud-init/partials/vector.sh")
-  }
-
-  part {
-    content_type = "text/x-shellscript"
-    content      = file("${path.module}/cloud-init/partials/set_hostname.sh")
-  }
-
-  part {
-    content_type = "text/x-shellscript"
-    content      = file("${path.module}/cloud-init/partials/subscription_manager.sh")
-  }
-
-  part {
-    content_type = "text/x-shellscript"
-    content      = file("${path.module}/cloud-init/partials/worker_external_creds.sh")
-  }
-
-  part {
-    content_type = "text/x-shellscript"
-    content      = file("${path.module}/cloud-init/partials/worker_service.sh")
-  }
-
-  part {
-    content_type = "text/x-shellscript"
-    content      = file("${path.module}/cloud-init/partials/offline_token.sh")
-  }
-}
-
 # Create a launch template that specifies almost everything about our workers.
 # This eliminates a lot of repeated code for the actual spot fleet itself.
 resource "aws_launch_template" "worker_aoc_x86" {
@@ -85,7 +41,7 @@ resource "aws_launch_template" "worker_aoc_x86" {
   }
 
   # Assemble the cloud-init userdata file.
-  user_data = data.template_cloudinit_config.workers_aoc_cloud_init.rendered
+  user_data = data.template_file.workers_aoc_cloud_config.rendered
 
   # Get the security group for the instances.
   vpc_security_group_ids = [
