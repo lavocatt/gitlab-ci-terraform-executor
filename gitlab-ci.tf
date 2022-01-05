@@ -156,8 +156,7 @@ resource "aws_security_group" "gitlab_ci_runner_external" {
 resource "aws_instance" "gitlab_ci_runner" {
   # centos stream 8
   ami           = "ami-0ee70e88eed976a1b"
-  key_name      = "obudai"
-  instance_type = "t3.small"
+  instance_type = "c6a.xlarge"
 
   # deploy only in staging
   count = local.workspace_name == "staging" ? 1 : 0
@@ -168,13 +167,15 @@ resource "aws_instance" "gitlab_ci_runner" {
     aws_security_group.gitlab_ci_runner_internal.id
   ]
   iam_instance_profile = aws_iam_instance_profile.gitlab_ci.name
-  user_data            = file("cloud-init/gitlab_ci_runner.sh")
+
+  user_data = templatefile("cloud-init/gitlab_ci_runner.sh.tpl", { secret_arn = data.aws_secretsmanager_secret.schutzbot_gitlab_runner.arn })
 
   tags = merge(
-    var.imagebuilder_tags, { Name = "gitlab_ci_runner" },
+    var.imagebuilder_tags, { Name = "🏃 Schutzbot on GitLab runner ${local.workspace_name}" },
   )
 
   root_block_device {
     volume_size = 40
+    volume_type = "gp3"
   }
 }
