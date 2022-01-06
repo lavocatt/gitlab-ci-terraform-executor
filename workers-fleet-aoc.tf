@@ -41,7 +41,7 @@ resource "aws_launch_template" "worker_aoc_x86" {
   }
 
   # Assemble the cloud-init userdata file.
-  user_data = data.template_file.workers_aoc_cloud_config.rendered
+  user_data = base64encode(data.template_file.workers_aoc_cloud_config.rendered)
 
   # Get the security group for the instances.
   vpc_security_group_ids = [
