@@ -47,6 +47,7 @@ data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
       "ec2:DescribeVolumes",
       "ec2:DescribeVpcAttribute",
       "ec2:DescribeVpcs",
+      "ec2:DescribeRouteTables",
     ]
 
     resources = ["*"]
