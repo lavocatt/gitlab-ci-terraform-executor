@@ -133,6 +133,52 @@ resource "aws_s3_bucket_policy" "rpmrepo_s3" {
   policy = data.aws_iam_policy_document.rpmrepo_s3.json
 }
 
+
+##############################################################################
+## Logging
+
+# Create a cloudwatch log group to receive logs from the lambda function.
+# NOTE(mhayden): AWS chooses the cloudwatch log group name automatically, so
+# the path below **must be** /aws/lambda/{function_name}.
+resource "aws_cloudwatch_log_group" "rpmrepo_logs" {
+  name = "/aws/lambda/rpmrepo-gateway-${local.workspace_name}"
+
+  tags = merge(
+    var.imagebuilder_tags, { Name = "RPMrepo - ${local.workspace_name}" },
+  )
+}
+
+# Create policy to allow the lambda function to log to cloudwatch.
+data "aws_iam_policy_document" "rpmrepo_cloudwatch" {
+  statement {
+    sid = "RPMRepoCloudwatch"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+
+    # Asterisk on the end allows the lambda to write to various log streams
+    # inside this log group.
+    resources = [
+      "${aws_cloudwatch_log_group.rpmrepo_logs.arn}:*"
+    ]
+  }
+}
+
+# Load the lambda cloudwatch policy into IAM.
+resource "aws_iam_policy" "rpmrepo_lambda_cloudwatch" {
+  name   = "rpmrepo_lambda_cloudwatch_${local.workspace_name}"
+  policy = data.aws_iam_policy_document.rpmrepo_cloudwatch.json
+}
+
+# Attach the lambda cloudwatch policy to the rpmrepo lambda role.
+resource "aws_iam_role_policy_attachment" "rpmrepo_lambda_cloudwatch" {
+  role       = aws_iam_role.rpmrepo_gateway_lambda.name
+  policy_arn = aws_iam_policy.rpmrepo_lambda_cloudwatch.arn
+}
+
 ##############################################################################
 ## API Gateway
 
