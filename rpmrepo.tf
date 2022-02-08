@@ -211,6 +211,8 @@ resource "aws_lambda_function" "rpmrepo_gateway" {
   runtime       = "python3.8"
   s3_bucket     = var.rpmrepo_external_bucket
   s3_key        = "code/rpmrepo-gateway/rpmrepo-gateway-${var.rpmrepo_gateway_commit}.zip"
+  # enumerate with many snapshots take a long time, so let's set the timeout to 30 seconds
+  timeout = 30
   tags = merge(
     var.imagebuilder_tags,
     { Name = "RPMrepo Gateway - ${local.workspace_name}" },
