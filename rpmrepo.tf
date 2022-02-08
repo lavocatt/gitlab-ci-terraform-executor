@@ -141,7 +141,8 @@ resource "aws_s3_bucket_policy" "rpmrepo_s3" {
 # NOTE(mhayden): AWS chooses the cloudwatch log group name automatically, so
 # the path below **must be** /aws/lambda/{function_name}.
 resource "aws_cloudwatch_log_group" "rpmrepo_logs" {
-  name = "/aws/lambda/rpmrepo-gateway-${local.workspace_name}"
+  name              = "/aws/lambda/rpmrepo-gateway-${local.workspace_name}"
+  retention_in_days = 1
 
   tags = merge(
     var.imagebuilder_tags, { Name = "RPMrepo - ${local.workspace_name}" },
