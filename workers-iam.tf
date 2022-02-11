@@ -174,7 +174,6 @@ resource "aws_iam_role_policy_attachment" "spotfleet_iam_spot_policy" {
 # Create S3 bucket for workers to upload images.
 resource "aws_s3_bucket" "imagebuilder_s3" {
   bucket = "imagebuilder.service.${local.workspace_name}"
-  acl    = "private"
 
   tags = merge(
     var.imagebuilder_tags, { Name = "Image Builder S3 bucket - ${local.workspace_name}" },

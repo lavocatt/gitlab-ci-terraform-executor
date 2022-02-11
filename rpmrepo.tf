@@ -64,7 +64,6 @@ variable "rpmrepo_gateway_commit" {
 ## S3 Storage
 
 resource "aws_s3_bucket" "rpmrepo_s3" {
-  acl    = "private"
   bucket = local.workspace_name == "staging" ? "rpmrepo-storage" : "rpmrepo-storage-${local.workspace_name}"
   tags = merge(
     var.imagebuilder_tags,
