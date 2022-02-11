@@ -32,7 +32,9 @@ data "aws_iam_policy_document" "vmimport_ec2_aoc" {
       "ec2:CreateTags",
       "ec2:RegisterImage",
       "ec2:ImportSnapshot",
-      "ec2:ModifyImageAttribute"
+      "ec2:ModifyImageAttribute",
+      "ec2:DeregisterImage",
+      "ec2:DeleteSnapshot"
     ]
 
     resources = ["*"]
