@@ -74,12 +74,12 @@ data "aws_ami" "rhel8_x86" {
 # Get the RHEL 8 image with osbuild-composer pre-installed that was created
 # by packer.
 data "aws_ami" "rhel8_x86_prebuilt" {
-  owners      = ["self"]
+  owners      = ["self", "920877988636"]
   most_recent = true
 
   # Get the image that matches our composer_commit.
   filter {
-    name   = "tag:Name"
+    name   = "name"
     values = ["osbuild-composer-worker-main-${var.composer_commit}"]
   }
 }
