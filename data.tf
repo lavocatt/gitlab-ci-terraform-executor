@@ -30,6 +30,9 @@ data "aws_secretsmanager_secret" "subscription_manager_command" {
 data "aws_secretsmanager_secret" "offline_token" {
   name = "offline_token"
 }
+data "aws_secretsmanager_secret" "offline_token_fedora" {
+  name = "offline_token_fedora"
+}
 data "aws_secretsmanager_secret" "pozorbot" {
   name = "pozorbot"
 }
