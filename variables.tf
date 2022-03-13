@@ -32,6 +32,11 @@ variable "composer_commit" {
   description = "The Git SHA of osbuild-composer to deploy on both the composer and worker nodes."
 }
 
+variable "fedora_workers_composer_commit" {
+  type        = string
+  description = "The Git SHA of osbuild-composer to deploy on Fedora worker instances."
+}
+
 variable "composer_host_aoc" {
   type        = string
   description = "Hostname of composer behind api.openshift.com."

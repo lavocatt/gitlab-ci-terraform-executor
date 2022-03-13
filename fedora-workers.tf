@@ -135,33 +135,6 @@ resource "aws_cloudwatch_log_group" "workers_fedora" {
 
 ##############################################################################
 ## WORKER SPOT FLEETS
-data "template_file" "workers_fedora_cloud_config" {
-  template = file("${path.module}/cloud-init/partials/worker_aoc.cfg")
-
-  vars = {
-    # Add any variables here to pass to the setup script when the instance
-    # boots.
-
-    composer_host = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
-
-    # Provide the ARNs to the secrets that contains keys/certificates
-    subscription_manager_command          = data.aws_secretsmanager_secret.subscription_manager_command.arn
-    gcp_service_account_image_builder_arn = data.aws_secretsmanager_secret.gcp_service_account_image_builder.arn
-    azure_account_image_builder_arn       = data.aws_secretsmanager_secret.azure_account_image_builder.arn
-    aws_account_image_builder_arn         = data.aws_secretsmanager_secret.aws_account_image_builder.arn
-    offline_token_arn                     = data.aws_secretsmanager_secret.offline_token_fedora.arn
-
-    # TODO: pick dns name from the right availability zone
-    secrets_manager_endpoint_domain = "secretsmanager.${data.aws_region.current.name}.amazonaws.com"
-    cloudwatch_logs_endpoint_domain = "logs.${data.aws_region.current.name}.amazonaws.com"
-
-    # Set the hostname of the instance.
-    system_hostname_prefix = "${local.workspace_name}-worker-fedora"
-
-    # Set the CloudWatch log group.
-    cloudwatch_log_group = "${local.workspace_name}_workers_fedora"
-  }
-}
 
 # Security group for fedora worker instances.
 resource "aws_security_group" "workers_fedora" {
@@ -204,130 +177,85 @@ resource "aws_security_group" "workers_fedora" {
   )
 }
 
-# Create a launch template that specifies almost everything about our workers.
-# This eliminates a lot of repeated code for the actual spot fleet itself.
-resource "aws_launch_template" "worker_fedora_x86" {
-  name          = "imagebuilder_worker_fedora_x86_${local.workspace_name}"
-  image_id      = data.aws_ami.rhel8_x86_prebuilt.id
-  instance_type = "t3.medium"
-  key_name      = "obudai"
+data "aws_ami" "worker_fedora_35_x86_64" {
+  owners      = ["self"]
+  most_recent = true
 
-  # Allow the instance to assume the external_worker IAM role.
-  iam_instance_profile {
-    name = aws_iam_instance_profile.worker_fedora.name
+  filter {
+    name   = "tag:composer_commit"
+    values = [var.fedora_workers_composer_commit]
   }
-
-  # Assemble the cloud-init userdata file.
-  user_data = base64encode(data.template_file.workers_fedora_cloud_config.rendered)
-
-  # Get the security group for the instances.
-  vpc_security_group_ids = [
-    aws_security_group.workers_fedora.id
-  ]
-
-  # Ensure the latest version of the template is marked as the default one.
-  update_default_version = true
-
-  # Block devices attached to each worker.
-  block_device_mappings {
-    device_name = "/dev/sda1"
-
-    ebs {
-      volume_size = 50
-      volume_type = "gp2"
-      encrypted   = true
-    }
+  filter {
+    name   = "tag:os"
+    values = ["fedora"]
   }
-
-  # Apply tags to the spot fleet definition itself.
-  tags = merge(
-    var.imagebuilder_tags, { Name = "🇫 Fedora Worker (${local.workspace_name})" },
-  )
-
-  # Apply tags to the instances created in the fleet.
-  tag_specifications {
-    resource_type = "instance"
-
-    tags = merge(
-      var.imagebuilder_tags, { Name = "🇫 Fedora Worker (${local.workspace_name})" },
-    )
+  filter {
+    name   = "tag:os_version"
+    values = ["35"]
   }
-
-  # Apply tags to the EBS volumes created in the fleet.
-  tag_specifications {
-    resource_type = "volume"
-
-    tags = merge(
-      var.imagebuilder_tags, { Name = "🇫 Fedora Worker (${local.workspace_name})" },
-    )
+  filter {
+    name   = "tag:arch"
+    values = ["x86_64"]
   }
 }
 
-# Create a auto-scaling group with our launch template.
-resource "aws_autoscaling_group" "workers_fedora_x86" {
-  name = "imagebuilder_workers_fedora_x86_${local.workspace_name}"
 
-  # For now, specify both minimum and maximum to the same value
-  max_size = local.spot_fleet_worker_fedora_count
-  min_size = local.spot_fleet_worker_fedora_count
+module "worker_group_fedora_35_x86_64" {
+  source = "./worker-group"
 
-  # Run in all availability zones
-  vpc_zone_identifier = data.aws_subnet_ids.external_subnets.ids
+  name = "Fedora-Worker-x86_64-(${local.workspace_name})"
 
-  # React faster to price changes
-  capacity_rebalance = true
+  composer_host        = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
+  image_id             = data.aws_ami.worker_fedora_35_x86_64.id
+  instance_profile_arn = aws_iam_instance_profile.worker_fedora.arn
+  instance_types       = ["c6a.large"]
+  max_size             = 1
+  min_size             = 1
+  offline_token_arn    = data.aws_secretsmanager_secret.offline_token_fedora.arn
+  security_group_id    = aws_security_group.workers_fedora.id
+  subnet_ids           = data.aws_subnet_ids.external_subnets.ids
+  workspace_name       = local.workspace_name
 
-  mixed_instances_policy {
-    instances_distribution {
-      # Ensure we use the lowest price instances at all times.
-      spot_allocation_strategy = "lowest-price"
+  cloudwatch_log_group = aws_cloudwatch_log_group.workers_fedora.name
+}
 
-      # We want only spot instances
-      on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = 0
-    }
+data "aws_ami" "worker_fedora_35_aarch64" {
+  owners      = ["self"]
+  most_recent = true
 
-    launch_template {
-      launch_template_specification {
-        launch_template_id = aws_launch_template.worker_fedora_x86.id
-        version            = aws_launch_template.worker_fedora_x86.latest_version
-      }
-
-      dynamic "override" {
-        for_each = var.worker_instance_types
-
-        content {
-          instance_type = override.value
-        }
-      }
-    }
+  filter {
+    name   = "tag:composer_commit"
+    values = [var.fedora_workers_composer_commit]
   }
-  # ASG doesn't refresh instances when a launch template is changed,
-  # therefore we must explicitly request a refresh.
-  instance_refresh {
-    strategy = "Rolling"
-    preferences {
-      # Wait for 5 minutes before the instance is configured
-      instance_warmup = "300"
-
-      # We always must have 80% of healthy instances
-      min_healthy_percentage = 80
-    }
+  filter {
+    name   = "tag:os"
+    values = ["fedora"]
   }
-
-  dynamic "tag" {
-    for_each = var.imagebuilder_tags
-
-    content {
-      key                 = tag.key
-      value               = tag.value
-      propagate_at_launch = true
-    }
+  filter {
+    name   = "tag:os_version"
+    values = ["35"]
   }
-
-  tag {
-    key                 = "Name"
-    value               = "🇫 Fedora Worker ${local.workspace_name}"
-    propagate_at_launch = true
+  filter {
+    name   = "tag:arch"
+    values = ["aarch64"]
   }
+}
+
+module "worker_group_fedora_35_aarch64" {
+  source = "./worker-group"
+
+  name = "Fedora-Worker-aarch64-(${local.workspace_name})"
+
+  composer_host        = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
+  image_id             = data.aws_ami.worker_fedora_35_aarch64.id
+  instance_profile_arn = aws_iam_instance_profile.worker_fedora.arn
+  instance_types       = ["c6g.large"]
+  max_size             = 1
+  min_size             = 1
+  offline_token_arn    = data.aws_secretsmanager_secret.offline_token_fedora.arn
+  security_group_id    = aws_security_group.workers_fedora.id
+  subnet_ids           = data.aws_subnet_ids.external_subnets.ids
+  workspace_name       = local.workspace_name
+
+  cloudwatch_log_group = aws_cloudwatch_log_group.workers_fedora.name
 }
