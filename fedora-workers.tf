@@ -205,16 +205,17 @@ module "worker_group_fedora_35_x86_64" {
 
   name = "Fedora-Worker-x86_64-(${local.workspace_name})"
 
-  composer_host        = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
-  image_id             = data.aws_ami.worker_fedora_35_x86_64.id
-  instance_profile_arn = aws_iam_instance_profile.worker_fedora.arn
-  instance_types       = ["c6a.large"]
-  max_size             = 1
-  min_size             = 1
-  offline_token_arn    = data.aws_secretsmanager_secret.offline_token_fedora.arn
-  security_group_id    = aws_security_group.workers_fedora.id
-  subnet_ids           = data.aws_subnet_ids.external_subnets.ids
-  workspace_name       = local.workspace_name
+  composer_host                    = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
+  image_id                         = data.aws_ami.worker_fedora_35_x86_64.id
+  instance_profile_arn             = aws_iam_instance_profile.worker_fedora.arn
+  instance_types                   = ["c6a.large"]
+  max_size                         = 1
+  min_size                         = 1
+  offline_token_arn                = data.aws_secretsmanager_secret.offline_token_fedora.arn
+  subscription_manager_command_arn = data.aws_secretsmanager_secret.subscription_manager_command.arn
+  security_group_id                = aws_security_group.workers_fedora.id
+  subnet_ids                       = data.aws_subnet_ids.external_subnets.ids
+  workspace_name                   = local.workspace_name
 
   cloudwatch_log_group = aws_cloudwatch_log_group.workers_fedora.name
 }
@@ -246,16 +247,17 @@ module "worker_group_fedora_35_aarch64" {
 
   name = "Fedora-Worker-aarch64-(${local.workspace_name})"
 
-  composer_host        = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
-  image_id             = data.aws_ami.worker_fedora_35_aarch64.id
-  instance_profile_arn = aws_iam_instance_profile.worker_fedora.arn
-  instance_types       = ["c6g.large"]
-  max_size             = 1
-  min_size             = 1
-  offline_token_arn    = data.aws_secretsmanager_secret.offline_token_fedora.arn
-  security_group_id    = aws_security_group.workers_fedora.id
-  subnet_ids           = data.aws_subnet_ids.external_subnets.ids
-  workspace_name       = local.workspace_name
+  composer_host                    = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
+  image_id                         = data.aws_ami.worker_fedora_35_aarch64.id
+  instance_profile_arn             = aws_iam_instance_profile.worker_fedora.arn
+  instance_types                   = ["c6g.large"]
+  max_size                         = 1
+  min_size                         = 1
+  offline_token_arn                = data.aws_secretsmanager_secret.offline_token_fedora.arn
+  subscription_manager_command_arn = data.aws_secretsmanager_secret.subscription_manager_command.arn
+  security_group_id                = aws_security_group.workers_fedora.id
+  subnet_ids                       = data.aws_subnet_ids.external_subnets.ids
+  workspace_name                   = local.workspace_name
 
   cloudwatch_log_group = aws_cloudwatch_log_group.workers_fedora.name
 }
