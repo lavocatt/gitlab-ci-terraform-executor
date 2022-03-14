@@ -46,6 +46,7 @@ variable "offline_token_arn" {
 variable "subscription_manager_command_arn" {
   description = "ARN of subscription command secret."
   type        = string
+  default     = ""
 }
 variable "cloudwatch_log_group" {
   description = "Cloudwatch log group that's used for logging."
