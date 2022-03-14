@@ -5,6 +5,7 @@
 variable "imagebuilder_tags" {
   type        = map(any)
   description = "Required AWS tags for Image Builder"
+
   default = {
     ServiceOwner : "Image Builder"
     AppCode : "IMGB-001"
@@ -15,6 +16,7 @@ variable "imagebuilder_tags" {
 # instances should be used for running workers.
 variable "worker_instance_types" {
   description = "Instance types for workers"
+
   default = [
     "c5.large",
     "c5d.large",
@@ -35,6 +37,11 @@ variable "composer_commit" {
 variable "fedora_workers_composer_commit" {
   type        = string
   description = "The Git SHA of osbuild-composer to deploy on Fedora worker instances."
+}
+
+variable "fedora_workers_count" {
+  type        = number
+  description = "Number of Fedora workers (per arch)"
 }
 
 variable "composer_host_aoc" {

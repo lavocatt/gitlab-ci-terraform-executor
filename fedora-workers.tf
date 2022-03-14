@@ -198,8 +198,8 @@ module "worker_group_fedora_35_x86_64" {
   image_id                       = data.aws_ami.worker_fedora_35_x86_64.id
   instance_profile_arn           = aws_iam_instance_profile.worker_fedora.arn
   instance_types                 = ["c6a.large"]
-  max_size                       = 1
-  min_size                       = 1
+  max_size                       = var.fedora_workers_count
+  min_size                       = var.fedora_workers_count
   offline_token_arn              = data.aws_secretsmanager_secret.offline_token_fedora.arn
   koji_account_image_builder_arn = data.aws_secretsmanager_secret.fedora_koji.arn
   security_group_id              = aws_security_group.workers_fedora.id
@@ -240,8 +240,8 @@ module "worker_group_fedora_35_aarch64" {
   image_id                       = data.aws_ami.worker_fedora_35_aarch64.id
   instance_profile_arn           = aws_iam_instance_profile.worker_fedora.arn
   instance_types                 = ["c6g.large"]
-  max_size                       = 1
-  min_size                       = 1
+  max_size                       = var.fedora_workers_count
+  min_size                       = var.fedora_workers_count
   offline_token_arn              = data.aws_secretsmanager_secret.offline_token_fedora.arn
   koji_account_image_builder_arn = data.aws_secretsmanager_secret.fedora_koji.arn
   security_group_id              = aws_security_group.workers_fedora.id
