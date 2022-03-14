@@ -10,6 +10,7 @@ write_files:
       GCP_SERVICE_ACCOUNT_IMAGE_BUILDER_ARN='${gcp_service_account_image_builder_arn}'
       AZURE_ACCOUNT_IMAGE_BUILDER_ARN='${azure_account_image_builder_arn}'
       AWS_ACCOUNT_IMAGE_BUILDER_ARN='${aws_account_image_builder_arn}'
+      KOJI_ACCOUNT_IMAGE_BUILDER_ARN='${koji_account_image_builder_arn}'
       SYSTEM_HOSTNAME_PREFIX='${system_hostname_prefix}'
       SECRETS_MANAGER_ENDPOINT_URL=https://${secrets_manager_endpoint_domain}/
       CLOUDWATCH_LOGS_ENDPOINT_URL=https://${cloudwatch_logs_endpoint_domain}/

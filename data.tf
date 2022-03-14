@@ -24,6 +24,9 @@ data "aws_secretsmanager_secret" "azure_account_image_builder" {
 data "aws_secretsmanager_secret" "aws_account_image_builder" {
   name = "aws_account_image_builder"
 }
+data "aws_secretsmanager_secret" "fedora_koji" {
+  name = "fedora_koji_staging"
+}
 data "aws_secretsmanager_secret" "subscription_manager_command" {
   name = "subscription-manager-command"
 }

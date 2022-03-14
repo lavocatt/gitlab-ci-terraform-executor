@@ -18,8 +18,9 @@ locals {
     composer_host = var.composer_host
 
     # Provide the ARNs to the secrets that contains keys/certificates
-    offline_token_arn            = var.offline_token_arn
-    subscription_manager_command = var.subscription_manager_command_arn
+    offline_token_arn              = var.offline_token_arn
+    subscription_manager_command   = var.subscription_manager_command_arn
+    koji_account_image_builder_arn = var.koji_account_image_builder_arn
 
     # TODO: pick dns name from the right availability zone}
     secrets_manager_endpoint_domain = "secretsmanager.${data.aws_region.current.name}.amazonaws.com"

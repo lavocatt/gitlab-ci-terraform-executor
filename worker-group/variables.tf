@@ -48,6 +48,11 @@ variable "subscription_manager_command_arn" {
   type        = string
   default     = ""
 }
+variable "koji_account_image_builder_arn" {
+  description = "ARN of koji account secret."
+  type        = string
+  default     = ""
+}
 variable "cloudwatch_log_group" {
   description = "Cloudwatch log group that's used for logging."
   type        = string
