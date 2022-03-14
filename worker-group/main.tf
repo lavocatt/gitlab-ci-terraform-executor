@@ -41,12 +41,11 @@ locals {
 
 # Create a launch template that specifies almost everything about our workers.
 # This eliminates a lot of repeated code for the actual spot fleet itself.
-
 resource "aws_launch_template" "worker" {
   name          = var.name
   image_id      = var.image_id
   instance_type = "t3.medium"
-  key_name      = "obudai"
+  key_name      = var.key_name
 
   # Allow the instance to assume the external_worker IAM role.
   iam_instance_profile {

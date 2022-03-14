@@ -27,6 +27,11 @@ variable "image_id" {
   description = "AMI ID to be launched."
   type        = string
 }
+variable "key_name" {
+  description = "A key name that can be used to SSH into the instances."
+  type        = string
+  default     = ""
+}
 variable "instance_profile_arn" {
   description = "ARN of instance profile to be attached the the instances."
   type        = string
