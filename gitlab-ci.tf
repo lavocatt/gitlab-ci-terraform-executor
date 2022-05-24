@@ -24,6 +24,10 @@ resource "aws_iam_instance_profile" "gitlab_ci" {
   role = aws_iam_role.gitlab_ci.name
 }
 
+data "aws_iam_role" "spot_fleet_tagging_role" {
+  name = "aws-ec2-spot-fleet-tagging-role"
+}
+
 data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
   statement {
     actions = [
@@ -48,9 +52,28 @@ data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
       "ec2:DescribeVpcAttribute",
       "ec2:DescribeVpcs",
       "ec2:DescribeRouteTables",
+
+      # see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/work-with-spot-fleets.html#spot-fleet-prerequisites
+      "ec2:RequestSpotFleet",
+      "ec2:ModifySpotFleetRequest",
+      "ec2:CancelSpotFleetRequests",
+      "ec2:DescribeSpotFleetRequests",
+      "ec2:DescribeSpotFleetInstances",
+      "ec2:DescribeSpotFleetRequestHistory",
+      "iam:CreateServiceLinkedRole",
+      "iam:ListRoles",
+      "iam:ListInstanceProfiles",
     ]
 
     resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "iam:PassRole"
+    ]
+
+    resources = [data.aws_iam_role.spot_fleet_tagging_role.arn]
   }
 }
 
@@ -168,7 +191,9 @@ resource "aws_instance" "gitlab_ci_runner" {
   ]
   iam_instance_profile = aws_iam_instance_profile.gitlab_ci.name
 
-  user_data = templatefile("cloud-init/gitlab_ci_runner.sh.tpl", { secret_arn = data.aws_secretsmanager_secret.schutzbot_gitlab_runner.arn })
+  user_data = templatefile("cloud-init/gitlab_ci_runner.sh.tpl", {
+    secret_arn = data.aws_secretsmanager_secret.schutzbot_gitlab_runner.arn
+  })
 
   tags = merge(
     var.imagebuilder_tags, { Name = "🏃 Schutzbot on GitLab runner ${local.workspace_name}" },
