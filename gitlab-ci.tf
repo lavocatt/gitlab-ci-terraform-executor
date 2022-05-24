@@ -70,7 +70,10 @@ data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
 
   statement {
     actions = [
-      "iam:PassRole"
+      "iam:PassRole",
+
+      # terraform also needs this so it can read data.aws_iam_role
+      "iam:GetRole",
     ]
 
     resources = [data.aws_iam_role.spot_fleet_tagging_role.arn]
