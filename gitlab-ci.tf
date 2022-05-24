@@ -53,6 +53,9 @@ data "aws_iam_policy_document" "gitlab_ci_manage_instances" {
       "ec2:DescribeVpcs",
       "ec2:DescribeRouteTables",
 
+      # terraform needs this so it can read data.aws_instance
+      "ec2:DescribeInstanceAttribute",
+
       # see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/work-with-spot-fleets.html#spot-fleet-prerequisites
       "ec2:RequestSpotFleet",
       "ec2:ModifySpotFleetRequest",
