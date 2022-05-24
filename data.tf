@@ -96,20 +96,41 @@ data "aws_ami" "rhel8_x86_prebuilt" {
 data "aws_vpc" "internal_vpc" {
   filter {
     name = "tag:Name"
+
     values = [
       "RD-Platform-Prod-US-East-1"
     ]
   }
 }
 
-# Find all of the subnet IDs from the internal VPC.
-data "aws_subnet_ids" "internal_subnets" {
-  vpc_id = data.aws_vpc.internal_vpc.id
+# These deployments should use the old subnets so let's filter for them
+data "aws_subnet" "internalA" {
+  filter {
+    name   = "tag:Name"
+    values = ["InternalA"]
+  }
+}
+
+data "aws_subnet" "internalB" {
+  filter {
+    name   = "tag:Name"
+    values = ["InternalB"]
+  }
+}
+
+data "aws_subnets" "internal_subnets" {
+  filter {
+    name = "subnet-id"
+    values = [
+      data.aws_subnet.internalA.id,
+      data.aws_subnet.internalB.id,
+    ]
+  }
 }
 
 # Find all of the subnet details from the internal VPC.
 data "aws_subnet" "internal_subnet_primary" {
-  id = sort(data.aws_subnet_ids.internal_subnets.ids)[0]
+  id = sort(data.aws_subnets.internal_subnets.ids)[0]
 }
 
 # Find the default VPC (not internal).

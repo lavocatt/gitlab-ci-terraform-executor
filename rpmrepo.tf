@@ -499,7 +499,7 @@ resource "aws_batch_compute_environment" "rpmrepo_batch" {
     security_group_ids = [
       aws_security_group.rpmrepo_batch_ec2.id,
     ]
-    subnets = data.aws_subnet_ids.internal_subnets.ids
+    subnets = data.aws_subnets.internal_subnets.ids
     type    = "EC2"
   }
   depends_on   = [aws_iam_role_policy_attachment.rpmrepo_batch_mgr_service]

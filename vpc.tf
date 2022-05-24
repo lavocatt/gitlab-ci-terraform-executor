@@ -30,7 +30,7 @@ resource "aws_vpc_endpoint" "internal_vpc_rpmrepo" {
     aws_security_group.internal_allow_trusted.id,
   ]
 
-  subnet_ids = data.aws_subnet_ids.internal_subnets.ids
+  subnet_ids = data.aws_subnets.internal_subnets.ids
 
   lifecycle {
     # The ID of this resource is used in the RPMrepo gateway to redirect

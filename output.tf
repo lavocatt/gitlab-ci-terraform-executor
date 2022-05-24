@@ -9,7 +9,7 @@ output "internal_vpc" {
 }
 
 output "internal_subnets" {
-  value = join(", ", data.aws_subnet_ids.internal_subnets.ids)
+  value = join(", ", data.aws_subnets.internal_subnets.ids)
 }
 
 output "external_vpc" {
