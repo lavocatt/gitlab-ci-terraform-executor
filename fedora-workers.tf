@@ -205,6 +205,7 @@ module "worker_group_fedora_35_x86_64" {
   security_group_id              = aws_security_group.workers_fedora.id
   subnet_ids                     = data.aws_subnet_ids.external_subnets.ids
   workspace_name                 = local.workspace_name
+  key_name                       = "obudai"
 
   cloudwatch_log_group = aws_cloudwatch_log_group.workers_fedora.name
 }
