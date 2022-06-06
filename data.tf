@@ -25,7 +25,7 @@ data "aws_secretsmanager_secret" "aws_account_image_builder" {
   name = "aws_account_image_builder"
 }
 data "aws_secretsmanager_secret" "fedora_koji" {
-  name = "fedora_koji_staging"
+  name = local.workspace_name == "staging" ? "fedora_koji_staging" : "fedora_koji_stable"
 }
 data "aws_secretsmanager_secret" "subscription_manager_command" {
   name = "subscription-manager-command"
@@ -34,7 +34,7 @@ data "aws_secretsmanager_secret" "offline_token" {
   name = "offline_token"
 }
 data "aws_secretsmanager_secret" "offline_token_fedora" {
-  name = "offline_token_fedora"
+  name = local.workspace_name == "staging" ? "offline_token_fedora_staging" : "offline_token_fedora_stable"
 }
 data "aws_secretsmanager_secret" "pozorbot" {
   name = "pozorbot"
