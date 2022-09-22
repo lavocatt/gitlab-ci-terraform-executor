@@ -166,7 +166,7 @@ resource "aws_security_group" "workers_fedora" {
   )
 }
 
-data "aws_ami" "worker_fedora_35_x86_64" {
+data "aws_ami" "worker_fedora_x86_64" {
   owners      = ["self"]
   most_recent = true
 
@@ -180,7 +180,7 @@ data "aws_ami" "worker_fedora_35_x86_64" {
   }
   filter {
     name   = "tag:os_version"
-    values = ["35"]
+    values = ["36"]
   }
   filter {
     name   = "tag:arch"
@@ -189,13 +189,13 @@ data "aws_ami" "worker_fedora_35_x86_64" {
 }
 
 
-module "worker_group_fedora_35_x86_64" {
+module "worker_group_fedora_x86_64" {
   source = "./worker-group"
 
   name = "Fedora-Worker-x86_64-(${local.workspace_name})"
 
   composer_host                  = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
-  image_id                       = data.aws_ami.worker_fedora_35_x86_64.id
+  image_id                       = data.aws_ami.worker_fedora_x86_64.id
   instance_profile_arn           = aws_iam_instance_profile.worker_fedora.arn
   instance_types                 = ["c6a.large"]
   max_size                       = var.fedora_workers_count
@@ -209,7 +209,7 @@ module "worker_group_fedora_35_x86_64" {
   cloudwatch_log_group = aws_cloudwatch_log_group.workers_fedora.name
 }
 
-data "aws_ami" "worker_fedora_35_aarch64" {
+data "aws_ami" "worker_fedora_aarch64" {
   owners      = ["self"]
   most_recent = true
 
@@ -223,7 +223,7 @@ data "aws_ami" "worker_fedora_35_aarch64" {
   }
   filter {
     name   = "tag:os_version"
-    values = ["35"]
+    values = ["36"]
   }
   filter {
     name   = "tag:arch"
@@ -231,13 +231,13 @@ data "aws_ami" "worker_fedora_35_aarch64" {
   }
 }
 
-module "worker_group_fedora_35_aarch64" {
+module "worker_group_fedora_aarch64" {
   source = "./worker-group"
 
   name = "Fedora-Worker-aarch64-(${local.workspace_name})"
 
   composer_host                  = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
-  image_id                       = data.aws_ami.worker_fedora_35_aarch64.id
+  image_id                       = data.aws_ami.worker_fedora_aarch64.id
   instance_profile_arn           = aws_iam_instance_profile.worker_fedora.arn
   instance_types                 = ["c6g.large"]
   max_size                       = var.fedora_workers_count
