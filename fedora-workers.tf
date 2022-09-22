@@ -197,7 +197,7 @@ module "worker_group_fedora_x86_64" {
   composer_host                  = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
   image_id                       = data.aws_ami.worker_fedora_x86_64.id
   instance_profile_arn           = aws_iam_instance_profile.worker_fedora.arn
-  instance_types                 = ["c6a.large"]
+  instance_types                 = ["c6a.large", "c6i.large"]
   max_size                       = var.fedora_workers_count
   min_size                       = var.fedora_workers_count
   offline_token_arn              = data.aws_secretsmanager_secret.offline_token_fedora.arn
@@ -239,7 +239,7 @@ module "worker_group_fedora_aarch64" {
   composer_host                  = local.workspace_name == "staging" ? var.composer_host_aoc_staging : var.composer_host_aoc
   image_id                       = data.aws_ami.worker_fedora_aarch64.id
   instance_profile_arn           = aws_iam_instance_profile.worker_fedora.arn
-  instance_types                 = ["c6g.large"]
+  instance_types                 = ["c7g.large"]
   max_size                       = var.fedora_workers_count
   min_size                       = var.fedora_workers_count
   offline_token_arn              = data.aws_secretsmanager_secret.offline_token_fedora.arn
