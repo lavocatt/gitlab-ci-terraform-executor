@@ -7,11 +7,6 @@ terraform {
   }
 }
 
-provider "aws" {
-  profile = "default"
-  region  = "us-east-1"
-}
-
 
 locals {
   cloud_init_user_data = templatefile("${path.module}/user-data.yaml", {
