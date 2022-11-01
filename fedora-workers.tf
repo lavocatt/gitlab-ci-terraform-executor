@@ -113,6 +113,44 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_worker_fedora" {
   policy_arn = aws_iam_policy.cloudwatch_logging_fedora.arn
 }
 
+
+# Create a policy that allows the instances to set their protection policy
+data "aws_iam_policy_document" "instance_protection_policy" {
+  statement {
+    sid = "DescribeAutoScalingInstancesPolicy"
+
+    actions = [
+      "autoscaling:DescribeAutoScalingInstances",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "SetInstanceProtectionPolicy"
+
+    actions = [
+      "autoscaling:SetInstanceProtection",
+    ]
+    resources = [
+      module.worker_group_fedora_x86_64.autoscaling_group_arn,
+      module.worker_group_fedora_aarch64.autoscaling_group_arn
+    ]
+  }
+}
+
+# Load the policy for protection policy.
+resource "aws_iam_policy" "instance_protection_policy" {
+  name   = "instance_protection_policy_fedora_${local.workspace_name}"
+  policy = data.aws_iam_policy_document.instance_protection_policy.json
+}
+
+# Attach the the policy for protection policy.
+resource "aws_iam_role_policy_attachment" "instance_protection_policy" {
+  role       = aws_iam_role.worker_fedora.name
+  policy_arn = aws_iam_policy.instance_protection_policy.arn
+}
+
 # Attach the monitoring client policy.
 resource "aws_iam_role_policy_attachment" "pozorbot_worker_fedora" {
   role       = aws_iam_role.worker_fedora.name
