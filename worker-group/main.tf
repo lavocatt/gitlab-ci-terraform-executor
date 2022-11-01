@@ -141,6 +141,11 @@ resource "aws_autoscaling_group" "workers" {
     }
   }
 
+  # To meet the security requirements, we need to restart the machine once
+  # a week. Since we don't really care, let's just do it every day to prevent
+  # any issues that a long-running instance can have (disk corruption).
+  max_instance_lifetime = 60 * 60 * 24 # 1 day
+
   tag {
     key                 = "Name"
     value               = var.name
