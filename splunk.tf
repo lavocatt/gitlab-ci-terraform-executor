@@ -23,6 +23,7 @@ data "aws_iam_policy_document" "splunk_collect_data" {
       "ec2:DescribeRegions",
       "ec2:DescribeReservedInstances",
       "ec2:DescribeReservedInstancesModifications",
+      "ec2:DescribeSpotFleetInstances",
       "ec2:DescribeTags",
       "ec2:DescribeVolumes",
       "ecs:DescribeClusters",
